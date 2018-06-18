@@ -11,25 +11,40 @@ public class ScenarioControl : MonoBehaviour {
     // Use this for initialization
 	void Start ()
     {
-		m_cved = new CvedPed();
-		m_extCtrl = new ExternalObjectCtrl();
-		m_extCtrl.Initialize(m_cved);
-		m_cved.Initialize(m_extCtrl, m_prefabs);
+
+    }
+
+    void OnEnable()
+    {
+        m_cved = new CvedPed();
+        m_extCtrl = new ExternalObjectCtrl();
+        m_extCtrl.Initialize(m_cved);
+        m_cved.Initialize(m_extCtrl, m_prefabs);
 
         if (c_debug)
             m_lstVehis = new List<short>();
     }
 
-	void testCvedCreateVehicle()
+    void OnDisable()
     {
-        Quaternion q = Quaternion.identity;
-        q.eulerAngles = new Vector3(-90, 90, 0);
+        m_extCtrl.UnInitialize();
+    }
+
+
+
+    void testCvedCreateVehicle()
+    {
+        Vector3 forward_state = new Vector3(1, 0, 0);
+        Vector3 right_state = new Vector3(0, 0, -1);
+        Vector3 pos_state = new Vector3(-600f, 0.5f, -4290f);
         uint numVehis = (uint)m_lstVehis.Count;
         short id_local = m_cved.CreateVehicle("test" + numVehis
                             , numVehis
                             , 8, 8, 8
-                            , new Vector3(-600f, 0.5f, -4290f)
-                            , q);
+                            , pos_state
+                            , forward_state
+                            , right_state);
+
         if (!(id_local < 0))
         {
         	m_lstVehis.Add(id_local);

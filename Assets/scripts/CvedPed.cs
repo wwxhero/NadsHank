@@ -9,7 +9,7 @@ class CvedPed : Object
     Vector3 [] m_szPrefabs;
     ExternalObjectCtrl m_ctrl;
     Dictionary<short, GameObject> m_dictVehis;
-    short m_keyBase = 0;
+    short m_keyBase = 1; //0 is reserved for self owned object
 
 
 	public CvedPed()
@@ -41,19 +41,24 @@ class CvedPed : Object
         else
             return k3;
     }
-
     public short CreateVehicle(string name
                             , uint solId
                             , double xSize
                             , double ySize
                             , double zSize
                             , Vector3 ptPos
-                            , Quaternion ori)
+                            , Vector3 t
+                            , Vector3 r)
     {
         //todo: create a vehicle object and return its id
         Debug.Assert(m_prefabs.Length > 0);
         uint idx_prefab = solId % (uint)m_prefabs.Length;
-        GameObject veh = Instantiate(m_prefabs[idx_prefab], ptPos, ori);
+        Vector3 z_prime = Vector3.Cross(r, -t);
+        Vector3 y_prime = -t;
+        Quaternion q = new Quaternion();
+        q.SetLookRotation(z_prime, y_prime);
+        GameObject veh = Instantiate(m_prefabs[idx_prefab], ptPos, q);
+
         Vector3 szVeh = m_szPrefabs[idx_prefab];
         float k1 = (float)xSize / szVeh[0];
         float k2 = (float)ySize / szVeh[1];
@@ -92,14 +97,26 @@ class CvedPed : Object
         {
 
         }
-
-
     }
 
 	public void ExecuteDynamicModels()
 	{
         //todo: update every vehicle's state
         //Debug.Log("ExecuteDynamicModels");
-	}
+        Vector3 pos_state = new Vector3();
+        Vector3 tan_state = new Vector3();
+        Vector3 lat_state = new Vector3();
+        foreach (short id_local in m_dictVehis.Keys)
+        {
+            m_ctrl.OnGetUpdate(id_local, ref pos_state, ref tan_state, ref lat_state);
+            GameObject o = m_dictVehis[id_local];
+            o.transform.position = pos_state;
+            Vector3 z_prime = Vector3.Cross(lat_state, -tan_state);
+            Vector3 y_prime = -tan_state;
+            Quaternion q = new Quaternion();
+            q.SetLookRotation(z_prime, y_prime);
+        }
+
+    }
 
 };
