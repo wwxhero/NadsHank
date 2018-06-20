@@ -1,13 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 using UnityEngine;
 
-class ExternalObjectCtrl
+class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
+                            , IExternalObjectCtrl
 {
-    public ExternalObjectCtrl()
+    public ExternalObjectCtrlPed()
     {
     }
-    public bool Initialize(CvedPed cved)
+    public bool Initialize(CvedPed cved, XmlNode root)
     {
         //todo: load distributed version scene file, intialize vr-link
         return false;

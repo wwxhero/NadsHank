@@ -7,7 +7,7 @@ class CvedPed : Object
 
     GameObject [] m_prefabs;
     Vector3 [] m_szPrefabs;
-    ExternalObjectCtrl m_ctrl;
+    IExternalObjectCtrl m_ctrl;
     Dictionary<short, GameObject> m_dictVehis;
     short m_keyBase = 1; //0 is reserved for self owned object
 
@@ -17,7 +17,7 @@ class CvedPed : Object
 
 	}
 
-	public bool Initialize(ExternalObjectCtrl ctrl, GameObject[] prefabs)
+	public bool Initialize(IExternalObjectCtrl ctrl, GameObject[] prefabs)
 	{
 		m_ctrl = ctrl;
         m_dictVehis = new Dictionary<short, GameObject>();

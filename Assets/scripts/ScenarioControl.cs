@@ -1,28 +1,41 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 using UnityEngine;
 
 public class ScenarioControl : MonoBehaviour {
     public GameObject [] m_prefabs;
     CvedPed m_cved;
-	ExternalObjectCtrl m_extCtrl;
+	IExternalObjectCtrl m_extCtrl;
     const bool c_debug = true;
     List<short> m_lstVehis;
     // Use this for initialization
-	void Start ()
+    void Start ()
     {
 
     }
 
     void OnEnable()
     {
-        m_cved = new CvedPed();
-        m_extCtrl = new ExternalObjectCtrl();
-        m_extCtrl.Initialize(m_cved);
-        m_cved.Initialize(m_extCtrl, m_prefabs);
+        try
+        {
+            m_cved = new CvedPed();
+            m_extCtrl = new ExternalObjectCtrlPed();
+            XmlDocument scene = new XmlDocument();
+            scene.Load("SceneDistri.xml");
+            XmlNode root = scene.DocumentElement;
+            m_extCtrl.Initialize(m_cved, root);
+            m_cved.Initialize(m_extCtrl, m_prefabs);
 
-        if (c_debug)
-            m_lstVehis = new List<short>();
+            if (c_debug)
+                m_lstVehis = new List<short>();
+        }
+        catch(System.IO.FileNotFoundException)
+        {
+            Debug.LogError("can't find scene file");
+            OnDisable();
+        }
     }
 
     void OnDisable()
@@ -64,6 +77,45 @@ public class ScenarioControl : MonoBehaviour {
         }
     }
 
+    void testLoadScene()
+    {
+        try
+        {
+            XmlDocument scene = new XmlDocument();
+            scene.Load("SceneDistri.xml");
+            XmlNode root = scene.DocumentElement;
+            XmlAttribute attr_root = root.Attributes["port"];
+            Debug.Log("root:" + "name=" + root.Name+ " port="+attr_root.Value);
+            XmlNode c = root.FirstChild;
+            while(null != c)
+            {
+                XmlAttributeCollection attr_child = c.Attributes;
+                int type = Convert.ToInt32(attr_child["type"].Value);
+                if (1 == type)
+                    Debug.Log("child:"
+                            + "name=" + c.Name
+                            + " name2=" + attr_child["name"].Value
+                            + " type=" + attr_child["type"].Value
+                            + " ipv4=" + attr_child["ipv4"].Value
+                            + " ipmask=" + attr_child["ipmask"].Value);
+                else if(0 == type)
+                    Debug.Log("child:"
+                            + "name=" + c.Name
+                            + " name2=" + attr_child["name"].Value
+                            + " type=" + attr_child["type"].Value
+                            + " ipv4=" + attr_child["ipv4"].Value
+                            + " ipmask=" + attr_child["ipmask"].Value
+                            + " cabtype=" + attr_child["cabtype"].Value);
+                c = c.NextSibling;
+            }
+
+        }
+        catch (System.IO.FileNotFoundException)
+        {
+            Debug.Log("scene load failed!");
+        }
+    }
+
 	// Update is called once per frame
 	void Update ()
     {
@@ -80,6 +132,9 @@ public class ScenarioControl : MonoBehaviour {
             ptBtn.y = ptBtn.y + szBtn.y;
             if (GUI.Button(new Rect(ptBtn[0], ptBtn[1], szBtn[0], szBtn[1]), "testCvedDeleteVehicle"))
                 testCvedDeleteVehicle();
+            ptBtn.y = ptBtn.y + szBtn.y;
+            if (GUI.Button(new Rect(ptBtn[0], ptBtn[1], szBtn[0], szBtn[1]), "testLoadScene"))
+                testLoadScene();
             ptBtn.y = ptBtn.y + szBtn.y;
         }
 

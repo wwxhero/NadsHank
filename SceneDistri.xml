@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Header port=4545>
-	<DistriSim name="Monitor" type=1 ipv4="128.255.250.90" ipmask="255.255.255.0">
+<Header port="4545">
+	<DistriSim name="Monitor" type="1" ipv4="128.255.250.90" ipmask="255.255.255.0">
 	</DistriSim>
-	<DistriSim name="Sim1" type=0 ipv4="128.255.250.240" ipmask="255.255.255.0"
+	<DistriSim name="Sim1" type="0" ipv4="128.255.250.240" ipmask="255.255.255.0"
 			cabtype="NadsCabMalibu">
 	</DistriSim>
-	<DistriSim name="Sim2" type=0 ipv4="128.255.250.90" ipmask="255.255.255.0"
+	<DistriSim name="Sim2" type="0" ipv4="128.255.250.90" ipmask="255.255.255.0"
 			cabtype="NadsCabMalibu">
 	</DistriSim>
 </Header>
