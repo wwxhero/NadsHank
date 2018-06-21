@@ -8,8 +8,8 @@ class CvedPed : Object
     GameObject [] m_prefabs;
     Vector3 [] m_szPrefabs;
     IExternalObjectCtrl m_ctrl;
-    Dictionary<short, GameObject> m_dictVehis;
-    short m_keyBase = 1; //0 is reserved for self owned object
+    Dictionary<ushort, GameObject> m_dictVehis;
+    ushort m_keyBase = 1; //0 is reserved for self owned object
 
 
 	public CvedPed()
@@ -20,7 +20,7 @@ class CvedPed : Object
 	public bool Initialize(IExternalObjectCtrl ctrl, GameObject[] prefabs)
 	{
 		m_ctrl = ctrl;
-        m_dictVehis = new Dictionary<short, GameObject>();
+        m_dictVehis = new Dictionary<ushort, GameObject>();
         m_prefabs = prefabs;
         m_szPrefabs = new Vector3[prefabs.Length];
         for (int i = 0; i < prefabs.Length; i ++)
@@ -41,7 +41,7 @@ class CvedPed : Object
         else
             return k3;
     }
-    public short CreateVehicle(string name
+    public ushort CreateVehicle(string name
                             , uint solId
                             , double xSize
                             , double ySize
@@ -65,13 +65,13 @@ class CvedPed : Object
         float k3 = (float)zSize / szVeh[2];
         float k = mid(k1, k2, k3);
         veh.transform.localScale = new Vector3(k, k, k);
-        short id_local = m_keyBase;
+        ushort id_local = m_keyBase;
         m_dictVehis[id_local] = veh;
         m_keyBase++;
         return id_local;
     }
 
-    public GameObject GetVehicle(short id_local)
+    public GameObject GetVehicle(ushort id_local)
     {
         //todo: return the vehicle game object
         try
@@ -84,7 +84,7 @@ class CvedPed : Object
         }
     }
 
-    public void DeleteVehicle(short id_local)
+    public void DeleteVehicle(ushort id_local)
     {
         //remove the vehicle
         try
@@ -106,7 +106,7 @@ class CvedPed : Object
         Vector3 pos_state = new Vector3();
         Vector3 tan_state = new Vector3();
         Vector3 lat_state = new Vector3();
-        foreach (short id_local in m_dictVehis.Keys)
+        foreach (ushort id_local in m_dictVehis.Keys)
         {
             m_ctrl.OnGetUpdate(id_local, ref pos_state, ref tan_state, ref lat_state);
             GameObject o = m_dictVehis[id_local];

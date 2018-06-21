@@ -16,8 +16,8 @@ interface IExternalObjectCtrl
     //todo: wrap up the network traffic for a single frame
     void PostUpdateDynamicModels();
     //todo: recieve from neighbors for pos and orientation in left-hand convension
-    bool OnGetUpdate(short id_local, ref Vector3 pos_state, ref Vector3 forward_state, ref Vector3 right_state);
+    bool OnGetUpdate(ushort id_local, ref Vector3 pos_state, ref Vector3 forward_state, ref Vector3 right_state);
     //todo: send out state information of a pedestrain as a partical
-    void OnPushUpdate(short id_local, Vector3 pos_state, Vector3 tan_state, Vector3 lat_state);
+    void OnPushUpdate(ushort id_local, Vector3 pos_state, Vector3 tan_state, Vector3 lat_state);
 }
 

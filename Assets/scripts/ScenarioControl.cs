@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using System.Xml;
 using UnityEngine;
 
@@ -9,7 +11,7 @@ public class ScenarioControl : MonoBehaviour {
     CvedPed m_cved;
 	IExternalObjectCtrl m_extCtrl;
     const bool c_debug = true;
-    List<short> m_lstVehis;
+    List<ushort> m_lstVehis;
     // Use this for initialization
     void Start ()
     {
@@ -29,7 +31,7 @@ public class ScenarioControl : MonoBehaviour {
             m_cved.Initialize(m_extCtrl, m_prefabs);
 
             if (c_debug)
-                m_lstVehis = new List<short>();
+                m_lstVehis = new List<ushort>();
         }
         catch(System.IO.FileNotFoundException)
         {
@@ -51,7 +53,7 @@ public class ScenarioControl : MonoBehaviour {
         Vector3 right_state = new Vector3(0, 0, -1);
         Vector3 pos_state = new Vector3(-600f, 0.5f, -4290f);
         uint numVehis = (uint)m_lstVehis.Count;
-        short id_local = m_cved.CreateVehicle("test" + numVehis
+        ushort id_local = m_cved.CreateVehicle("test" + numVehis
                             , numVehis
                             , 8, 8, 8
                             , pos_state
@@ -71,12 +73,23 @@ public class ScenarioControl : MonoBehaviour {
         if (cnt > 0)
         {
             int idx_t = cnt - 1;
-            short id_local = m_lstVehis[idx_t];
+            ushort id_local = m_lstVehis[idx_t];
             m_cved.DeleteVehicle(id_local);
             m_lstVehis.RemoveAt(idx_t);
         }
     }
-
+    void testGetLocalIPAddress()
+    {
+        var host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (var ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                Debug.Log("ip:" + ip.ToString());
+            }
+        }
+        //throw new Exception("No network adapters with an IPv4 address in the system!");
+    }
     void testLoadScene()
     {
         try
@@ -135,6 +148,9 @@ public class ScenarioControl : MonoBehaviour {
             ptBtn.y = ptBtn.y + szBtn.y;
             if (GUI.Button(new Rect(ptBtn[0], ptBtn[1], szBtn[0], szBtn[1]), "testLoadScene"))
                 testLoadScene();
+            ptBtn.y = ptBtn.y + szBtn.y;
+            if (GUI.Button(new Rect(ptBtn[0], ptBtn[1], szBtn[0], szBtn[1]), "testGetLocalIPAddress"))
+                testGetLocalIPAddress();
             ptBtn.y = ptBtn.y + szBtn.y;
         }
 
