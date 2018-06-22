@@ -5,7 +5,9 @@
 	<DistriSim name="Sim1" type="0" ipv4="128.255.250.240" ipmask="255.255.255.0"
 			cabtype="NadsCabMalibu">
 	</DistriSim>
-	<DistriSim name="Sim2" type="0" ipv4="128.255.250.90" ipmask="255.255.255.0"
+	<DistriSim name="Sim2" type="0" ipv4="128.255.250.239" ipmask="255.255.255.0"
 			cabtype="NadsCabMalibu">
+	</DistriSim>
+	<DistriSim name="Ped1" type="2" ipv4="128.255.250.90" ipmask="255.255.255.0">
 	</DistriSim>
 </Header>

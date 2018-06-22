@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class ScenarioControl : MonoBehaviour {
     public GameObject [] m_prefabs;
+    public string[] m_typeNames;
     CvedPed m_cved;
 	IExternalObjectCtrl m_extCtrl;
     const bool c_debug = true;
@@ -28,7 +29,7 @@ public class ScenarioControl : MonoBehaviour {
             scene.Load("SceneDistri.xml");
             XmlNode root = scene.DocumentElement;
             m_extCtrl.Initialize(m_cved, root);
-            m_cved.Initialize(m_extCtrl, m_prefabs);
+            m_cved.Initialize(m_extCtrl, m_prefabs, m_typeNames);
 
             if (c_debug)
                 m_lstVehis = new List<ushort>();

@@ -9,31 +9,53 @@ using UnityEngine;
 class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
                             , IExternalObjectCtrl
 {
+    enum Type { edo_controller = 0, ado_controller, ped_controller };
     Dictionary<ushort, GlobalId> m_mapLid2Gid;
     Dictionary<GlobalId, GameObject> m_mapGid2Ado;
 
     List<ulong> m_ipClusters;
-    List<GameObject> m_lstPeers;
+
     ulong m_selfIp;
     CvedPed m_pCved;
+    Matrix4x4 c_sim2unity;
 
     struct SEG
     {
         ulong ip;
         ulong mask;
-        ulong Group()
+        public ulong Group()
         {
             ulong g = ip & mask;
             g = g | (~mask);
             return g;
         }
+        public SEG(ulong a_ip, ulong a_mask)
+        {
+            ip = a_ip;
+            mask = a_mask;
+        }
     };
-    private void InitIpclusters(List<SEG> ips, ref List<ulong> clusters)
+    private void InitIpclusters(List<SEG> ips, out List<ulong> clusters)
     {
+        //it is the hardcoded version of broadcast
+        HashSet<ulong> setIps = new HashSet<ulong>();
+        foreach (SEG seg in ips)
+        {
+            setIps.Add(seg.Group());
+        }
+        clusters = new List<ulong>();
+        foreach (ulong ip in setIps)
+        {
+            clusters.Add(ip);
+        }
     }
-    //private void BroadCastObj(ushort id_local, const cvTObjStateBuf* sb);
-    private void getLocalhostIps(ref List<ulong> lstIps)
+    private void BroadCastObj(ushort id_local, Vector3 pos_state, Vector3 forward_state, Vector3 right_state)
     {
+        //todo: broadcast pedestrian state information
+    }
+    private void getLocalhostIps(out HashSet<ulong> lstIps)
+    {
+        lstIps = new HashSet<ulong>();
         var host = Dns.GetHostEntry(Dns.GetHostName());
         foreach (var ip in host.AddressList)
         {
@@ -47,33 +69,144 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
 
     public ExternalObjectCtrlPed()
     {
+        c_sim2unity = Matrix4x4.zero;
+        c_sim2unity[0, 0] = 1;
+        c_sim2unity[1, 2] = 1;
+        c_sim2unity[2, 1] = 1;
+        c_sim2unity[3, 3] = 1;
+        //the matrix:
+        //      1 0 0 0
+        //      0 0 1 0
+        //      0 1 0 0
+        //      0 0 0 1
     }
     public bool Initialize(CvedPed cved, XmlNode root)
     {
         //todo: load distributed version scene file, intialize vr-link
-        return false;
+        HashSet<ulong> localhostIps;
+        getLocalhostIps(out localhostIps);
+
+        List<SEG> neighborsTo = new List<SEG>();
+        List<ulong> neighborsFrom = new List<ulong>();
+        ushort id_local = 0;
+        int numSelf = 0;
+        XmlNode distriConf = root.FirstChild;
+        bool ok = true;
+        while (null != distriConf)
+        {
+            XmlAttributeCollection attrs = distriConf.Attributes;
+            string ipStr = attrs["ipv4"].Value;
+            string ipMask = attrs["ipmask"].Value;
+            ulong simIp = BitConverter.ToUInt64(IPAddress.Parse(ipStr).GetAddressBytes(), 0);
+            ulong simMask = BitConverter.ToUInt64(IPAddress.Parse(ipMask).GetAddressBytes(), 0);
+            string strType = attrs["type"].Value;
+            int type = 0;
+            ok = int.TryParse(strType, out type);
+            Debug.Assert(ok);
+            bool selfBlk = (localhostIps.Contains(simIp) && (int)Type.ped_controller == type); //0: edo_controller, 1: ado_controller, 2: ped_controller
+            bool neighborBlk = !selfBlk;
+            bool peerEdoBlk = ((int)Type.edo_controller == type
+                            && neighborBlk);
+            if (neighborBlk)
+            {
+                SEG seg = new SEG(simIp, simMask);
+                neighborsTo.Add(seg);
+                neighborsFrom.Add(simIp);
+            }
+
+            if (peerEdoBlk)
+            {
+                id_local = cved.CreateVehicle(attrs["cabtype"].Value);
+                GlobalId id_global = new GlobalId(simIp, 0);
+                m_mapLid2Gid.Add(id_local, id_global);
+            }
+
+            if (selfBlk)
+            {
+                m_selfIp = simIp;
+                numSelf++;
+                //fixme: intialize state0 of pedestrian and ready to send out
+            }
+            distriConf = distriConf.NextSibling;
+        }
+
+        ok = (numSelf == 1);
+        if (ok)
+        {
+            InitIpclusters(neighborsTo, out m_ipClusters);
+            string strPort = root.Attributes["port"].Value;
+            int port;
+            ok = int.TryParse(strPort, out port);
+            Debug.Assert(ok); //port is in right format
+            base.NetworkInitialize(m_ipClusters, neighborsFrom, port, m_selfIp);
+            m_pCved = cved;
+            //fixme: broadcast state0 to all neighbors
+        }
+
+        return ok;
     }
 
     public void UnInitialize()
     {
         //todo: unload distributed version scene file, uninitialize vr-link
+        base.NetworkUnInitialize();
+        m_ipClusters.Clear();
+        m_mapLid2Gid.Clear();
     }
     public void PreUpdateDynamicModels()
     {
         //todo: prepare environment for network traffic
+        base.PreDynaCalc();
+
     }
     public void PostUpdateDynamicModels()
     {
         //todo: wrap up the network traffic for a single frame
+        base.PostDynaCalc();
     }
-    public bool OnGetUpdate(ushort id_local, ref Vector3 pos_state, ref Vector3 forward_state, ref Vector3 right_state)
+
+    public override void CreateAdoStub(GlobalId id_global, string name, Vector3 pos, Vector3 forward, Vector3 right)
+    {
+        //need pdu support from vr-link or work around
+    }
+
+    public override void DeleteAdoStub(GlobalId id_global)
+    {
+        //
+    }
+
+    public bool OnGetUpdate(ushort id_local, out Vector3 pos_state, out Vector3 forward_state, out Vector3 right_state)
     {
         //todo: recieve from neighbors for pos and orientation in left-hand convension
         forward_state = new Vector3(1, 0, 0);
         right_state = new Vector3(0, 0, -1);
         pos_state = new Vector3(-600f, 0.5f, -4290f);
+        GlobalId id_global = new GlobalId(0, 0);
+        if (!m_mapLid2Gid.TryGetValue(id_local, out id_global))
+            return false;
+        Vector3 pos_state_sim;
+        Vector3 forward_state_sim;
+        Vector3 right_state_sim;
+        bool recieved = base.Receive(id_global, out pos_state_sim, out forward_state_sim, out right_state_sim);
+        if (recieved)
+        {
+            pos_state = c_sim2unity.MultiplyPoint3x4(pos_state_sim);
+            forward_state = c_sim2unity.MultiplyPoint3x4(forward_state_sim);
+            right_state = c_sim2unity.MultiplyPoint3x4(right_state_sim);
+        }
 
-        return true;
+        string[] recFlag = { "NReceived", "Recieved" };
+        Byte[] seg = BitConverter.GetBytes(id_global.owner);
+        int idx = recieved ? 1 : 0;
+        Debug.LogFormat(@"OnGetUpdate {0} id:{1} from ip:[{2}.{3}.{4}.{5}]
+                                \n\t position: [{6},{7},{8}]
+                                \n\t tangent: [{9},{10},{11}]
+                                \n\t lateral: [{12},{13},{14}]\n"
+                                , recFlag[idx], id_local, seg[0], seg[1], seg[2], seg[3]
+                                , pos_state.x, pos_state.y, pos_state.z
+                                , forward_state.x, forward_state.y, forward_state.z
+                                , right_state.x, right_state.y, right_state);
+        return recieved;
     }
     public void OnPushUpdate(ushort id_local, Vector3 pos_state, Vector3 tan_state, Vector3 lat_state)
     {

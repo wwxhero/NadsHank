@@ -10,22 +10,24 @@ class CvedPed : Object
     IExternalObjectCtrl m_ctrl;
     Dictionary<ushort, GameObject> m_dictVehis;
     ushort m_keyBase = 1; //0 is reserved for self owned object
-
+    Dictionary<string, GameObject> m_typename2prefab;
 
 	public CvedPed()
 	{
 
 	}
 
-	public bool Initialize(IExternalObjectCtrl ctrl, GameObject[] prefabs)
+	public bool Initialize(IExternalObjectCtrl ctrl, GameObject[] prefabs, string[] typenames)
 	{
 		m_ctrl = ctrl;
         m_dictVehis = new Dictionary<ushort, GameObject>();
+        m_typename2prefab = new Dictionary<string, GameObject>();
         m_prefabs = prefabs;
         m_szPrefabs = new Vector3[prefabs.Length];
         for (int i = 0; i < prefabs.Length; i ++)
         {
             m_szPrefabs[i] = prefabs[i].GetComponent<Renderer>().bounds.size;
+            m_typename2prefab[typenames[i]] = prefabs[i];
         }
         return true;
 	}
@@ -71,6 +73,23 @@ class CvedPed : Object
         return id_local;
     }
 
+    public ushort CreateVehicle(string type)
+    {
+        //todo: create a vehicle and place it at default(invisible) place
+        GameObject vehiPrefab = null;
+        bool exists = m_typename2prefab.TryGetValue(type, out vehiPrefab);
+        if (!exists)
+        {
+            System.Random rnd = new System.Random();
+            vehiPrefab = m_prefabs[rnd.Next(m_prefabs.Length)];
+        }
+        GameObject veh = Instantiate(vehiPrefab);
+        ushort id_local = m_keyBase;
+        m_dictVehis[id_local] = veh;
+        m_keyBase++;
+        return id_local;
+    }
+
     public GameObject GetVehicle(ushort id_local)
     {
         //todo: return the vehicle game object
@@ -103,12 +122,12 @@ class CvedPed : Object
 	{
         //todo: update every vehicle's state
         //Debug.Log("ExecuteDynamicModels");
-        Vector3 pos_state = new Vector3();
-        Vector3 tan_state = new Vector3();
-        Vector3 lat_state = new Vector3();
         foreach (ushort id_local in m_dictVehis.Keys)
         {
-            m_ctrl.OnGetUpdate(id_local, ref pos_state, ref tan_state, ref lat_state);
+            Vector3 pos_state;
+            Vector3 tan_state;
+            Vector3 lat_state;
+            m_ctrl.OnGetUpdate(id_local, out pos_state, out tan_state, out lat_state);
             GameObject o = m_dictVehis[id_local];
             o.transform.position = pos_state;
             Vector3 z_prime = Vector3.Cross(lat_state, -tan_state);
