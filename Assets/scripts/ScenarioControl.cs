@@ -28,8 +28,9 @@ public class ScenarioControl : MonoBehaviour {
             XmlDocument scene = new XmlDocument();
             scene.Load("SceneDistri.xml");
             XmlNode root = scene.DocumentElement;
-            m_extCtrl.Initialize(m_cved, root);
             m_cved.Initialize(m_extCtrl, m_prefabs, m_typeNames);
+            m_extCtrl.Initialize(m_cved, root);
+
 
             if (c_debug)
                 m_lstVehis = new List<ushort>();

@@ -10,41 +10,41 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
                             , IExternalObjectCtrl
 {
     enum Type { edo_controller = 0, ado_controller, ped_controller };
-    Dictionary<ushort, GlobalId> m_mapLid2Gid;
+    Dictionary<ushort, GlobalId> m_mapLid2Gid = new Dictionary<ushort, GlobalId>();
     Dictionary<GlobalId, GameObject> m_mapGid2Ado;
 
-    List<ulong> m_ipClusters;
+    List<uint> m_ipClusters;
 
-    ulong m_selfIp;
+    uint m_selfIp;
     CvedPed m_pCved;
     Matrix4x4 c_sim2unity;
 
     struct SEG
     {
-        ulong ip;
-        ulong mask;
-        public ulong Group()
+        uint ip;
+        uint mask;
+        public uint Group()
         {
-            ulong g = ip & mask;
+            uint g = ip & mask;
             g = g | (~mask);
             return g;
         }
-        public SEG(ulong a_ip, ulong a_mask)
+        public SEG(uint a_ip, uint a_mask)
         {
             ip = a_ip;
             mask = a_mask;
         }
     };
-    private void InitIpclusters(List<SEG> ips, out List<ulong> clusters)
+    private void InitIpclusters(List<SEG> ips, out List<uint> clusters)
     {
         //it is the hardcoded version of broadcast
-        HashSet<ulong> setIps = new HashSet<ulong>();
+        HashSet<uint> setIps = new HashSet<uint>();
         foreach (SEG seg in ips)
         {
             setIps.Add(seg.Group());
         }
-        clusters = new List<ulong>();
-        foreach (ulong ip in setIps)
+        clusters = new List<uint>();
+        foreach (uint ip in setIps)
         {
             clusters.Add(ip);
         }
@@ -53,15 +53,16 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
     {
         //todo: broadcast pedestrian state information
     }
-    private void getLocalhostIps(out HashSet<ulong> lstIps)
+    private void getLocalhostIps(out HashSet<uint> lstIps)
     {
-        lstIps = new HashSet<ulong>();
+        lstIps = new HashSet<uint>();
         var host = Dns.GetHostEntry(Dns.GetHostName());
         foreach (var ip in host.AddressList)
         {
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
-                ulong ipCode = BitConverter.ToUInt64(ip.GetAddressBytes(), 0);
+                byte [] ipSeg = ip.GetAddressBytes();
+                uint ipCode = BitConverter.ToUInt32(ipSeg, 0);
                 lstIps.Add(ipCode);
             }
         }
@@ -83,11 +84,11 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
     public bool Initialize(CvedPed cved, XmlNode root)
     {
         //todo: load distributed version scene file, intialize vr-link
-        HashSet<ulong> localhostIps;
+        HashSet<uint> localhostIps;
         getLocalhostIps(out localhostIps);
 
         List<SEG> neighborsTo = new List<SEG>();
-        List<ulong> neighborsFrom = new List<ulong>();
+        List<uint> neighborsFrom = new List<uint>();
         ushort id_local = 0;
         int numSelf = 0;
         XmlNode distriConf = root.FirstChild;
@@ -97,8 +98,8 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
             XmlAttributeCollection attrs = distriConf.Attributes;
             string ipStr = attrs["ipv4"].Value;
             string ipMask = attrs["ipmask"].Value;
-            ulong simIp = BitConverter.ToUInt64(IPAddress.Parse(ipStr).GetAddressBytes(), 0);
-            ulong simMask = BitConverter.ToUInt64(IPAddress.Parse(ipMask).GetAddressBytes(), 0);
+            uint simIp = BitConverter.ToUInt32(IPAddress.Parse(ipStr).GetAddressBytes(), 0);
+            uint simMask = BitConverter.ToUInt32(IPAddress.Parse(ipMask).GetAddressBytes(), 0);
             string strType = attrs["type"].Value;
             int type = 0;
             ok = int.TryParse(strType, out type);
@@ -199,13 +200,13 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
         Byte[] seg = BitConverter.GetBytes(id_global.owner);
         int idx = recieved ? 1 : 0;
         Debug.LogFormat(@"OnGetUpdate {0} id:{1} from ip:[{2}.{3}.{4}.{5}]
-                                \n\t position: [{6},{7},{8}]
-                                \n\t tangent: [{9},{10},{11}]
-                                \n\t lateral: [{12},{13},{14}]\n"
+                                position: [{6},{7},{8}]
+                                tangent: [{9},{10},{11}]
+                                lateral: [{12},{13},{14}]"
                                 , recFlag[idx], id_local, seg[0], seg[1], seg[2], seg[3]
                                 , pos_state.x, pos_state.y, pos_state.z
                                 , forward_state.x, forward_state.y, forward_state.z
-                                , right_state.x, right_state.y, right_state);
+                                , right_state.x, right_state.y, right_state.z);
         return recieved;
     }
     public void OnPushUpdate(ushort id_local, Vector3 pos_state, Vector3 tan_state, Vector3 lat_state)
