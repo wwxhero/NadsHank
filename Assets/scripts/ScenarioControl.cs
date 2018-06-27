@@ -11,7 +11,7 @@ public class ScenarioControl : MonoBehaviour {
     public string[] m_typeNames;
     CvedPed m_cved;
 	IExternalObjectCtrl m_extCtrl;
-    const bool c_debug = true;
+    const bool c_debug = false;
     List<ushort> m_lstVehis;
     // Use this for initialization
     void Start ()
