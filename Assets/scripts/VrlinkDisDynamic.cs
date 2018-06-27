@@ -80,15 +80,22 @@ class VrlinkDisDynamic
         public EntityStateRepository esr;
     };
 
-    struct EntityState
+    class EntityState
     {
         public Vector3 pos;
         public Vector3 forward;
         public Vector3 right;
         public bool updated;
+        public EntityState()
+        {
+            pos = new Vector3();
+            forward = new Vector3();
+            right = new Vector3();
+            updated = false;
+        }
     };
 
-    struct CnnOut
+    class CnnOut
     {
         public ExerciseConnection cnn;
         public Dictionary<ushort, EntityPub> pubs;
@@ -119,7 +126,7 @@ class VrlinkDisDynamic
     ReflectedEntityList m_entitiesIn;
     static VrlinkConf s_disConf = new VrlinkConf(
                                       DeadReckonTypes.Rvw
-	                                , true //0:DtTimeStampRelative 1:DtTimeStampAbsolute
+	                                , false //0:DtTimeStampRelative 1:DtTimeStampAbsolute
 	                                , false
 	                                , 0.05f						//translation threshold in meter
 	                                , 0.05236f					//rotation threshold in radian = 3 degree
@@ -138,7 +145,8 @@ class VrlinkDisDynamic
     ClockStaticAln m_sysClk;
     uint m_self;
 
-    CoordinateTransform m_trans;
+    CoordinateTransform m_topo2geoc;
+    CoordinateTransform m_geoc2topo;
 
     bool getEntityPub(uint ip, GlobalId id_global, out EntityPubRT pubRT)
     {
@@ -268,6 +276,7 @@ class VrlinkDisDynamic
         sInit.disVersion = 7;
         sInit.useAbsoluteTimestamps = (s_disConf.useAbsStamp); //0:DtTimeStampRelative 1:DtTimeStampAbsolute
         sInit.deviceAddress = strSelfIp;
+        sInit.application = System.Diagnostics.Process.GetCurrentProcess().Id;
         SetEntityThresholdsMessage thresholder = new SetEntityThresholdsMessage();
         //thresholder.entityId = m_esr.entityId;
         thresholder.translationTheshold = s_disConf.translationThreshold;
@@ -291,6 +300,7 @@ class VrlinkDisDynamic
         rInit.disVersion = 7;
         rInit.useAbsoluteTimestamps = (s_disConf.useAbsStamp == true); //0:DtTimeStampRelative 1:DtTimeStampAbsolute
         rInit.deviceAddress = strSelfIp;
+        rInit.application = System.Diagnostics.Process.GetCurrentProcess().Id;
 
         m_cnnIn = new ExerciseConnection(rInit);
         m_entitiesIn = new ReflectedEntityList(m_cnnIn);
@@ -308,17 +318,17 @@ class VrlinkDisDynamic
             m_statesIn.Add(id_neighbor, state);
         }
 
-        CoordinateTransform geoc2topo = new CoordinateTransform();
+        m_geoc2topo = new CoordinateTransform();
         double refLatitude = s_disConf.latitude;
         double refLongitude = s_disConf.longitude;
-        geoc2topo = CoordinateTransform.geocToTopoTransform(refLatitude, refLongitude);
-        m_trans = CoordinateTransform.inverse(geoc2topo);
-
+        m_geoc2topo = CoordinateTransform.geocToTopoTransform(refLatitude, refLongitude);
+        m_topo2geoc = CoordinateTransform.inverse(m_geoc2topo);
     }
 
     public void NetworkUnInitialize()
     {
         //unintialize vr-link connections
+        m_entitiesIn.dispose();
         m_cnnsOut.Clear();
         m_statesIn.Clear();
     }
@@ -327,6 +337,7 @@ class VrlinkDisDynamic
     {
         //prepare environment for subsequent receiving and sending
         double simTime = (double)m_sysClk.GetTickCnt()/(double)1000;
+        Debug.LogFormat("Sim time:{0}", simTime);
         //pre calc for sending
         foreach (KeyValuePair<uint, CnnOut> pair in m_cnnsOut)
         {
@@ -335,35 +346,36 @@ class VrlinkDisDynamic
             cnn.drainInput(-1.0);
         }
         //pre calc for receiving
-        foreach (KeyValuePair<GlobalId, EntityState> pair in m_statesIn)
+        foreach (GlobalId id_global in m_statesIn.Keys)
         {
-            EntityState es = pair.Value;
-            es.updated = false;
-            GlobalId id_global = pair.Key;
-            m_statesIn[id_global] = es;
+            m_statesIn[id_global].updated = false;
         }
+        //confirm: if every item in m_statesIn with (updated = false)
 
         m_cnnIn.clock.setSimTime(simTime);
         m_cnnIn.drainInput(-1.0);
+        Debug.LogFormat("[PreDynaCalc]number of entities:{0}", m_entitiesIn.entities.Count());
         foreach (ReflectedEntity ent in m_entitiesIn.entities)
         {
             EntityStateRepository esr = ent.esr;
-            GlobalId id_global = VrlinkId2GlobalId(esr.entityId);
+            GlobalId id_global = VrlinkId2GlobalId(esr.entityIdentifier);
             EntityState es;
             if (!m_statesIn.TryGetValue(id_global, out es))
                 continue;
 
             esr.algorithm = s_disConf.drAlgor;
             esr.useSmoother(s_disConf.smoothOn);
-            Vector3d pos = m_trans.coordTrans(esr.worldPosition);
-            TaitBryan eulor = m_trans.eulerTrans(esr.worldOrientation);
+            Vector3d pos = m_topo2geoc.coordTrans(esr.worldPosition);
+            TaitBryan eulor = m_topo2geoc.eulerTrans(esr.worldOrientation);
             Vector3 tan, right, up;
             Eulor2Frame(eulor, out tan, out right, out up);
             es.pos = new Vector3((float)pos.X, (float)pos.Y, (float)pos.Z);
             es.forward = tan;
             es.right = right;
             es.updated = true;
-            m_statesIn[id_global] = es; //fixme: confirm if this line is necessary
+            Debug.LogFormat("[Vrlink]pos:<{0},{1},{2}>", pos.X, pos.Y, pos.Z);
+            Debug.LogFormat("[Vrlink]tan:<{0},{1},{2}>", tan.x, tan.y, tan.z);
+            Debug.LogFormat("[Vrlink]right:<{0},{1},{2}>", right.x, right.y, right.z);
         }
     }
 

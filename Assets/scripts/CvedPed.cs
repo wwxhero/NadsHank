@@ -84,6 +84,8 @@ class CvedPed : Object
             vehiPrefab = m_prefabs[rnd.Next(m_prefabs.Length)];
         }
         GameObject veh = Instantiate(vehiPrefab);
+        veh.transform.localScale = new Vector3(2.5f, 2.5f, 2.5f);
+
         ushort id_local = m_keyBase;
         m_dictVehis[id_local] = veh;
         m_keyBase++;
@@ -121,21 +123,25 @@ class CvedPed : Object
 	public void ExecuteDynamicModels()
 	{
         //todo: update every vehicle's state
-        //Debug.Log("ExecuteDynamicModels");
-        foreach (ushort id_local in m_dictVehis.Keys)
+        m_ctrl.PreUpdateDynamicModels();
+        foreach (KeyValuePair<ushort, GameObject> pair in m_dictVehis)
         {
+            ushort id_local = pair.Key;
+            GameObject obj = pair.Value;
             Vector3 pos_state;
             Vector3 tan_state;
             Vector3 lat_state;
-            m_ctrl.OnGetUpdate(id_local, out pos_state, out tan_state, out lat_state);
-            GameObject o = m_dictVehis[id_local];
-            o.transform.position = pos_state;
-            Vector3 z_prime = Vector3.Cross(lat_state, -tan_state);
-            Vector3 y_prime = -tan_state;
-            Quaternion q = new Quaternion();
-            q.SetLookRotation(z_prime, y_prime);
+            if (m_ctrl.OnGetUpdate(id_local, out pos_state, out tan_state, out lat_state))
+            {
+                obj.transform.position = pos_state;
+                Vector3 z_prime = Vector3.Cross(lat_state, -tan_state);
+                Vector3 y_prime = -tan_state;
+                Quaternion q = new Quaternion();
+                q.SetLookRotation(z_prime, y_prime);
+                obj.transform.rotation = q;
+            }
         }
-
+        m_ctrl.PostUpdateDynamicModels();
     }
 
 };

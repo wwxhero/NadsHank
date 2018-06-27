@@ -70,16 +70,27 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
 
     public ExternalObjectCtrlPed()
     {
-        c_sim2unity = Matrix4x4.zero;
-        c_sim2unity[0, 0] = 1;
-        c_sim2unity[1, 2] = 1;
-        c_sim2unity[2, 1] = 1;
-        c_sim2unity[3, 3] = 1;
+        Matrix4x4 m_2 = Matrix4x4.zero;
+        m_2[0, 0] = 1;
+        m_2[1, 2] = 1;
+        m_2[2, 1] = 1;
+        m_2[3, 3] = 1;
         //the matrix:
         //      1 0 0 0
         //      0 0 1 0
         //      0 1 0 0
         //      0 0 0 1
+
+        Matrix4x4 m_1 = Matrix4x4.identity;
+        m_1[0, 3] = -40920;
+        m_1[1, 3] = -1320;
+        m_1[2, 3] = 0;
+        //the matrix:
+        //      1 0 0 -40920
+        //      0 1 0  -1320
+        //      0 0 1      0
+        //      0 0 0      1
+        c_sim2unity = m_2 * m_1;
     }
     public bool Initialize(CvedPed cved, XmlNode root)
     {
@@ -192,8 +203,8 @@ class ExternalObjectCtrlPed : VrlinkPedestrainCtrl
         if (recieved)
         {
             pos_state = c_sim2unity.MultiplyPoint3x4(pos_state_sim);
-            forward_state = c_sim2unity.MultiplyPoint3x4(forward_state_sim);
-            right_state = c_sim2unity.MultiplyPoint3x4(right_state_sim);
+            forward_state = c_sim2unity.MultiplyVector(forward_state_sim);
+            right_state = c_sim2unity.MultiplyVector(right_state_sim);
         }
 
         string[] recFlag = { "NReceived", "Recieved" };
