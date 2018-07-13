@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CameraManipulator : MonoBehaviour {
+public class Manipulator : MonoBehaviour {
 
     // Use this for initialization
     public float m_unitM = 0.1f;
