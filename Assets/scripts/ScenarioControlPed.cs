@@ -9,8 +9,10 @@ public class ScenarioControlPed : MonoBehaviour {
 
     public string m_scenePath;
     public GameObject[] m_prefabs;
+    public GameObject m_pedPrefabs;
     IDistriObjsCtrl m_ctrl;
     Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int,GameObject>();
+    GameObject m_pedestrain;
     Matrix4x4 c_sim2unity;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
@@ -107,7 +109,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                     Vector3 t_unity = c_sim2unity.MultiplyVector(t);
                                     Vector3 l_unity = c_sim2unity.MultiplyVector(l);
                                     Quaternion q_unity;
-                                    FrameToQuaternion(t_unity, l_unity, out q_unity);
+                                    FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
                                     int idx = id % m_prefabs.Length;
                                     GameObject o = Instantiate(m_prefabs[idx], p_unity, q_unity);
                                     o.name = name;
@@ -125,6 +127,40 @@ public class ScenarioControlPed : MonoBehaviour {
                                         m_id2Dyno.Remove(id);
                                         GameObject.Destroy(o);
                                     }
+                                    break;
+                                }
+                            case EVT.crtPed:
+                                {
+                                    Debug.Assert(null == m_pedestrain);
+                                    int id;
+                                    string name;
+                                    int solId;
+                                    double xSize, ySize, zSize;
+                                    double xPos, yPos, zPos;
+                                    double xTan, yTan, zTan;
+                                    double xLat, yLat, zLat;
+                                    m_ctrl.GetcrtPedTuple(out id, out name, out solId
+                                            , out xSize, out ySize, out zSize
+                                            , out xPos, out yPos, out zPos
+                                            , out xTan, out yTan, out zTan
+                                            , out xLat, out yLat, out zLat);
+                                    Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
+                                    Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
+                                    Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
+                                    Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
+                                    Vector3 t_unity = c_sim2unity.MultiplyVector(t);
+                                    Vector3 l_unity = c_sim2unity.MultiplyVector(l);
+                                    Quaternion q_unity;
+                                    FrameToQuaternionPed(t_unity, l_unity, out q_unity);
+                                    m_pedestrain = Instantiate(m_pedPrefabs, p_unity, q_unity);
+                                    m_pedestrain.name = name;
+                                    break;
+                                }
+                            case EVT.delPed:
+                                {
+                                    Debug.Assert(null != m_pedestrain);
+                                    GameObject.Destroy(m_pedestrain);
+                                    m_pedestrain = null;
                                     break;
                                 }
                         }
@@ -151,7 +187,7 @@ public class ScenarioControlPed : MonoBehaviour {
                         Vector3 t_unity = c_sim2unity.MultiplyVector(t);
                         Vector3 l_unity = c_sim2unity.MultiplyVector(l);
                         Quaternion q_unity;
-                        FrameToQuaternion(t_unity, l_unity, out q_unity);
+                        FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
                         kv.Value.transform.position = p_unity;
                         kv.Value.transform.rotation = q_unity;
                     }
@@ -171,10 +207,18 @@ public class ScenarioControlPed : MonoBehaviour {
         }
 	}
 
-    void FrameToQuaternion(Vector3 t, Vector3 l, out Quaternion q)
+    void FrameToQuaternionVehi(Vector3 t, Vector3 l, out Quaternion q)
     {
         Vector3 z_prime = Vector3.Cross(l, -t);
         Vector3 y_prime = -t;
+        q = new Quaternion();
+        q.SetLookRotation(z_prime, y_prime);
+    }
+
+    void FrameToQuaternionPed(Vector3 t, Vector3 l, out Quaternion q)
+    {
+        Vector3 y_prime = Vector3.Cross(t, l);
+        Vector3 z_prime = t;
         q = new Quaternion();
         q.SetLookRotation(z_prime, y_prime);
     }

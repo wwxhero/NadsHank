@@ -6,8 +6,6 @@ public class Manipulator : MonoBehaviour {
     // Use this for initialization
     public float m_unitM = 0.1f;
     public float m_unitA = 0.1f;
-    public enum WayRot {self, world};
-    public WayRot m_rotWay = WayRot.self;
     Quaternion m_OrgRot;
     Vector3 m_OrgPos;
 
@@ -90,48 +88,6 @@ public class Manipulator : MonoBehaviour {
             transform.position = m_OrgPos;
             transform.rotation = m_OrgRot;
         }
-
-
-
-            //Vector3 offset = new Vector3(0, 0, 0);
-            //Vector3 axis = new Vector3(0, 0, 0);
-            //if (Input.GetKey(KeyCode.Keypad8))
-            //    offset.z += m_unitM;
-            //else if (Input.GetKey(KeyCode.Keypad2))
-            //    offset.z -= m_unitM;
-            //else if (Input.GetKey(KeyCode.Keypad4))
-            //    offset.x -= m_unitM;
-            //else if (Input.GetKey(KeyCode.Keypad6))
-            //    offset.x += m_unitM;
-            //else if (Input.GetKey(KeyCode.KeypadMinus))
-            //    offset.y -= m_unitM;
-            //else if (Input.GetKey(KeyCode.KeypadPlus))
-            //    offset.y += m_unitM;
-            //else if (Input.GetKey(KeyCode.UpArrow))
-            //    axis.x -= 1.0f;
-            //else if (Input.GetKey(KeyCode.DownArrow))
-            //    axis.x += 1.0f;
-            //else if (Input.GetKey(KeyCode.LeftArrow))
-            //    axis.y -= 1.0f;
-            //else if (Input.GetKey(KeyCode.RightArrow))
-            //    axis.y += 1.0f;
-            //else if (Input.GetKey(KeyCode.S))
-            //{
-            //    this.transform.position = m_OrgPos;
-            //    transform.rotation = m_OrgRot;
-            //}
-
-
-            //this.transform.position += offset;
-            //switch (m_rotWay)
-            //{
-            //    case WayRot.world:
-            //        this.transform.RotateAround(this.transform.position, axis, axis.magnitude * m_unitA);
-            //        break;
-            //    case WayRot.self:
-            //        this.transform.Rotate(axis * m_unitA);
-            //        break;
-            //}
 
     }
 
