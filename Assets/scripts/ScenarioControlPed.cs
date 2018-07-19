@@ -14,6 +14,7 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int,GameObject>();
     GameObject m_pedestrain;
     Matrix4x4 c_sim2unity;
+    Matrix4x4 c_unity2sim;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
     float c_scale = 2.5f;
@@ -41,6 +42,7 @@ public class ScenarioControlPed : MonoBehaviour {
         //      0 0 1      0
         //      0 0 0      1
         c_sim2unity = m_2 * m_1;
+        c_unity2sim = c_sim2unity.inverse;
     }
 
 
@@ -167,6 +169,27 @@ public class ScenarioControlPed : MonoBehaviour {
                         m_ctrl.QPopEvent();
                     }
                 } while (!nonEvt);
+
+                if (null != m_pedestrain)
+                {
+                    Vector3 pos_unity = m_pedestrain.transform.position;
+                    Vector3 tan_unity = m_pedestrain.transform.forward;
+                    Vector3 lat_unity = m_pedestrain.transform.right;
+                    Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
+                    Vector3 t = c_unity2sim.MultiplyVector(tan_unity);
+                    Vector3 l = c_unity2sim.MultiplyVector(lat_unity);
+                    double xPos, yPos, zPos;
+                    double xTan, yTan, zTan;
+                    double xLat, yLat, zLat;
+                    xPos = p.x; yPos = p.y; zPos = p.z;
+                    xTan = t.x; yTan = t.y; zTan = t.z;
+                    xLat = l.x; yLat = l.y; zLat = l.z;
+                    m_ctrl.OnPushUpdate(0
+                                        , xPos, yPos, zPos
+                                        , xTan, yTan, zTan
+                                        , xLat, yLat, zLat);
+
+                }
 
                 foreach (KeyValuePair<int, GameObject> kv in m_id2Dyno)
                 {
