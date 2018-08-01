@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using SharpCom;
 using ExternalObjectsControlComLib;
+using System.Xml;
 
 public class ScenarioControlPed : MonoBehaviour {
 
@@ -52,9 +53,18 @@ public class ScenarioControlPed : MonoBehaviour {
         {
             try
             {
+                XmlDocument scene = new XmlDocument();
+                scene.Load("SceneDistri.xml");
+                XmlNode root = scene.DocumentElement;
+                XmlAttribute attr_root = root.Attributes["path"];
+                m_scenePath = attr_root.Value;
                 m_ctrl = new DistriObjsCtrlClass();
                 m_ctrl.CreateNetworkExternalObjectControl((int)IMPLE.DISVRLINK, (int)TERMINAL.ped_controller);
                 m_ctrl.Initialize(m_scenePath);
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                Debug.Log("scene load failed!");
             }
             catch (Exception e)
             {

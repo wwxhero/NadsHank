@@ -9,6 +9,8 @@ public class Manipulator : MonoBehaviour {
     Quaternion m_OrgRot;
     Vector3 m_OrgPos;
 
+    const float c_epsilon = 10 * float.Epsilon;
+
     void Start () {
         m_OrgRot = this.transform.rotation;
         m_OrgPos = this.transform.position;
@@ -25,7 +27,6 @@ public class Manipulator : MonoBehaviour {
         Vector3 dirTL = new Vector3(0, 0, 1);
         Matrix4x4 l2w = transform.localToWorldMatrix;
         Vector3 dirT = l2w.MultiplyVector(dirTL);
-        Debug.Assert(Mathf.Abs(dirT.magnitude - 1) < float.Epsilon);
         Vector3 dirTxz = new Vector3(dirT.x, 0, dirT.z);
         dirTxz = dirTxz.normalized;
        Vector3 vecM = dir * m_unitM * dirTxz;
