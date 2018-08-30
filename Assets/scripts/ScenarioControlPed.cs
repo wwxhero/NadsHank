@@ -239,7 +239,7 @@ public class ScenarioControlPed : MonoBehaviour {
 
                 foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
                 {
-                    if (0 == kv.Key)
+                    if (0 == kv.Key) //id(0) is own object
                         continue;
                     bool received = true;
                     double xPos, yPos, zPos;
@@ -258,7 +258,7 @@ public class ScenarioControlPed : MonoBehaviour {
                         Vector3 t_unity = c_sim2unity.MultiplyVector(t);
                         Vector3 l_unity = c_sim2unity.MultiplyVector(l);
                         Quaternion q_unity;
-                        FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
+                        FrameToQuaternionPed(t_unity, l_unity, out q_unity);
                         kv.Value.transform.position = p_unity;
                         kv.Value.transform.rotation = q_unity;
                     }
