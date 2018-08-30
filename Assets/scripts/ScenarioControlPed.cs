@@ -12,8 +12,8 @@ public class ScenarioControlPed : MonoBehaviour {
     public GameObject[] m_prefabs;
     public GameObject m_pedPrefabs;
     IDistriObjsCtrl m_ctrl;
-    Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int,GameObject>();
-    GameObject m_pedestrain;
+    Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
+    Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
@@ -143,7 +143,6 @@ public class ScenarioControlPed : MonoBehaviour {
                                 }
                             case EVT.crtPed:
                                 {
-                                    Debug.Assert(null == m_pedestrain);
                                     int id;
                                     string name;
                                     int solId;
@@ -164,15 +163,21 @@ public class ScenarioControlPed : MonoBehaviour {
                                     Vector3 l_unity = c_sim2unity.MultiplyVector(l);
                                     Quaternion q_unity;
                                     FrameToQuaternionPed(t_unity, l_unity, out q_unity);
-                                    m_pedestrain = Instantiate(m_pedPrefabs, p_unity, q_unity);
-                                    m_pedestrain.name = name;
+                                    GameObject ped = Instantiate(m_pedPrefabs, p_unity, q_unity);
+                                    ped.name = name;
+                                    m_id2Ped.Add(id, ped);
                                     break;
                                 }
                             case EVT.delPed:
                                 {
-                                    Debug.Assert(null != m_pedestrain);
-                                    GameObject.Destroy(m_pedestrain);
-                                    m_pedestrain = null;
+                                    int id;
+                                    m_ctrl.GetdelPedTuple(out id);
+                                    GameObject o;
+                                    if (m_id2Ped.TryGetValue(id, out o))
+                                    {
+                                        m_id2Ped.Remove(id);
+                                        GameObject.Destroy(o);
+                                    }
                                     break;
                                 }
                         }
@@ -180,11 +185,14 @@ public class ScenarioControlPed : MonoBehaviour {
                     }
                 } while (!nonEvt);
 
-                if (null != m_pedestrain)
+                GameObject pedOwn;
+                const int c_ownPedId = 0;
+                m_id2Ped.TryGetValue(c_ownPedId, out pedOwn);
+                if (null != pedOwn)
                 {
-                    Vector3 pos_unity = m_pedestrain.transform.position;
-                    Vector3 tan_unity = m_pedestrain.transform.forward;
-                    Vector3 lat_unity = m_pedestrain.transform.right;
+                    Vector3 pos_unity = pedOwn.transform.position;
+                    Vector3 tan_unity = pedOwn.transform.forward;
+                    Vector3 lat_unity = pedOwn.transform.right;
                     Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
                     Vector3 t = c_unity2sim.MultiplyVector(tan_unity);
                     Vector3 l = c_unity2sim.MultiplyVector(lat_unity);
@@ -194,7 +202,7 @@ public class ScenarioControlPed : MonoBehaviour {
                     xPos = p.x; yPos = p.y; zPos = p.z;
                     xTan = t.x; yTan = t.y; zTan = t.z;
                     xLat = l.x; yLat = l.y; zLat = l.z;
-                    m_ctrl.OnPushUpdate(0
+                    m_ctrl.OnPushUpdate(c_ownPedId
                                         , xPos, yPos, zPos
                                         , xTan, yTan, zTan
                                         , xLat, yLat, zLat);
@@ -203,6 +211,36 @@ public class ScenarioControlPed : MonoBehaviour {
 
                 foreach (KeyValuePair<int, GameObject> kv in m_id2Dyno)
                 {
+                    bool received = true;
+                    double xPos, yPos, zPos;
+                    double xTan, yTan, zTan;
+                    double xLat, yLat, zLat;
+                    m_ctrl.OnGetUpdate(kv.Key, out received
+                                    , out xPos, out yPos, out zPos
+                                    , out xTan, out yTan, out zTan
+                                    , out xLat, out yLat, out zLat);
+                    if (received)
+                    {
+                        Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
+                        Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
+                        Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
+                        Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
+                        Vector3 t_unity = c_sim2unity.MultiplyVector(t);
+                        Vector3 l_unity = c_sim2unity.MultiplyVector(l);
+                        Quaternion q_unity;
+                        FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
+                        kv.Value.transform.position = p_unity;
+                        kv.Value.transform.rotation = q_unity;
+                    }
+                    string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
+                                                        , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
+                    Debug.Log(strTuple);
+                }
+
+                foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
+                {
+                    if (0 == kv.Key)
+                        continue;
                     bool received = true;
                     double xPos, yPos, zPos;
                     double xTan, yTan, zTan;
