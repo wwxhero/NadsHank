@@ -9,8 +9,8 @@ using System.Xml;
 public class ScenarioControlPed : MonoBehaviour {
 
     public string m_scenePath;
-    public GameObject[] m_prefabs;
-    public GameObject m_pedPrefabs;
+    public GameObject[] m_vehiPrefabs;
+    public GameObject m_pedPrefab;
     IDistriObjsCtrl m_ctrl;
     Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
     Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
@@ -61,6 +61,7 @@ public class ScenarioControlPed : MonoBehaviour {
                 m_ctrl = new DistriObjsCtrlClass();
                 m_ctrl.CreateNetworkExternalObjectControl((int)IMPLE.DISVRLINK, (int)TERMINAL.ped_controller);
                 m_ctrl.Initialize(m_scenePath);
+                //m_ctrl.Initialize2(out m_scenePath);
             }
             catch (System.IO.FileNotFoundException)
             {
@@ -122,8 +123,8 @@ public class ScenarioControlPed : MonoBehaviour {
                                     Vector3 l_unity = c_sim2unity.MultiplyVector(l);
                                     Quaternion q_unity;
                                     FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
-                                    int idx = id % m_prefabs.Length;
-                                    GameObject o = Instantiate(m_prefabs[idx], p_unity, q_unity);
+                                    int idx = id % m_vehiPrefabs.Length;
+                                    GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
                                     o.name = name;
                                     o.transform.localScale = new Vector3(c_scale, c_scale, c_scale);
                                     m_id2Dyno.Add(id, o);
@@ -163,9 +164,11 @@ public class ScenarioControlPed : MonoBehaviour {
                                     Vector3 l_unity = c_sim2unity.MultiplyVector(l);
                                     Quaternion q_unity;
                                     FrameToQuaternionPed(t_unity, l_unity, out q_unity);
-                                    GameObject ped = Instantiate(m_pedPrefabs, p_unity, q_unity);
+                                    GameObject ped = Instantiate(m_pedPrefab, p_unity, q_unity);
                                     ped.name = name;
                                     m_id2Ped.Add(id, ped);
+                                    if (0 == id)
+                                        ped.AddComponent<Manipulator>();
                                     break;
                                 }
                             case EVT.delPed:
