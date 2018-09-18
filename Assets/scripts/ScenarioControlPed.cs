@@ -273,7 +273,6 @@ public class ScenarioControlPed : MonoBehaviour {
                     double xPos, yPos, zPos;
                     double xTan, yTan, zTan;
                     double xLat, yLat, zLat;
-                    int nParts = m_id2PedPartN[kv.Key];
                     m_ctrl.OnGetUpdate(kv.Key, out received
                                     , out xPos, out yPos, out zPos
                                     , out xTan, out yTan, out zTan
@@ -321,6 +320,7 @@ public class ScenarioControlPed : MonoBehaviour {
                         kv.Value.transform.position = p_unity;
                         kv.Value.transform.rotation = q_unity;
                         double q_s_w, q_s_x, q_s_y, q_s_z;
+                        int nParts = m_id2PedPartN[kv.Key];
                         for (int i_part = 0; i_part < nParts; i_part ++)
                         {
                             m_ctrl.OnGetUpdateArt(kv.Key, i_part, out q_s_w, out q_s_x, out q_s_y, out q_s_z);
