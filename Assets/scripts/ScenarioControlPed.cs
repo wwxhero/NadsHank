@@ -188,7 +188,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                     for (int i_part = 0; i_part < nParts; i_part ++)
                                     {
                                         string namePartS;
-                                        m_ctrl.GetcrtPedPartName(i_part, out namePartS);
+                                        m_ctrl.GetcrtPedPartName(id, i_part, out namePartS);
                                         string namePartU;
                                         namePartU = ped.name + "/" + namePartS;
                                         Transform tran = ped.transform.Find(namePartU);
