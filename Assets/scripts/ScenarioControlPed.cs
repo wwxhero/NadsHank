@@ -259,7 +259,7 @@ public class ScenarioControlPed : MonoBehaviour {
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
 
-                    m_ctrl.OnPushUpdate(c_ownPedId
+                    m_ctrl.OnPostPushUpdateArt(c_ownPedId
                                         , xPos, yPos, zPos
                                         , xTan, yTan, zTan
                                         , xLat, yLat, zLat);
@@ -303,7 +303,7 @@ public class ScenarioControlPed : MonoBehaviour {
                     double xPos, yPos, zPos;
                     double xTan, yTan, zTan;
                     double xLat, yLat, zLat;
-                    m_ctrl.OnGetUpdate(kv.Key, out received
+                    m_ctrl.OnPreGetUpdateArt(kv.Key, out received
                                     , out xPos, out yPos, out zPos
                                     , out xTan, out yTan, out zTan
                                     , out xLat, out yLat, out zLat);
