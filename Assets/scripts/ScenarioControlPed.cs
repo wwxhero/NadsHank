@@ -189,9 +189,11 @@ public class ScenarioControlPed : MonoBehaviour {
                                     {
                                         string namePartS;
                                         m_ctrl.GetcrtPedPartName(id, i_part, out namePartS);
-                                        string namePartU;
-                                        namePartU = ped.name + "/" + namePartS;
-                                        Transform tran = ped.transform.Find(namePartU);
+                                        string log = string.Format("{0}:{1}", i_part, namePartS);
+                                        Debug.Log(log);
+                                        GameObject go = GameObject.Find(namePartS);
+                                        Debug.Assert(null != go);
+                                        Transform tran = go.transform;
                                         Debug.Assert(null != tran);
                                         long partId = PartID_U(id, i_part);
                                         m_partId2tran.Add(partId, tran);
