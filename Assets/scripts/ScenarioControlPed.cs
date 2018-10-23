@@ -181,7 +181,10 @@ public class ScenarioControlPed : MonoBehaviour {
                                     ped.name = name;
                                     m_id2Ped.Add(id, ped);
                                     if (0 == id)
+                                    {
                                         ped.AddComponent<Manipulator>();
+                                        ped.AddComponent<Roll>();
+                                    }
 
                                     m_id2PedPartN.Add(id, nParts);
 
