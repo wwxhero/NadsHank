@@ -6,6 +6,7 @@ public class Manipulator : MonoBehaviour {
     // Use this for initialization
     public float m_unitM = 0.1f;
     public float m_unitA = 0.1f;
+    public KeyCode m_ctrl = KeyCode.P;
     Quaternion m_OrgRot;
     Vector3 m_OrgPos;
 
@@ -52,6 +53,8 @@ public class Manipulator : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+        if (!Input.GetKey(m_ctrl))
+            return;
         int yDir = 0;
         if (Input.GetKey(KeyCode.KeypadMinus))
             yDir = -1;

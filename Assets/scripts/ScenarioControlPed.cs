@@ -6,6 +6,7 @@ using SharpCom;
 using ExternalObjectsControlComLib;
 using System.Xml;
 
+
 public class ScenarioControlPed : MonoBehaviour {
 
     public string m_scenePath;
@@ -27,6 +28,7 @@ public class ScenarioControlPed : MonoBehaviour {
     {
         long partId_g = idPed;
         partId_g = (partId_g << 32);
+#pragma warning disable 0675
         partId_g = (partId_g | idPart_S);
         return partId_g;
     }
