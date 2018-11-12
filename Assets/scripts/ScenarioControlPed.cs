@@ -17,8 +17,18 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
     //map: id->n_part
     Dictionary<int, int>        m_id2PedPartN = new Dictionary<int, int>();
-    //map: (id, i_part)->transform.localRotation
-    Dictionary<long, Transform> m_partId2tran = new Dictionary<long, Transform>();
+    class Joint
+    {
+        public Joint(Transform t)
+        {
+            m_t = t;
+            m_q0 = t.localRotation;
+        }
+        public readonly Transform m_t;
+        public readonly Quaternion m_q0;
+    };
+    //map: (id, i_part)->Joint.transform.localRotation
+    Dictionary<long, Joint> m_partId2tran = new Dictionary<long, Joint>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
@@ -182,10 +192,10 @@ public class ScenarioControlPed : MonoBehaviour {
                                     GameObject ped = Instantiate(m_pedPrefab, p_unity, q_unity);
                                     ped.name = name;
                                     m_id2Ped.Add(id, ped);
+                                    Transform t_base = ped.transform.Find("Base");
+                                    InitZeroPos.Init(t_base);
                                     if (0 == id)
                                     {
-                                        Transform t_base = ped.transform.Find("Base");
-                                        InitZeroPos.Init(t_base);
                                         ped.AddComponent<Manipulator>();
                                         //ped.AddComponent<Roll>();
                                         //ped.AddComponent<JointDumper>();
@@ -206,7 +216,8 @@ public class ScenarioControlPed : MonoBehaviour {
                                         Transform tran = go.transform;
                                         Debug.Assert(null != tran);
                                         long partId = PartID_U(id, i_part);
-                                        m_partId2tran.Add(partId, tran);
+                                        Joint j = new Joint(tran);
+                                        m_partId2tran.Add(partId, j);
                                     }
 
                                     break;
@@ -265,8 +276,11 @@ public class ScenarioControlPed : MonoBehaviour {
                     for (int i_part = 0; i_part < nParts; i_part ++)
                     {
                         long partId = PartID_U(c_ownPedId, i_part);
-                        Quaternion q_unity = m_partId2tran[partId].localRotation;
-                        QuaternionU2S(q_unity, out q_w, out q_x, out q_y, out q_z);
+                        Joint joint = m_partId2tran[partId];
+                        Quaternion q_unity = joint.m_t.localRotation;
+                        Quaternion q_0_inv = Quaternion.Inverse(joint.m_q0);
+                        Quaternion q_unity_offset = q_unity * q_0_inv;
+                        JointQuatU2S(q_unity_offset, out q_w, out q_x, out q_y, out q_z);
                         m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z);
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
@@ -335,11 +349,14 @@ public class ScenarioControlPed : MonoBehaviour {
                         int nParts = m_id2PedPartN[kv.Key];
                         for (int i_part = 0; i_part < nParts; i_part ++)
                         {
-                            m_ctrl.OnGetUpdateArt(kv.Key, i_part, out q_s_w, out q_s_x, out q_s_y, out q_s_z);
                             //fixme: performance might be sacrified here from loop manage to native code call
                             long partId = PartID_U(kv.Key, i_part);
-                            Transform tran = m_partId2tran[partId];
-                            QuaternionS2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity);
+                            Joint joint = m_partId2tran[partId];
+                            m_ctrl.OnGetUpdateArt(kv.Key, i_part, out q_s_w, out q_s_x, out q_s_y, out q_s_z);
+                            Quaternion q_unity_offset;
+                            JointQuatS2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset);
+                            q_unity = q_unity_offset * joint.m_q0;
+                            Transform tran = joint.m_t;
                             tran.localRotation = q_unity;
                         }
                     }
@@ -375,7 +392,7 @@ public class ScenarioControlPed : MonoBehaviour {
         q.SetLookRotation(z_prime, y_prime);
     }
 
-    void QuaternionU2S(Quaternion q_u, out double q_s_w, out double q_s_x, out double q_s_y, out double q_s_z)
+    void JointQuatU2S(Quaternion q_u, out double q_s_w, out double q_s_x, out double q_s_y, out double q_s_z)
     {
         q_s_w = q_u.w;
         Vector3 q_v_u = new Vector3(q_u.x, q_u.y, q_u.z);
@@ -385,7 +402,7 @@ public class ScenarioControlPed : MonoBehaviour {
         q_s_z = q_v_s.z;
     }
 
-    void QuaternionS2U(double q_s_w, double q_s_x, double q_s_y, double q_s_z, out Quaternion q_u)
+    void JointQuatS2U(double q_s_w, double q_s_x, double q_s_y, double q_s_z, out Quaternion q_u)
     {
         q_u.w = (float)q_s_w;
         Vector3 q_v_s = new Vector3((float)q_s_x, (float)q_s_y, (float)q_s_z);
