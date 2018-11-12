@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InitZeroPos : MonoBehaviour {
+public class InitZeroPos  {
 
 	// Use this for initialization
 	struct Joint
@@ -15,7 +15,7 @@ public class InitZeroPos : MonoBehaviour {
 		public string m_name;
 		public Vector3 m_angle;
 	};
-    void Start()
+    public static void Init(Transform root)
     {
         Joint [] init = {
               new Joint("Base", new Vector3(0.00f, 0.00f, 0.00f))
@@ -52,7 +52,7 @@ public class InitZeroPos : MonoBehaviour {
             , new Joint("RightHandFinger1", new Vector3(15.73f, 358.65f, 354.14f))
         };
         Queue<Transform> q_t = new Queue<Transform>();
-        q_t.Enqueue(transform);
+        q_t.Enqueue(root);
         int i_pos = 0;
         while (q_t.Count > 0)
         {
@@ -66,9 +66,4 @@ public class InitZeroPos : MonoBehaviour {
             }
         }
     }
-
-	// Update is called once per frame
-	void Update () {
-
-	}
 }

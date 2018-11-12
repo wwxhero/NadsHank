@@ -184,9 +184,14 @@ public class ScenarioControlPed : MonoBehaviour {
                                     m_id2Ped.Add(id, ped);
                                     if (0 == id)
                                     {
+                                        Transform t_base = ped.transform.Find("Base");
+                                        InitZeroPos.Init(t_base);
                                         ped.AddComponent<Manipulator>();
-                                        ped.AddComponent<Roll>();
+                                        //ped.AddComponent<Roll>();
+                                        //ped.AddComponent<JointDumper>();
+
                                     }
+
 
                                     m_id2PedPartN.Add(id, nParts);
 
