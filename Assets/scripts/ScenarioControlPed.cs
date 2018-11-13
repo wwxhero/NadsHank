@@ -31,6 +31,8 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<long, Joint> m_partId2tran = new Dictionary<long, Joint>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
+    Matrix4x4 c_sim2unityJoint;
+    Matrix4x4 c_unity2simJoint;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
     float c_scale = 2.5f;
@@ -68,6 +70,19 @@ public class ScenarioControlPed : MonoBehaviour {
         //      0 0 0      1
         c_sim2unity = m_2 * m_1;
         c_unity2sim = c_sim2unity.inverse;
+
+        Matrix4x4 m = Matrix4x4.zero;
+        m[0, 2] = -1;
+        m[1, 0] = -1;
+        m[2, 1] = -1;
+        m[3, 3] =  1;
+        //the matrix:
+        //      0  0  -1  0
+        //     -1  0   0  0
+        //      0 -1   0  0
+        //      0  0   0  1
+        c_unity2simJoint = m;
+        c_sim2unityJoint = c_unity2simJoint.inverse;
     }
 
 
@@ -396,7 +411,7 @@ public class ScenarioControlPed : MonoBehaviour {
     {
         q_s_w = q_u.w;
         Vector3 q_v_u = new Vector3(q_u.x, q_u.y, q_u.z);
-        Vector3 q_v_s = -c_unity2sim.MultiplyVector(q_v_u);
+        Vector3 q_v_s = -c_unity2simJoint.MultiplyVector(q_v_u);
         q_s_x = q_v_s.x;
         q_s_y = q_v_s.y;
         q_s_z = q_v_s.z;
@@ -406,7 +421,7 @@ public class ScenarioControlPed : MonoBehaviour {
     {
         q_u.w = (float)q_s_w;
         Vector3 q_v_s = new Vector3((float)q_s_x, (float)q_s_y, (float)q_s_z);
-        Vector3 q_v_u = -c_sim2unity.MultiplyVector(q_v_s);
+        Vector3 q_v_u = -c_sim2unityJoint.MultiplyVector(q_v_s);
         q_u.x = (float)q_v_u.x;
         q_u.y = (float)q_v_u.y;
         q_u.z = (float)q_v_u.z;
