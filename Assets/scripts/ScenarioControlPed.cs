@@ -294,8 +294,30 @@ public class ScenarioControlPed : MonoBehaviour {
                         Joint joint = m_partId2tran[partId];
                         Quaternion q_unity = joint.m_t.localRotation;
                         Quaternion q_0_inv = Quaternion.Inverse(joint.m_q0);
-                        Quaternion q_unity_offset = q_unity * q_0_inv;
+                        Quaternion q_unity_offset =  q_0_inv * q_unity;
                         JointQuatU2S(q_unity_offset, out q_w, out q_x, out q_y, out q_z);
+                        Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
+
+//fixme debugging log:
+                        Vector3 a_unity_offset = q_unity_offset.eulerAngles;
+                        float epsilon_f = 0.1f;
+                        if (a_unity_offset.x < -epsilon_f || a_unity_offset.x > epsilon_f
+                            || a_unity_offset.y < -epsilon_f || a_unity_offset.y > epsilon_f
+                            || a_unity_offset.z < -epsilon_f || a_unity_offset.z > epsilon_f)
+                        {
+                            Vector3 a_sim_offset = q_sim_offset.eulerAngles;
+                            Vector3 a_unity_base = joint.m_q0.eulerAngles;
+                            Vector3 a_unity_prime = joint.m_t.localEulerAngles;
+                            string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
+                                                                                                        , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
+                                                                                                        , a_sim_offset.x, a_sim_offset.y, a_sim_offset.z);
+                            strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
+                                                                                                      , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
+                                                                                                      , a_unity_prime.x, a_unity_prime.y, a_unity_prime.z);
+                            Debug.Log(strLog);
+                        }
+//end of debugging log
+
                         m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z);
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
@@ -331,9 +353,10 @@ public class ScenarioControlPed : MonoBehaviour {
                         kv.Value.transform.position = p_unity;
                         kv.Value.transform.rotation = q_unity;
                     }
-                    string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
-                                                        , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
-                    Debug.Log(strTuple);
+//fixme debugging log
+                    //string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
+                    //                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
+                    //Debug.Log(strTuple);
                 }
 
                 foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
@@ -370,14 +393,15 @@ public class ScenarioControlPed : MonoBehaviour {
                             m_ctrl.OnGetUpdateArt(kv.Key, i_part, out q_s_w, out q_s_x, out q_s_y, out q_s_z);
                             Quaternion q_unity_offset;
                             JointQuatS2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset);
-                            q_unity = q_unity_offset * joint.m_q0;
+                            q_unity = joint.m_q0 * q_unity_offset;
                             Transform tran = joint.m_t;
                             tran.localRotation = q_unity;
                         }
                     }
-                    string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
-                                                        , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
-                    Debug.Log(strTuple);
+//fixme debugging log
+                    //string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
+                    //                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
+                    //Debug.Log(strTuple);
                 }
 
                 m_ctrl.PostUpdateDynamicModels();
