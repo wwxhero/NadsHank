@@ -6,6 +6,102 @@ using SharpCom;
 using ExternalObjectsControlComLib;
 using System.Xml;
 
+class MatrixJoints
+{
+    public void Initialize()
+    {
+        Matrix4x4 m_1_3_13 = Matrix4x4.zero;
+        m_1_3_13[2, 0] = 1;
+        m_1_3_13[0, 1] = -1;
+        m_1_3_13[1, 2] = 1;
+        m_1_3_13[3, 3] = 1;
+        c_matrixD2U.Add(1, m_1_3_13);
+        c_matrixD2U.Add(3, m_1_3_13);
+        c_matrixD2U.Add(13, m_1_3_13);
+        //matrix layout:
+        //  0   -1    0
+        //  0    0    1
+        //  1    0    0
+
+        Matrix4x4 m_17_21_24 = Matrix4x4.zero;
+        m_17_21_24[2, 0] = 1;
+        m_17_21_24[0, 1] = 1;
+        m_17_21_24[1, 2] = -1;
+        m_17_21_24[3, 3] = 1;
+        c_matrixD2U.Add(17, m_17_21_24);
+        c_matrixD2U.Add(21, m_17_21_24);
+        c_matrixD2U.Add(24, m_17_21_24);
+        //matrix layout:
+        //  0   1   0
+        //  0   0   -1
+        //  1   0   0
+
+        Matrix4x4 m_19_23_25 = Matrix4x4.zero;
+        m_19_23_25[2, 0] = 1;
+        m_19_23_25[0, 1] = 1;
+        m_19_23_25[1, 2] = -1;
+        m_19_23_25[3, 3] = 1;
+        c_matrixD2U.Add(19, m_19_23_25);
+        c_matrixD2U.Add(23, m_19_23_25);
+        c_matrixD2U.Add(25, m_19_23_25);
+        //matrix layout:
+        //  0   1   0
+        //  0   0   -1
+        //  1   0   0
+
+        Matrix4x4 m_5_7_8_10 = Matrix4x4.zero;
+        m_5_7_8_10[2, 0] = -1;
+        m_5_7_8_10[0, 1] = -1;
+        m_5_7_8_10[1, 2] = -1;
+        m_5_7_8_10[3, 3] = 1;
+        c_matrixD2U.Add(5, m_5_7_8_10);
+        c_matrixD2U.Add(7, m_5_7_8_10);
+        c_matrixD2U.Add(8, m_5_7_8_10);
+        c_matrixD2U.Add(10, m_5_7_8_10);
+        //matrix layout:
+        //  0   -1    0
+        //  0    0   -1
+        // -1    0    0
+
+        Matrix4x4 m_12_15 = Matrix4x4.zero;
+        m_12_15[1, 0] = 1;
+        m_12_15[0, 1] = -1;
+        m_12_15[2, 2] = -1;
+        m_12_15[3, 3] = 1;
+        c_matrixD2U.Add(12, m_12_15);
+        c_matrixD2U.Add(15, m_12_15);
+        //matrix layout:
+        //  0   -1    0
+        //  1    0    0
+        //  0    0    -1
+
+    }
+    public readonly Dictionary<int, Matrix4x4> c_matrixD2U = new Dictionary<int, Matrix4x4>();
+}
+
+class Joint
+{
+    public Joint(Transform t, int i_joint, MatrixJoints c_d2u)
+    {
+        m_t = t;
+        m_q0 = t.localRotation;
+        Matrix4x4 d2u;
+        if (c_d2u.c_matrixD2U.TryGetValue(i_joint, out d2u))
+        {
+            m_d2u = d2u;
+            m_u2d = d2u.inverse;
+        }
+        else
+        {
+            m_d2u = m_u2d = Matrix4x4.identity;
+        }
+    }
+    public readonly Transform m_t;
+    public readonly Quaternion m_q0;
+    public readonly Matrix4x4 m_u2d;
+    public readonly Matrix4x4 m_d2u;
+};
+
 
 public class ScenarioControlPed : MonoBehaviour {
 
@@ -17,22 +113,12 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
     //map: id->n_part
     Dictionary<int, int>        m_id2PedPartN = new Dictionary<int, int>();
-    class Joint
-    {
-        public Joint(Transform t)
-        {
-            m_t = t;
-            m_q0 = t.localRotation;
-        }
-        public readonly Transform m_t;
-        public readonly Quaternion m_q0;
-    };
+
     //map: (id, i_part)->Joint.transform.localRotation
     Dictionary<long, Joint> m_partId2tran = new Dictionary<long, Joint>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
-    Matrix4x4 c_sim2unityJoint;
-    Matrix4x4 c_unity2simJoint;
+    MatrixJoints c_jointsD2U = new MatrixJoints();
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
     float c_scale = 2.5f;
@@ -70,19 +156,8 @@ public class ScenarioControlPed : MonoBehaviour {
         //      0 0 0      1
         c_sim2unity = m_2 * m_1;
         c_unity2sim = c_sim2unity.inverse;
+        c_jointsD2U.Initialize();
 
-        Matrix4x4 m = Matrix4x4.zero;
-        m[0, 2] = -1;
-        m[1, 0] = -1;
-        m[2, 1] = -1;
-        m[3, 3] =  1;
-        //the matrix:
-        //      0  0  -1  0
-        //     -1  0   0  0
-        //      0 -1   0  0
-        //      0  0   0  1
-        c_unity2simJoint = m;
-        c_sim2unityJoint = c_unity2simJoint.inverse;
     }
 
 
@@ -231,7 +306,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                         Transform tran = go.transform;
                                         Debug.Assert(null != tran);
                                         long partId = PartID_U(id, i_part);
-                                        Joint j = new Joint(tran);
+                                        Joint j = new Joint(tran, i_part, c_jointsD2U);
                                         m_partId2tran.Add(partId, j);
                                     }
 
@@ -295,7 +370,7 @@ public class ScenarioControlPed : MonoBehaviour {
                         Quaternion q_unity = joint.m_t.localRotation;
                         Quaternion q_0_inv = Quaternion.Inverse(joint.m_q0);
                         Quaternion q_unity_offset =  q_0_inv * q_unity;
-                        JointQuatU2S(q_unity_offset, out q_w, out q_x, out q_y, out q_z);
+                        JointQuatU2D(q_unity_offset, out q_w, out q_x, out q_y, out q_z, joint.m_u2d);
                         Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
 
 //fixme debugging log:
@@ -392,7 +467,7 @@ public class ScenarioControlPed : MonoBehaviour {
                             Joint joint = m_partId2tran[partId];
                             m_ctrl.OnGetUpdateArt(kv.Key, i_part, out q_s_w, out q_s_x, out q_s_y, out q_s_z);
                             Quaternion q_unity_offset;
-                            JointQuatS2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset);
+                            JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
                             q_unity = joint.m_q0 * q_unity_offset;
                             Transform tran = joint.m_t;
                             tran.localRotation = q_unity;
@@ -431,21 +506,21 @@ public class ScenarioControlPed : MonoBehaviour {
         q.SetLookRotation(z_prime, y_prime);
     }
 
-    void JointQuatU2S(Quaternion q_u, out double q_s_w, out double q_s_x, out double q_s_y, out double q_s_z)
+    void JointQuatU2D(Quaternion q_u, out double q_s_w, out double q_s_x, out double q_s_y, out double q_s_z, Matrix4x4 m)
     {
         q_s_w = q_u.w;
         Vector3 q_v_u = new Vector3(q_u.x, q_u.y, q_u.z);
-        Vector3 q_v_s = -c_unity2simJoint.MultiplyVector(q_v_u);
+        Vector3 q_v_s = -m.MultiplyVector(q_v_u);
         q_s_x = q_v_s.x;
         q_s_y = q_v_s.y;
         q_s_z = q_v_s.z;
     }
 
-    void JointQuatS2U(double q_s_w, double q_s_x, double q_s_y, double q_s_z, out Quaternion q_u)
+    void JointQuatD2U(double q_s_w, double q_s_x, double q_s_y, double q_s_z, out Quaternion q_u, Matrix4x4 m)
     {
         q_u.w = (float)q_s_w;
         Vector3 q_v_s = new Vector3((float)q_s_x, (float)q_s_y, (float)q_s_z);
-        Vector3 q_v_u = -c_sim2unityJoint.MultiplyVector(q_v_s);
+        Vector3 q_v_u = -m.MultiplyVector(q_v_s);
         q_u.x = (float)q_v_u.x;
         q_u.y = (float)q_v_u.y;
         q_u.z = (float)q_v_u.z;
