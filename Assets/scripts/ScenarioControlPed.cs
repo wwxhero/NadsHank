@@ -96,6 +96,39 @@ class Joint
             m_d2u = m_u2d = Matrix4x4.identity;
         }
     }
+    public Joint(Transform t, int i_joint, MatrixJoints c_d2u, Transform t_base)
+    {
+        //fixme: unnecessry computation for supported joints from DIGUY
+        m_t = t;
+        m_q0 = t.localRotation;
+        Matrix4x4 d2u;
+        if (c_d2u.c_matrixD2U.TryGetValue(i_joint, out d2u))
+        {
+            Vector3 x_d_ub = new Vector3(0, 0, 1);
+            Vector3 y_d_ub = new Vector3(-1, 0, 0);
+            Vector3 z_d_ub = new Vector3(0, 1, 0);
+            Matrix4x4 m_w2l = t.worldToLocalMatrix;
+            Matrix4x4 m_b2w = t_base.localToWorldMatrix;
+            Matrix4x4 m_b2l = m_w2l * m_b2w;
+            Vector3 x_d_ul = m_b2l.MultiplyVector(x_d_ub);
+            Vector3 y_d_ul = m_b2l.MultiplyVector(y_d_ub);
+            Vector3 z_d_ul = m_b2l.MultiplyVector(z_d_ub);
+            Vector4 x_d_ul_m = new Vector4(x_d_ul.x, x_d_ul.y, x_d_ul.z, 0);
+            Vector4 y_d_ul_m = new Vector4(y_d_ul.x, y_d_ul.y, y_d_ul.z, 0);
+            Vector4 z_d_ul_m = new Vector4(z_d_ul.x, z_d_ul.y, z_d_ul.z, 0);
+            Vector4 w_d_ul_m = new Vector4(0, 0, 0, 1);
+            m_d2u.SetColumn(0, x_d_ul_m);
+            m_d2u.SetColumn(1, y_d_ul_m);
+            m_d2u.SetColumn(2, z_d_ul_m);
+            m_d2u.SetColumn(3, w_d_ul_m);
+            m_u2d = m_d2u.inverse;
+        }
+        else
+        {
+            m_d2u = m_u2d = Matrix4x4.identity;
+        }
+
+    }
     public readonly Transform m_t;
     public readonly Quaternion m_q0;
     public readonly Matrix4x4 m_u2d;
@@ -306,7 +339,8 @@ public class ScenarioControlPed : MonoBehaviour {
                                         Transform tran = go.transform;
                                         Debug.Assert(null != tran);
                                         long partId = PartID_U(id, i_part);
-                                        Joint j = new Joint(tran, i_part, c_jointsD2U);
+                                        //Joint j = new Joint(tran, i_part, c_jointsD2U);
+                                        Joint j = new Joint(tran, i_part, c_jointsD2U, t_base);
                                         m_partId2tran.Add(partId, j);
                                     }
 
