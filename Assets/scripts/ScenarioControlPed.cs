@@ -6,128 +6,32 @@ using SharpCom;
 using ExternalObjectsControlComLib;
 using System.Xml;
 
-class MatrixJoints
-{
-    public void Initialize()
-    {
-        Matrix4x4 m_1_3_13 = Matrix4x4.zero;
-        m_1_3_13[2, 0] = 1;
-        m_1_3_13[0, 1] = -1;
-        m_1_3_13[1, 2] = 1;
-        m_1_3_13[3, 3] = 1;
-        c_matrixD2U.Add(1, m_1_3_13);
-        c_matrixD2U.Add(3, m_1_3_13);
-        c_matrixD2U.Add(13, m_1_3_13);
-        //matrix layout:
-        //  0   -1    0
-        //  0    0    1
-        //  1    0    0
-
-        Matrix4x4 m_17_21_24 = Matrix4x4.zero;
-        m_17_21_24[2, 0] = 1;
-        m_17_21_24[0, 1] = 1;
-        m_17_21_24[1, 2] = -1;
-        m_17_21_24[3, 3] = 1;
-        c_matrixD2U.Add(17, m_17_21_24);
-        c_matrixD2U.Add(21, m_17_21_24);
-        c_matrixD2U.Add(24, m_17_21_24);
-        //matrix layout:
-        //  0   1   0
-        //  0   0   -1
-        //  1   0   0
-
-        Matrix4x4 m_19_23_25 = Matrix4x4.zero;
-        m_19_23_25[2, 0] = 1;
-        m_19_23_25[0, 1] = 1;
-        m_19_23_25[1, 2] = -1;
-        m_19_23_25[3, 3] = 1;
-        c_matrixD2U.Add(19, m_19_23_25);
-        c_matrixD2U.Add(23, m_19_23_25);
-        c_matrixD2U.Add(25, m_19_23_25);
-        //matrix layout:
-        //  0   1   0
-        //  0   0   -1
-        //  1   0   0
-
-        Matrix4x4 m_5_7_8_10 = Matrix4x4.zero;
-        m_5_7_8_10[2, 0] = -1;
-        m_5_7_8_10[0, 1] = -1;
-        m_5_7_8_10[1, 2] = -1;
-        m_5_7_8_10[3, 3] = 1;
-        c_matrixD2U.Add(5, m_5_7_8_10);
-        c_matrixD2U.Add(7, m_5_7_8_10);
-        c_matrixD2U.Add(8, m_5_7_8_10);
-        c_matrixD2U.Add(10, m_5_7_8_10);
-        //matrix layout:
-        //  0   -1    0
-        //  0    0   -1
-        // -1    0    0
-
-        Matrix4x4 m_12_15 = Matrix4x4.zero;
-        m_12_15[1, 0] = 1;
-        m_12_15[0, 1] = -1;
-        m_12_15[2, 2] = -1;
-        m_12_15[3, 3] = 1;
-        c_matrixD2U.Add(12, m_12_15);
-        c_matrixD2U.Add(15, m_12_15);
-        //matrix layout:
-        //  0   -1    0
-        //  1    0    0
-        //  0    0    -1
-
-    }
-    public readonly Dictionary<int, Matrix4x4> c_matrixD2U = new Dictionary<int, Matrix4x4>();
-}
-
 class Joint
 {
-    public Joint(Transform t, int i_joint, MatrixJoints c_d2u)
-    {
-        m_t = t;
-        m_q0 = t.localRotation;
-        Matrix4x4 d2u;
-        if (c_d2u.c_matrixD2U.TryGetValue(i_joint, out d2u))
-        {
-            m_d2u = d2u;
-            m_u2d = d2u.inverse;
-        }
-        else
-        {
-            m_d2u = m_u2d = Matrix4x4.identity;
-        }
-    }
-    public Joint(Transform t, int i_joint, MatrixJoints c_d2u, Transform t_base)
+    public Joint(Transform t, Transform t_base)
     {
         //fixme: unnecessry computation for supported joints from DIGUY
         m_t = t;
         m_q0 = t.localRotation;
-        Matrix4x4 d2u;
-        if (c_d2u.c_matrixD2U.TryGetValue(i_joint, out d2u))
-        {
-            Vector3 x_d_ub = new Vector3(0, 0, 1);
-            Vector3 y_d_ub = new Vector3(-1, 0, 0);
-            Vector3 z_d_ub = new Vector3(0, 1, 0);
-            Matrix4x4 m_w2l = t.worldToLocalMatrix;
-            Matrix4x4 m_b2w = t_base.localToWorldMatrix;
-            Matrix4x4 m_b2l = m_w2l * m_b2w;
-            Vector3 x_d_ul = m_b2l.MultiplyVector(x_d_ub);
-            Vector3 y_d_ul = m_b2l.MultiplyVector(y_d_ub);
-            Vector3 z_d_ul = m_b2l.MultiplyVector(z_d_ub);
-            Vector4 x_d_ul_m = new Vector4(x_d_ul.x, x_d_ul.y, x_d_ul.z, 0);
-            Vector4 y_d_ul_m = new Vector4(y_d_ul.x, y_d_ul.y, y_d_ul.z, 0);
-            Vector4 z_d_ul_m = new Vector4(z_d_ul.x, z_d_ul.y, z_d_ul.z, 0);
-            Vector4 w_d_ul_m = new Vector4(0, 0, 0, 1);
-            m_d2u.SetColumn(0, x_d_ul_m);
-            m_d2u.SetColumn(1, y_d_ul_m);
-            m_d2u.SetColumn(2, z_d_ul_m);
-            m_d2u.SetColumn(3, w_d_ul_m);
-            m_u2d = m_d2u.inverse;
-        }
-        else
-        {
-            m_d2u = m_u2d = Matrix4x4.identity;
-        }
 
+        Vector3 x_d_ub = new Vector3(0, 0, 1);
+        Vector3 y_d_ub = new Vector3(-1, 0, 0);
+        Vector3 z_d_ub = new Vector3(0, 1, 0);
+        Matrix4x4 m_w2l = t.worldToLocalMatrix;
+        Matrix4x4 m_b2w = t_base.localToWorldMatrix;
+        Matrix4x4 m_b2l = m_w2l * m_b2w;
+        Vector3 x_d_ul = m_b2l.MultiplyVector(x_d_ub);
+        Vector3 y_d_ul = m_b2l.MultiplyVector(y_d_ub);
+        Vector3 z_d_ul = m_b2l.MultiplyVector(z_d_ub);
+        Vector4 x_d_ul_m = new Vector4(x_d_ul.x, x_d_ul.y, x_d_ul.z, 0);
+        Vector4 y_d_ul_m = new Vector4(y_d_ul.x, y_d_ul.y, y_d_ul.z, 0);
+        Vector4 z_d_ul_m = new Vector4(z_d_ul.x, z_d_ul.y, z_d_ul.z, 0);
+        Vector4 w_d_ul_m = new Vector4(0, 0, 0, 1);
+        m_d2u.SetColumn(0, x_d_ul_m);
+        m_d2u.SetColumn(1, y_d_ul_m);
+        m_d2u.SetColumn(2, z_d_ul_m);
+        m_d2u.SetColumn(3, w_d_ul_m);
+        m_u2d = m_d2u.inverse;
     }
     public readonly Transform m_t;
     public readonly Quaternion m_q0;
@@ -151,7 +55,6 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<long, Joint> m_partId2tran = new Dictionary<long, Joint>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
-    MatrixJoints c_jointsD2U = new MatrixJoints();
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
     float c_scale = 2.5f;
@@ -189,7 +92,6 @@ public class ScenarioControlPed : MonoBehaviour {
         //      0 0 0      1
         c_sim2unity = m_2 * m_1;
         c_unity2sim = c_sim2unity.inverse;
-        c_jointsD2U.Initialize();
 
     }
 
@@ -339,8 +241,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                         Transform tran = go.transform;
                                         Debug.Assert(null != tran);
                                         long partId = PartID_U(id, i_part);
-                                        //Joint j = new Joint(tran, i_part, c_jointsD2U);
-                                        Joint j = new Joint(tran, i_part, c_jointsD2U, t_base);
+                                        Joint j = new Joint(tran, t_base);
                                         m_partId2tran.Add(partId, j);
                                     }
 
