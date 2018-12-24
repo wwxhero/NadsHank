@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank", "Assembly-CSharp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank", "Assembly-CSharp-Editor-firstpass.csproj", "{73FB010D-3F7E-E0DF-CBD0-35AA097A5BED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpCom", "SharpCom\SharpCom.csproj", "{68BF658B-A555-4CC0-AF57-ACD5E5933A5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{73FB010D-3F7E-E0DF-CBD0-35AA097A5BED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73FB010D-3F7E-E0DF-CBD0-35AA097A5BED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73FB010D-3F7E-E0DF-CBD0-35AA097A5BED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68BF658B-A555-4CC0-AF57-ACD5E5933A5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68BF658B-A555-4CC0-AF57-ACD5E5933A5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68BF658B-A555-4CC0-AF57-ACD5E5933A5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68BF658B-A555-4CC0-AF57-ACD5E5933A5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
