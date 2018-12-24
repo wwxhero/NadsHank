@@ -42,7 +42,7 @@ class Joint
 
 public class ScenarioControlPed : MonoBehaviour {
 
-    public string m_scenePath;
+    private string m_scenePath;
     public GameObject[] m_vehiPrefabs;
     public GameObject m_pedPrefab;
     IDistriObjsCtrl m_ctrl;

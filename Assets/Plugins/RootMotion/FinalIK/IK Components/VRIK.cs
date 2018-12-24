@@ -157,7 +157,6 @@ namespace RootMotion.FinalIK {
 				references = new References();
 
 				var animator = root.GetComponentInChildren<Animator>();
-                Debug.Log("Animator in VRIK is = " + animator.ToString());
 				if (animator == null || !animator.isHuman) {
 					Debug.LogWarning("VRIK needs a Humanoid Animator to auto-detect biped references. Please assign references manually.");
 					return false;

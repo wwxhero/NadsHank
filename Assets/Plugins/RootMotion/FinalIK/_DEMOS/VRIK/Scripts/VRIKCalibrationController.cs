@@ -7,7 +7,7 @@ namespace RootMotion.Demos
 
     public class VRIKCalibrationController : MonoBehaviour
     {
-
+        public bool calibration_done = false;
         [Tooltip("Reference to the VRIK component on the avatar.")] public VRIK ik;
         [Tooltip("The settings for VRIK calibration.")] public VRIKCalibrator.Settings settings;
         [Tooltip("The HMD.")] public Transform headTracker;
@@ -26,6 +26,7 @@ namespace RootMotion.Demos
             {
                 // Calibrate the character, store data of the calibration
                 data = VRIKCalibrator.Calibrate(ik, settings, headTracker, bodyTracker, leftHandTracker, rightHandTracker, leftFootTracker, rightFootTracker);
+                calibration_done = true;
             }
 
             /*
