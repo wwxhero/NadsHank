@@ -18,7 +18,7 @@ public class InitZeroPos  {
     public static void Init(Transform root)
     {
         Joint [] init = {
-              new Joint("Base", new Vector3(0.00f, 0.00f, 0.00f))
+              new Joint("CMU compliant skeleton", new Vector3(0.00f, 0.00f, 0.00f))
             , new Joint("Hips", new Vector3(334.10f, 0.00f, 0.00f))
             , new Joint("LHipJoint", new Vector3(81.55f, 159.84f, 255.87f))
             , new Joint("LowerBack", new Vector3(32.82f, 0.00f, 0.00f))

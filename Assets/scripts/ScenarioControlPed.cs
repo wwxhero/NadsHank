@@ -217,13 +217,14 @@ public class ScenarioControlPed : MonoBehaviour {
                                     GameObject ped = Instantiate(m_pedPrefab, p_unity, q_unity);
                                     ped.name = name;
                                     m_id2Ped.Add(id, ped);
-                                    Transform t_base = ped.transform.Find("Base");
+                                    Transform t_base = ped.transform.Find("CMU compliant skeleton");
                                     InitZeroPos.Init(t_base);
                                     if (0 == id)
                                     {
                                         ped.AddComponent<Manipulator>();
                                         //ped.AddComponent<Roll>();
                                         //ped.AddComponent<JointDumper>();
+                                        ped.AddComponent<RootMotion.FinalIK.VRIK>();
 
                                     }
 
