@@ -57,7 +57,7 @@ public class ScenarioControlPed : MonoBehaviour {
     Matrix4x4 c_unity2sim;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-    float c_scale = 2.5f;
+    float c_scaleVeh = 3.5f;
     long PartID_U(int idPed, int idPart_S)
     {
         long partId_g = idPed;
@@ -174,7 +174,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                     int idx = id % m_vehiPrefabs.Length;
                                     GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
                                     o.name = name;
-                                    o.transform.localScale = new Vector3(c_scale, c_scale, c_scale);
+                                    o.transform.localScale = new Vector3(c_scaleVeh, c_scaleVeh, c_scaleVeh);
                                     m_id2Dyno.Add(id, o);
                                     break;
                                 }
