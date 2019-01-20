@@ -45,9 +45,11 @@ public class ScenarioControlPed : MonoBehaviour {
     private string m_scenePath;
     public GameObject[] m_vehiPrefabs;
     public GameObject m_pedPrefab;
+    public GameObject m_mockTrackersPrefab;
     IDistriObjsCtrl m_ctrl;
     Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
     Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
+    GameObject m_mockTrackers;
     //map: id->n_part
     Dictionary<int, int>        m_id2PedPartN = new Dictionary<int, int>();
 
@@ -236,7 +238,33 @@ public class ScenarioControlPed : MonoBehaviour {
                                         //ped.AddComponent<JointDumper>();
                                         RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
                                         ik.AutoDetectReferences();
-                                        ik.enabled = false;
+
+                                        //ik.enabled = false;
+
+                                        m_mockTrackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
+                                        RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
+                                        caliCtrl.ik = ik;
+                                        Transform[] trackers = { caliCtrl.headTracker
+                                                            , caliCtrl.bodyTracker
+                                                            , caliCtrl.leftHandTracker
+                                                            , caliCtrl.rightHandTracker
+                                                            , caliCtrl.leftFootTracker
+                                                            , caliCtrl.rightFootTracker
+                                                        };
+                                        string[] targetNames = { "Pelvis/Spine1/Spine2/Spine3/Neck1/NeckHead/Tracker Mock (CenterEyeAnchor)"
+                                                            , "Pelvis/Tracker Mock (Body)"
+                                                            , "Pelvis/Spine1/Spine2/Spine3/LArmCollarbone/LArmUpper1/LArmUpper2/LArmForearm1/LArmForearm2/LArmHand/Tracker Mock (Left Hand)"
+                                                            , "Pelvis/Spine1/Spine2/Spine3/RArmCollarbone/RArmUpper1/RArmUpper2/RArmForearm1/RArmForearm2/RArmHand/Tracker Mock (Right Hand)"
+                                                            , "Pelvis/LLegUpper/LLegCalf/LLegAnkle/Tracker Mock (Left Foot)"
+                                                            , "Pelvis/RLegUpper/RLegCalf/RLegAnkle/Tracker Mock (Right Foot)"
+                                                        };
+                                        caliCtrl.headTracker = m_mockTrackers.transform.Find(targetNames[0]);
+                                        caliCtrl.bodyTracker = m_mockTrackers.transform.Find(targetNames[1]);
+                                        caliCtrl.leftHandTracker = m_mockTrackers.transform.Find(targetNames[2]);
+                                        caliCtrl.rightHandTracker = m_mockTrackers.transform.Find(targetNames[3]);
+                                        caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
+                                        caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
+
                                     }
 
 
