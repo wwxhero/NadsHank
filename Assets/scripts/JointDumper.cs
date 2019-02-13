@@ -105,6 +105,47 @@ public class JointDumper : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        Transform t_this = GetComponent<Transform>();
+        Queue<Transform> q_t = new Queue<Transform>();
+        q_t.Enqueue(t_this);
+        do
+        {
+            t_this = q_t.Dequeue();
+            Transform t_parent = t_this.parent;
+            Matrix4x4 p2w = (null == t_parent) ? Matrix4x4.identity : t_parent.localToWorldMatrix;
+            Matrix4x4 l2w = t_this.localToWorldMatrix;
+            //Matrix4x4 p2w_inv = p2w.inverse;
+            Matrix4x4 p2w_inv = (null == t_parent) ? Matrix4x4.identity : t_parent.worldToLocalMatrix;
+            Matrix4x4 l2p = p2w_inv * l2w;
+            Matrix4x4 r = new Matrix4x4(l2p.GetColumn(0)
+                                    , l2p.GetColumn(1)
+                                    , l2p.GetColumn(2)
+                                    , new Vector4(0, 0, 0, 1));
+            Matrix4x4 t = r.inverse * l2p;
+            string strLog = string.Format("\n{0}:", t_this.name);
+            strLog += "\nlocal to parent:";
+            for (int i_r = 0; i_r < 4; i_r ++)
+            {
+                string strRow = string.Format("\n\t{0} {1} {2} {3}", l2p[i_r, 0].ToString("0.0000"), l2p[i_r, 1].ToString("0.0000"), l2p[i_r, 2].ToString("0.0000"), l2p[i_r, 3].ToString("0.0000"));
+                strLog += strRow;
+            }
+            strLog += "\nrotation:";
+            for (int i_r = 0; i_r < 4; i_r ++)
+            {
+                string strRow = string.Format("\n\t{0} {1} {2} {3}", r[i_r, 0].ToString("0.0000"), r[i_r, 1].ToString("0.0000"), r[i_r, 2].ToString("0.0000"), r[i_r, 3].ToString("0.0000"));
+                strLog += strRow;
+            }
+            strLog += "\ntranslation:";
+            for (int i_r = 0; i_r < 4; i_r ++)
+            {
+                string strRow = string.Format("\n\t{0} {1} {2} {3}", t[i_r, 0].ToString("0.0000"), t[i_r, 1].ToString("0.0000"), t[i_r, 2].ToString("0.0000"), t[i_r, 3].ToString("0.0000"));
+                strLog += strRow;
+            }
+            Debug.Log(strLog);
+            foreach (Transform t_c in t_this)
+            {
+                q_t.Enqueue(t_c);
+            }
+        } while(q_t.Count > 0);
     }
 }

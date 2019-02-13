@@ -57,6 +57,8 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<long, Joint> m_partId2tran = new Dictionary<long, Joint>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
+
+    public bool c_logMatrixFactor;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
     long PartID_U(int idPed, int idPart_S)
@@ -239,7 +241,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                         RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
                                         ik.AutoDetectReferences();
 
-                                        //ik.enabled = false;
+                                        ik.enabled = false;
 
                                         m_mockTrackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
                                         RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
@@ -264,6 +266,9 @@ public class ScenarioControlPed : MonoBehaviour {
                                         caliCtrl.rightHandTracker = m_mockTrackers.transform.Find(targetNames[3]);
                                         caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
                                         caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
+
+                                        if (c_logMatrixFactor)
+                                            ped.AddComponent<JointDumper>();
 
                                     }
 
@@ -455,8 +460,6 @@ public class ScenarioControlPed : MonoBehaviour {
                 }
 
                 m_ctrl.PostUpdateDynamicModels();
-
-
             }
             catch (Exception e)
             {
