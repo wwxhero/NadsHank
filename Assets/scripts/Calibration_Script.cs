@@ -16,6 +16,8 @@ public class Calibration_Script : MonoBehaviour
     public GameObject pelvis, head;
     private Vector3 headActualPosition, pelvisActualPosition, leftFootPosition, rightFootPosition;
     private float y_value, z_value;
+    public GameObject cameraRig, otherTargets;
+
     void Start()
     {
         Debug.Log("ped = " + gameObject.name);
@@ -36,7 +38,9 @@ public class Calibration_Script : MonoBehaviour
         modelActualHead = GameObject.Find(gameObject.name + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/Neck/Neck1");
         modelActualPelvis = GameObject.Find(gameObject.name + "/CMU compliant skeleton/Hips");
         pelvis = GameObject.Find("Other Targets/Pelvis_Bone_Tracker/Pelvis");
-        head = GameObject.Find("[CameraRig]/Camera (eye)/Head");
+        cameraRig = GameObject.Find("[CameraRig]");
+        head = GameObject.Find(cameraRig.name + "/Camera (eye)/Head");
+        otherTargets = GameObject.Find("Other Targets");
 
         count = 1;
         leftHandLength = Mathf.Round((Vector3.Distance(modelUpperArmLeft.transform.position, modelLowerArmLeft.transform.position) + Vector3.Distance(modelLowerArmLeft.transform.position, modelLeftWristJoint.transform.position)) * 100f) / 100f;
@@ -59,8 +63,9 @@ public class Calibration_Script : MonoBehaviour
         Debug.Log("Pelvis to Left Upper Leg Length = " + pelvisToUpperLegLeftLength);
         Debug.Log("Pelvis to Right Upper Leg Length = " + pelvisToUpperLegRightLength);
         Debug.Log("Actual Pelvis position = " + modelActualPelvis.transform.position);
-        
-        Vector3 pelvisPosition = new Vector3(0f, 0.06f, -0.08f);
+
+        //Vector3 pelvisPosition = new Vector3(0.03f, -0.01f, -0.3f);
+        Vector3 pelvisPosition = new Vector3(0f, 0f, -0.33f);
         Debug.Log("New Pelvis Position = " + pelvisPosition);
         pelvis.transform.localPosition = pelvisPosition;
     }
@@ -102,10 +107,13 @@ public class Calibration_Script : MonoBehaviour
             Debug.Log("Left Foot Tracker Position before the if statement = " + modelLeftFoot.transform.position);
             Debug.Log("Right Foot Tracker Position before the if statement = " + modelRightFoot.transform.position);
 
-            Vector3 gameObject_positions = gameObject.transform.position /*new Vector3 (0f, 0f, 0f)*/;
+            Debug.Log("modelPelvis local position = " + modelPelvis.transform.localPosition);
 
-            if (modelHead.transform.position != gameObject_positions && modelPelvis.transform.position != gameObject_positions && modelLeftWrist.transform.position != gameObject_positions
-                && modelLeftFoot.transform.position != gameObject_positions && modelRightWrist.transform.position != gameObject_positions && modelRightFoot.transform.position != gameObject_positions)
+            Vector3 gameObject_positions = /*this.gameObject.transform.position*/ new Vector3 (0f, 0f, 0f);
+            Debug.Log("gameObject_positions = " + gameObject_positions);
+
+            if (modelHead.transform.localPosition != gameObject_positions && modelPelvis.transform.localPosition != gameObject_positions && modelLeftWrist.transform.localPosition != gameObject_positions
+                && modelLeftFoot.transform.localPosition != gameObject_positions && modelRightWrist.transform.localPosition != gameObject_positions && modelRightFoot.transform.localPosition != gameObject_positions)
             {
                 Debug.Log("Head Tracker Position = " + modelHead.transform.position);
                 Debug.Log("Pelvis Tracker Position = " + modelPelvis.transform.position);
@@ -119,7 +127,7 @@ public class Calibration_Script : MonoBehaviour
                 actualRightFootLength = Mathf.Round((Vector3.Distance(modelPelvis.transform.position, modelRightFoot.transform.position) + pelvisToUpperLegRightLength) * 100f) / 100f;
                 actualLeftHandLength = Mathf.Round((Vector3.Distance(modelHead.transform.position, modelLeftWrist.transform.position) - headToUpperArmLeftLength) * 100f) / 100f;
                 actualRightHandLength = Mathf.Round((Vector3.Distance(modelHead.transform.position, modelRightWrist.transform.position) - headToUpperArmRightLength) * 100f) / 100f;
-                
+
                 float forTestingLeftHand = Vector3.Distance(modelHead.transform.position, modelLeftWrist.transform.position);
                 Debug.Log("Testing Left Hand = " + forTestingLeftHand);
 
@@ -140,9 +148,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperArmLeft.transform.localScale.y + (modelUpperArmLeft.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerArmLeft.transform.localScale.y + (modelLowerArmLeft.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperArmLeft.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerArmLeft.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperArmLeft.transform.localScale = new Vector3(modelUpperArmLeft.transform.localScale.x, newScale1, modelUpperArmLeft.transform.localScale.z);
+                    modelLowerArmLeft.transform.localScale = new Vector3(modelLowerArmLeft.transform.localScale.x, newScale2, modelLowerArmLeft.transform.localScale.z);
                     Debug.Log("Modified Left Upper Arm Size = " + modelUpperArmLeft.transform.localScale);
                     Debug.Log("Modified Left Lower Arm Size = " + modelLowerArmLeft.transform.localScale);
                 }
@@ -155,9 +163,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperArmLeft.transform.localScale.y - (modelUpperArmLeft.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerArmLeft.transform.localScale.y - (modelLowerArmLeft.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperArmLeft.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerArmLeft.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperArmLeft.transform.localScale = new Vector3(modelUpperArmLeft.transform.localScale.x, newScale1, modelUpperArmLeft.transform.localScale.z);
+                    modelLowerArmLeft.transform.localScale = new Vector3(modelLowerArmLeft.transform.localScale.x, newScale2, modelLowerArmLeft.transform.localScale.z);
                     Debug.Log("Modified Left Upper Arm Size = " + modelUpperArmLeft.transform.localScale);
                     Debug.Log("Modified Left Lower Arm Size = " + modelLowerArmLeft.transform.localScale);
                 }
@@ -170,9 +178,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperArmRight.transform.localScale.y + (modelUpperArmRight.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerArmRight.transform.localScale.y + (modelLowerArmRight.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperArmRight.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerArmRight.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperArmRight.transform.localScale = new Vector3(modelUpperArmRight.transform.localScale.x, newScale1, modelUpperArmRight.transform.localScale.z);
+                    modelLowerArmRight.transform.localScale = new Vector3(modelLowerArmRight.transform.localScale.x, newScale2, modelLowerArmRight.transform.localScale.z);
                     Debug.Log("Modified Right Upper Arm Size = " + modelUpperArmRight.transform.localScale);
                     Debug.Log("Modified Right Lower Arm Size = " + modelLowerArmRight.transform.localScale);
                 }
@@ -185,9 +193,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperArmRight.transform.localScale.y - (modelUpperArmRight.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerArmRight.transform.localScale.y - (modelLowerArmRight.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperArmRight.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerArmRight.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperArmRight.transform.localScale = new Vector3(modelUpperArmRight.transform.localScale.x, newScale1, modelUpperArmRight.transform.localScale.z);
+                    modelLowerArmRight.transform.localScale = new Vector3(modelLowerArmRight.transform.localScale.x, newScale2, modelLowerArmRight.transform.localScale.z);
                     Debug.Log("Modified Right Upper Arm Size = " + modelUpperArmRight.transform.localScale);
                     Debug.Log("Modified Right Lower Arm Size = " + modelLowerArmRight.transform.localScale);
                 }
@@ -199,7 +207,7 @@ public class Calibration_Script : MonoBehaviour
                     float percentage = Mathf.Round(((difference / headToPelvisLength) * 100) * 100f) / 100f;
                     Debug.Log("Percentage = " + percentage);
                     float newScale = Mathf.Round((modelActualPelvis.transform.localScale.y + (modelActualPelvis.transform.localScale.y * ((percentage / 9) / 100))) * 100f) / 100f;
-                    modelActualPelvis.transform.localScale = new Vector3(newScale, newScale, newScale);
+                    modelActualPelvis.transform.localScale = new Vector3(modelActualPelvis.transform.localScale.x, newScale, modelActualPelvis.transform.localScale.z);
                     Debug.Log("Modified Head to Pelvis Size = " + modelActualPelvis.transform.localScale);
                 }
 
@@ -210,7 +218,7 @@ public class Calibration_Script : MonoBehaviour
                     float percentage = Mathf.Round(((difference / headToPelvisLength) * 100) * 100f) / 100f;
                     Debug.Log("Percentage = " + percentage);
                     float newScale = Mathf.Round((modelActualPelvis.transform.localScale.y - (modelActualPelvis.transform.localScale.y * ((percentage / 9) / 100))) * 100f) / 100f;
-                    modelActualPelvis.transform.localScale = new Vector3(newScale, newScale, newScale);
+                    modelActualPelvis.transform.localScale = new Vector3(modelActualPelvis.transform.localScale.x, newScale, modelActualPelvis.transform.localScale.z);
                     Debug.Log("Modified Head to Pelvis Size = " + modelActualPelvis.transform.localScale);
                 }
 
@@ -222,9 +230,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperLegLeft.transform.localScale.y + (modelUpperLegLeft.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerLegLeft.transform.localScale.y + (modelLowerLegLeft.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperLegLeft.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerLegLeft.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperLegLeft.transform.localScale = new Vector3(modelUpperLegLeft.transform.localScale.x, newScale1, modelUpperLegLeft.transform.localScale.z);
+                    modelLowerLegLeft.transform.localScale = new Vector3(modelLowerLegLeft.transform.localScale.x, newScale2, modelLowerLegLeft.transform.localScale.z);
                     Debug.Log("Modified Left Upper Leg Size = " + modelUpperLegLeft.transform.localScale);
                     Debug.Log("Modeified Left Lower Leg Size = " + modelLowerLegLeft.transform.localScale);
                 }
@@ -237,9 +245,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperLegLeft.transform.localScale.y - (modelUpperLegLeft.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerLegLeft.transform.localScale.y - (modelLowerLegLeft.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperLegLeft.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerLegLeft.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperLegLeft.transform.localScale = new Vector3(modelUpperLegLeft.transform.localScale.x, newScale1, modelUpperLegLeft.transform.localScale.z);
+                    modelLowerLegLeft.transform.localScale = new Vector3(modelLowerLegLeft.transform.localScale.x, newScale2, modelLowerLegLeft.transform.localScale.z);
                     Debug.Log("Modified Left Upper Leg Size = " + modelUpperLegLeft.transform.localScale);
                     Debug.Log("Modeified Left Lower Leg Size = " + modelLowerLegLeft.transform.localScale);
                 }
@@ -252,9 +260,9 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperLegRight.transform.localScale.y + (modelUpperLegRight.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerLegRight.transform.localScale.y + (modelLowerLegRight.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperLegRight.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerLegRight.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperLegRight.transform.localScale = new Vector3(modelUpperLegRight.transform.localScale.x, newScale1, modelUpperLegRight.transform.localScale.z);
+                    modelLowerLegRight.transform.localScale = new Vector3(modelLowerLegRight.transform.localScale.x, newScale2, modelLowerLegRight.transform.localScale.z);
                     Debug.Log("Modified Right Upper Leg Size = " + modelUpperLegRight.transform.localScale);
                     Debug.Log("Modified Right Lower Leg Size = " + modelLowerLegRight.transform.localScale);
                 }
@@ -267,14 +275,21 @@ public class Calibration_Script : MonoBehaviour
                     Debug.Log("Percentage = " + percentage);
                     float newScale1 = Mathf.Round((modelUpperLegRight.transform.localScale.y - (modelUpperLegRight.transform.localScale.y * (((percentage / 5) * 1.13f) / 100))) * 100f) / 100f;
                     float newScale2 = Mathf.Round((modelLowerLegRight.transform.localScale.y - (modelLowerLegRight.transform.localScale.y * (((percentage / 5) / 100)))) * 100f) / 100f;
-                    
-                    modelUpperLegRight.transform.localScale = new Vector3(1f, newScale1, 1f);
-                    modelLowerLegRight.transform.localScale = new Vector3(1f, newScale2, 1f);
+
+                    modelUpperLegRight.transform.localScale = new Vector3(modelUpperLegRight.transform.localScale.x, newScale1, modelUpperLegRight.transform.localScale.z);
+                    modelLowerLegRight.transform.localScale = new Vector3(modelLowerLegRight.transform.localScale.x, newScale2, modelLowerLegRight.transform.localScale.z);
                     Debug.Log("Modified Right Upper Leg Size = " + modelUpperLegRight.transform.localScale);
                     Debug.Log("Modified Right Lower Leg Size = " + modelLowerLegRight.transform.localScale);
                 }
                 count++;
             }
+            //cameraRig.transform.eulerAngles = new Vector3(cameraRig.transform.eulerAngles.x,
+            //                                                90f,
+            //                                                cameraRig.transform.eulerAngles.z);
+
+            //otherTargets.transform.eulerAngles = new Vector3(otherTargets.transform.eulerAngles.x,
+            //                                                90f,
+            //                                                otherTargets.transform.eulerAngles.z);
         }
     }
 }
