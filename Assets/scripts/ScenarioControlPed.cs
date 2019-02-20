@@ -42,7 +42,7 @@ class Joint
 
 public class ScenarioControlPed : MonoBehaviour {
 
-    public string m_scenePath;
+    private string m_scenePath;
     public GameObject[] m_vehiPrefabs;
     public GameObject m_pedPrefab;
     IDistriObjsCtrl m_ctrl;
@@ -57,7 +57,6 @@ public class ScenarioControlPed : MonoBehaviour {
     Matrix4x4 c_unity2sim;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-    float c_scale = 2.5f;
     long PartID_U(int idPed, int idPart_S)
     {
         long partId_g = idPed;
@@ -90,7 +89,19 @@ public class ScenarioControlPed : MonoBehaviour {
         //      0 1 0  -1320
         //      0 0 1      0
         //      0 0 0      1
-        c_sim2unity = m_2 * m_1;
+
+        Matrix4x4 m_s_f2m = Matrix4x4.zero;
+        float f2m = 0.3048f;
+        m_s_f2m[0, 0] = f2m;
+        m_s_f2m[1, 1] = f2m;
+        m_s_f2m[2, 2] = f2m;
+        m_s_f2m[3, 3] = 1;
+        //the matrix:
+        //      f2m 0   0   0
+        //      0   f2m 0   0
+        //      0   0   f2m 0
+        //      0   0   0   1
+        c_sim2unity =  m_s_f2m * m_2 * m_1;
         c_unity2sim = c_sim2unity.inverse;
 
     }
@@ -167,14 +178,13 @@ public class ScenarioControlPed : MonoBehaviour {
                                     Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
                                     Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
                                     Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-                                    Vector3 t_unity = c_sim2unity.MultiplyVector(t);
-                                    Vector3 l_unity = c_sim2unity.MultiplyVector(l);
+                                    Vector3 t_unity = MultiplyDir(c_sim2unity, t);
+                                    Vector3 l_unity = MultiplyDir(c_sim2unity, l);
                                     Quaternion q_unity;
                                     FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
                                     int idx = id % m_vehiPrefabs.Length;
                                     GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
                                     o.name = name;
-                                    o.transform.localScale = new Vector3(c_scale, c_scale, c_scale);
                                     m_id2Dyno.Add(id, o);
                                     break;
                                 }
@@ -210,21 +220,23 @@ public class ScenarioControlPed : MonoBehaviour {
                                     Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
                                     Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
                                     Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-                                    Vector3 t_unity = c_sim2unity.MultiplyVector(t);
-                                    Vector3 l_unity = c_sim2unity.MultiplyVector(l);
+                                    Vector3 t_unity = MultiplyDir(c_sim2unity, t);
+                                    Vector3 l_unity = MultiplyDir(c_sim2unity, l);
                                     Quaternion q_unity;
                                     FrameToQuaternionPed(t_unity, l_unity, out q_unity);
                                     GameObject ped = Instantiate(m_pedPrefab, p_unity, q_unity);
                                     ped.name = name;
                                     m_id2Ped.Add(id, ped);
-                                    Transform t_base = ped.transform.Find("Base");
+                                    Transform t_base = ped.transform.Find("CMU compliant skeleton");
                                     InitZeroPos.Init(t_base);
                                     if (0 == id)
                                     {
                                         ped.AddComponent<Manipulator>();
                                         //ped.AddComponent<Roll>();
                                         //ped.AddComponent<JointDumper>();
-
+                                        RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
+                                        ik.AutoDetectReferences();
+                                        ik.enabled = false;
                                     }
 
 
@@ -287,8 +299,8 @@ public class ScenarioControlPed : MonoBehaviour {
                     Vector3 tan_unity = pedOwn.transform.forward;
                     Vector3 lat_unity = pedOwn.transform.right;
                     Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
-                    Vector3 t = c_unity2sim.MultiplyVector(tan_unity);
-                    Vector3 l = c_unity2sim.MultiplyVector(lat_unity);
+                    Vector3 t = MultiplyDir(c_unity2sim, tan_unity);
+                    Vector3 l = MultiplyDir(c_unity2sim, lat_unity);
                     double xPos, yPos, zPos;
                     double xTan, yTan, zTan;
                     double xLat, yLat, zLat;
@@ -356,8 +368,8 @@ public class ScenarioControlPed : MonoBehaviour {
                         Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
                         Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
                         Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-                        Vector3 t_unity = c_sim2unity.MultiplyVector(t);
-                        Vector3 l_unity = c_sim2unity.MultiplyVector(l);
+                        Vector3 t_unity = MultiplyDir(c_sim2unity, t);
+                        Vector3 l_unity = MultiplyDir(c_sim2unity, l);
                         Quaternion q_unity;
                         FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
                         kv.Value.transform.position = p_unity;
@@ -387,8 +399,8 @@ public class ScenarioControlPed : MonoBehaviour {
                         Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
                         Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
                         Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-                        Vector3 t_unity = c_sim2unity.MultiplyVector(t);
-                        Vector3 l_unity = c_sim2unity.MultiplyVector(l);
+                        Vector3 t_unity = MultiplyDir(c_sim2unity, t);
+                        Vector3 l_unity = MultiplyDir(c_sim2unity, l);
                         Quaternion q_unity;
                         FrameToQuaternionPed(t_unity, l_unity, out q_unity);
                         kv.Value.transform.position = p_unity;
@@ -441,6 +453,8 @@ public class ScenarioControlPed : MonoBehaviour {
         q.SetLookRotation(z_prime, y_prime);
     }
 
+
+
     void JointQuatU2D(Quaternion q_u, out double q_s_w, out double q_s_x, out double q_s_y, out double q_s_z, Matrix4x4 m)
     {
         q_s_w = q_u.w;
@@ -460,4 +474,12 @@ public class ScenarioControlPed : MonoBehaviour {
         q_u.y = (float)q_v_u.y;
         q_u.z = (float)q_v_u.z;
     }
+
+    Vector3 MultiplyDir(Matrix4x4 m, Vector3 d)
+    {
+        Vector3 d_prime = m.MultiplyVector(d);
+        d_prime.Normalize();
+        return d_prime;
+    }
+
 }
