@@ -13,6 +13,7 @@ class Joint
         //fixme: unnecessry computation for supported joints from DIGUY
         m_t = t;
         m_q0 = t.localRotation;
+        m_q0inv = Quaternion.Inverse(m_q0);
 
         Vector3 x_d_ub = new Vector3(0, 0, 1);
         Vector3 y_d_ub = new Vector3(-1, 0, 0);
@@ -35,6 +36,7 @@ class Joint
     }
     public readonly Transform m_t;
     public readonly Quaternion m_q0;
+    public readonly Quaternion m_q0inv;
     public readonly Matrix4x4 m_u2d;
     public readonly Matrix4x4 m_d2u;
 };
@@ -348,12 +350,11 @@ public class ScenarioControlPed : MonoBehaviour {
                         long partId = PartID_U(c_ownPedId, i_part);
                         Joint joint = m_partId2tran[partId];
                         Quaternion q_unity = joint.m_t.localRotation;
-                        Quaternion q_0_inv = Quaternion.Inverse(joint.m_q0);
+                        Quaternion q_0_inv = joint.m_q0inv;
                         Quaternion q_unity_offset =  q_0_inv * q_unity;
                         JointQuatU2D(q_unity_offset, out q_w, out q_x, out q_y, out q_z, joint.m_u2d);
-                        Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
-
 //fixme debugging log:
+                        Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
                         Vector3 a_unity_offset = q_unity_offset.eulerAngles;
                         float epsilon_f = 0.1f;
                         if (a_unity_offset.x < -epsilon_f || a_unity_offset.x > epsilon_f
