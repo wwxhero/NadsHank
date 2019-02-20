@@ -238,12 +238,8 @@ public class ScenarioControlPed : MonoBehaviour {
                                     if (0 == id)
                                     {
                                         ped.AddComponent<Manipulator>();
-                                        //ped.AddComponent<Roll>();
-                                        //ped.AddComponent<JointDumper>();
                                         RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
                                         ik.AutoDetectReferences();
-
-                                        ik.enabled = false;
 
                                         m_mockTrackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
                                         RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
