@@ -60,7 +60,9 @@ public class ScenarioControlPed : MonoBehaviour {
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
 
-    public bool c_logMatrixFactor;
+    public bool DEF_LOGMATRIXFAC;
+    public bool DEF_LOGJOINTTRAN;
+    public bool DEF_LOGJOINTIDNAME;
     enum IMPLE { IGCOMM = 0, DISVRLINK };
     enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
     long PartID_U(int idPed, int idPart_S)
@@ -265,7 +267,7 @@ public class ScenarioControlPed : MonoBehaviour {
                                         caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
                                         caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
 
-                                        if (c_logMatrixFactor)
+                                        if (DEF_LOGMATRIXFAC)
                                             ped.AddComponent<JointDumper>();
 
                                     }
@@ -277,8 +279,11 @@ public class ScenarioControlPed : MonoBehaviour {
                                     {
                                         string namePartS;
                                         m_ctrl.GetcrtPedPartName(id, i_part, out namePartS);
-                                        string log = string.Format("{0}:{1}", i_part, namePartS);
-                                        Debug.Log(log);
+                                        if (DEF_LOGJOINTIDNAME)
+                                        {
+                                            string log = string.Format("{0}:{1}", i_part, namePartS);
+                                            Debug.Log(log);
+                                        }
                                         GameObject go = GameObject.Find(namePartS);
                                         Debug.Assert(null != go);
                                         Transform tran = go.transform;
@@ -350,23 +355,26 @@ public class ScenarioControlPed : MonoBehaviour {
                         Quaternion q_unity_offset =  q_0_inv * q_unity;
                         JointQuatU2D(q_unity_offset, out q_w, out q_x, out q_y, out q_z, joint.m_u2d);
 //fixme debugging log:
-                        Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
-                        Vector3 a_unity_offset = q_unity_offset.eulerAngles;
-                        float epsilon_f = 0.1f;
-                        if (a_unity_offset.x < -epsilon_f || a_unity_offset.x > epsilon_f
-                            || a_unity_offset.y < -epsilon_f || a_unity_offset.y > epsilon_f
-                            || a_unity_offset.z < -epsilon_f || a_unity_offset.z > epsilon_f)
+                        if (DEF_LOGJOINTTRAN)
                         {
-                            Vector3 a_sim_offset = q_sim_offset.eulerAngles;
-                            Vector3 a_unity_base = joint.m_q0.eulerAngles;
-                            Vector3 a_unity_prime = joint.m_t.localEulerAngles;
-                            string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
-                                                                                                        , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
-                                                                                                        , a_sim_offset.x, a_sim_offset.y, a_sim_offset.z);
-                            strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
-                                                                                                      , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
-                                                                                                      , a_unity_prime.x, a_unity_prime.y, a_unity_prime.z);
-                            Debug.Log(strLog);
+                            Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
+                            Vector3 a_unity_offset = q_unity_offset.eulerAngles;
+                            float epsilon_f = 0.1f;
+                            if (a_unity_offset.x < -epsilon_f || a_unity_offset.x > epsilon_f
+                                || a_unity_offset.y < -epsilon_f || a_unity_offset.y > epsilon_f
+                                || a_unity_offset.z < -epsilon_f || a_unity_offset.z > epsilon_f)
+                            {
+                                Vector3 a_sim_offset = q_sim_offset.eulerAngles;
+                                Vector3 a_unity_base = joint.m_q0.eulerAngles;
+                                Vector3 a_unity_prime = joint.m_t.localEulerAngles;
+                                string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
+                                                                                                            , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
+                                                                                                            , a_sim_offset.x, a_sim_offset.y, a_sim_offset.z);
+                                strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
+                                                                                                          , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
+                                                                                                          , a_unity_prime.x, a_unity_prime.y, a_unity_prime.z);
+                                Debug.Log(strLog);
+                            }
                         }
 //end of debugging log
 
