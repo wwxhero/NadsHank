@@ -8,7 +8,7 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
     private GameObject pedestrian, cameraRig, actual_Targets, other_Targets;
     public Transform actualTargets, otherTargets;
     public Transform CameraRig;
-    public bool configuration;
+    public bool configuration, tracker_configuration;
     private VRIKCalibrationController ik;
     private VRIK ik1;
     public GameObject Head, Pelvis, Left_Hand, Right_Hand, Left_Foot, Right_Foot, Head_ik, Pelvis_ik, Left_Hand_ik, Right_Hand_ik, Left_Foot_ik, Right_Foot_ik, left_hand_target_vrik_calibrator, right_hand_target_vrik_calibrator, left_foot_target_vrik_calibrator, right_foot_target_vrik_calibrator, head_target_vrik_calibrator, pelvis_target_vrik_calibrator;
@@ -16,6 +16,7 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
     // Use this for initialization
     void Start () {
         configuration = false;
+        tracker_configuration = false;
     }
 	
 	// Update is called once per frame
@@ -148,6 +149,7 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
             //ik1.solver.rightLeg.bendGoalWeight = 0.0f;
 
             ik.calibration_done = false;
+            tracker_configuration = true;
         }
 
         if (ik1.solver.leftLeg.bendGoalWeight == 1.0f)
