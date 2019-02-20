@@ -5,36 +5,45 @@ using RootMotion.FinalIK;
 using RootMotion.Demos;
 
 public class Tracker_Automatic_Calibrator : MonoBehaviour {
-    private GameObject leftHand, rightHand, leftLeg, rightLeg, pelvis, head;
+    public GameObject leftHand, rightHand, leftLeg, rightLeg, pelvis, head;
     private Quaternion leftHand_Default_Rotation, left_Foot_Default_Rotation, rightHand_Default_Rotation, right_Foot_Default_Rotation, pelvis_Default_Rotation, head_Default_Rotation;
     private Quaternion leftHand_Updated_Rotation, left_Foot_Updated_Rotation, rightHand_Updated_Rotation, right_Foot_Updated_Rotation, pelvis_Updated_Rotation, head_Updated_Rotation;
     public model_and_Steam_VR_Controller m1;
     public GameObject SteamVR_Activator, left_Hand_Target, right_Hand_Target, left_Foot_Target, right_Foot_Target, pelvis_Target, head_Target;
-    private bool configuration;
+    //public GameObject makeHumanModel;
+    private bool configuration/*, tracker_configuration*/;
+    private Quaternion calculated_difference_of_leftHand, calculated_difference_of_rightHand, calculated_difference_of_leftFoot, calculated_difference_of_rightFoot, calculated_difference_of_pelvis, calculated_difference_of_head;
 
     // Use this for initialization
     void Start () {
-        leftHand = GameObject.Find(this.gameObject.name + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/LeftShoulder/LeftArm/LeftForeArm/LeftHand");
-        Debug.Log("left Hand = " + leftHand.name);
-        rightHand = GameObject.Find(this.gameObject.name + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/RightShoulder/RightArm/RightForeArm/RightHand");
-        leftLeg = GameObject.Find(this.gameObject.name + "/CMU compliant skeleton/Hips/LHipJoint/LeftUpLeg/LeftLeg/LeftFoot");
-        rightLeg = GameObject.Find(this.gameObject.name + "/CMU compliant skeleton/Hips/RHipJoint/RightUpLeg/RightLeg/RightFoot");
-        pelvis = GameObject.Find(this.gameObject.name + "/CMU compliant skeleton/Hips");
-        head = GameObject.Find(this.gameObject.name + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/Neck/Neck1");
+        //makeHumanModel = GameObject.Find("makeHuman31Bone");
+        leftHand = GameObject.Find(this.gameObject.name/*makeHumanModel.name*/ + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/LeftShoulder/LeftArm/LeftForeArm/LeftHand");
+        //Debug.Log("left Hand = " + leftHand.name);
+        rightHand = GameObject.Find(this.gameObject.name/*makeHumanModel.name*/ + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/RightShoulder/RightArm/RightForeArm/RightHand");
+        leftLeg = GameObject.Find(this.gameObject.name/*makeHumanModel.name*/ + "/CMU compliant skeleton/Hips/LHipJoint/LeftUpLeg/LeftLeg/LeftFoot");
+        rightLeg = GameObject.Find(this.gameObject.name/*makeHumanModel.name*/ + "/CMU compliant skeleton/Hips/RHipJoint/RightUpLeg/RightLeg/RightFoot");
+        pelvis = GameObject.Find(this.gameObject.name/*makeHumanModel.name*/ + "/CMU compliant skeleton/Hips");
+        head = GameObject.Find(this.gameObject.name/*makeHumanModel.name*/ + "/CMU compliant skeleton/Hips/LowerBack/Spine/Spine1/Neck/Neck1");
+        
+        //Debug.Log("left Hand Default Local Rotation = " + leftHand.transform.localEulerAngles);
+        //Debug.Log("right Hand Default Local Rotation = " + rightHand.transform.localEulerAngles);
+        //Debug.Log("left Foot Default Local Rotation = " + leftLeg.transform.localEulerAngles);
+        //Debug.Log("right Foot Default Local Rotation = " + rightLeg.transform.localEulerAngles);
+        //Debug.Log("pelvis Default Local Rotation = " + pelvis.transform.localEulerAngles);
+        //Debug.Log("head Default Local Rotation = " + head.transform.localEulerAngles);
 
-        Debug.Log("left Hand Default Local Rotation = " + leftHand.transform.localEulerAngles);
-        leftHand_Default_Rotation = leftHand.transform.localRotation;
-        rightHand_Default_Rotation = rightHand.transform.localRotation;
-        left_Foot_Default_Rotation = leftLeg.transform.localRotation;
-        right_Foot_Default_Rotation = rightLeg.transform.localRotation;
-        pelvis_Default_Rotation = pelvis.transform.localRotation;
-        Debug.Log("Pelvis rotation = " + pelvis_Default_Rotation.eulerAngles);
-        head_Default_Rotation = head.transform.localRotation;
+        leftHand_Default_Rotation = /*Quaternion.Euler(new Vector3(10.9f, 359.3f, 6.5f))*/ leftHand.transform.localRotation;
+        rightHand_Default_Rotation = /*Quaternion.Euler(new Vector3(10.9f, 0.7f, 353.5f))*/ rightHand.transform.localRotation;
+        left_Foot_Default_Rotation = Quaternion.Euler(new Vector3(287.2f, 0.0f, 4.1f)) /*leftLeg.transform.localRotation*/;
+        right_Foot_Default_Rotation = Quaternion.Euler(new Vector3(287.2f, 0.0f, 355.9f)) /*rightLeg.transform.localRotation*/;
+        pelvis_Default_Rotation = Quaternion.Euler(new Vector3(334.1f, 0.0f, 0.0f)) /*pelvis.transform.localRotation*/;
+        head_Default_Rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f)) /*head.transform.localRotation*/;
 
         SteamVR_Activator = GameObject.Find("Steam_VR_Activator_&_Avatar_Handler");
         m1 = SteamVR_Activator.GetComponent<model_and_Steam_VR_Controller>();
 
         configuration = false;
+        //tracker_configuration = false;
     }
 	
 	// Update is called once per frame
@@ -57,57 +66,135 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
         if (right_Foot_Target == null)
             right_Foot_Target = GameObject.Find("Other Targets/Right_Foot_Tracker/Right Foot Target");
 
-        if (head_Target != null && pelvis_Target != null && left_Hand_Target != null && right_Hand_Target != null && left_Foot_Target != null && right_Foot_Target != null && configuration == false)
+        if (configuration == false)
+        {
+            left_Foot_Updated_Rotation = leftLeg.transform.localRotation;
+            Debug.Log("left Foot Updated Local Rotation = " + leftLeg.transform.localEulerAngles);
+            calculated_difference_of_leftFoot = left_Foot_Default_Rotation * Quaternion.Inverse(left_Foot_Updated_Rotation);
+            Debug.Log("calculated_difference_of_leftFoot = " + calculated_difference_of_leftFoot.eulerAngles);
+
+            right_Foot_Updated_Rotation = rightLeg.transform.localRotation;
+            Debug.Log("right Foot Updated Local Rotation = " + rightLeg.transform.localEulerAngles);
+            calculated_difference_of_rightFoot = right_Foot_Default_Rotation * Quaternion.Inverse(right_Foot_Updated_Rotation);
+            Debug.Log("calculated_difference_of_rightFoot = " + calculated_difference_of_rightFoot.eulerAngles);
+
+            pelvis_Updated_Rotation = pelvis.transform.localRotation;
+            Debug.Log("pelvis Updated Local Rotation = " + pelvis.transform.localEulerAngles);
+            calculated_difference_of_pelvis = pelvis_Default_Rotation * Quaternion.Inverse(pelvis_Updated_Rotation);
+            Debug.Log("calculated_difference_of_pelvis = " + calculated_difference_of_pelvis.eulerAngles);
+
+            head_Updated_Rotation = head.transform.localRotation;
+            Debug.Log("head Updated Local Rotation = " + head.transform.localEulerAngles);
+            calculated_difference_of_head = head_Default_Rotation * Quaternion.Inverse(head_Updated_Rotation);
+            Debug.Log("calculated_difference_of_head = " + calculated_difference_of_head.eulerAngles);
+
+            configuration = true;
+        }
+
+        if (head_Target != null && pelvis_Target != null && left_Hand_Target != null && right_Hand_Target != null && left_Foot_Target != null && right_Foot_Target != null && m1.tracker_configuration == true)
         {
             leftHand_Updated_Rotation = leftHand.transform.localRotation;
             Debug.Log("left Hand Updated Local Rotation = " + leftHand.transform.localEulerAngles);
-            Debug.Log("leftHandTracker Local Updated = " + left_Hand_Target.transform.localEulerAngles);
-            Quaternion a = leftHand_Default_Rotation * Quaternion.Inverse(leftHand_Updated_Rotation);
-            Quaternion b = left_Hand_Target.transform.localRotation;
-            b = b * a;
-            Debug.Log("Updated Quaternion in Euler Angles = " + b.eulerAngles);
-            left_Hand_Target.transform.localRotation = b;
+            //Debug.Log("leftHandTracker Local Updated = " + left_Hand_Target.transform.localEulerAngles);
+            calculated_difference_of_leftHand = leftHand_Default_Rotation * Quaternion.Inverse(leftHand_Updated_Rotation);
+            Debug.Log("calculated_difference_of_leftHand = " + calculated_difference_of_leftHand.eulerAngles);
 
             rightHand_Updated_Rotation = rightHand.transform.localRotation;
-            Quaternion c = rightHand_Default_Rotation * Quaternion.Inverse(rightHand_Updated_Rotation);
-            Quaternion d = right_Hand_Target.transform.localRotation;
-            d = d * c;
-            right_Hand_Target.transform.localRotation = d;
+            Debug.Log("right Hand Updated Local Rotation = " + rightHand.transform.localEulerAngles);
+            calculated_difference_of_rightHand = rightHand_Default_Rotation * Quaternion.Inverse(rightHand_Updated_Rotation);
+            Debug.Log("calculated_difference_of_rightHand = " + calculated_difference_of_rightHand.eulerAngles);
 
-            left_Foot_Updated_Rotation = leftLeg.transform.localRotation;
-            Quaternion e = left_Foot_Default_Rotation * Quaternion.Inverse(left_Foot_Updated_Rotation);
-            Quaternion f = left_Foot_Target.transform.localRotation;
-            f = f * e;
-            f *= Quaternion.Euler(0, 0, -90);
-            left_Foot_Target.transform.localRotation = f;
+            Quaternion a = left_Hand_Target.transform.localRotation;
+            Debug.Log("Quaternion a = " + a.eulerAngles);
+            a *= calculated_difference_of_leftHand;
+            Debug.Log("Updated left_hand_target in Euler Angles = " + a.eulerAngles);
+            left_Hand_Target.transform.localRotation = a;
+            Debug.Log("New left_hand_target in Euler Angles = " + left_Hand_Target.transform.localEulerAngles);
 
-            right_Foot_Updated_Rotation = rightLeg.transform.localRotation;
-            Quaternion g = right_Foot_Default_Rotation * Quaternion.Inverse(right_Foot_Updated_Rotation);
-            Quaternion h = right_Foot_Target.transform.localRotation;
-            h = h * g;
-            h *= Quaternion.Euler(0, 0, 90);
-            right_Foot_Target.transform.localRotation = h;
+            Quaternion b = right_Hand_Target.transform.localRotation;
+            Debug.Log("Quaternion b = " + b.eulerAngles);
+            b *= calculated_difference_of_rightHand;
+            Debug.Log("Updated right_hand_target in Euler Angles = " + b.eulerAngles);
+            right_Hand_Target.transform.localRotation = b;
+            Debug.Log("New right_hand_target in Euler Angles = " + right_Hand_Target.transform.localEulerAngles);
 
-            pelvis_Updated_Rotation = pelvis.transform.localRotation;
-            Quaternion i = pelvis_Default_Rotation * Quaternion.Inverse(pelvis_Updated_Rotation);
-            Quaternion j = pelvis_Target.transform.localRotation;
-            j = j * i;
-            pelvis_Target.transform.localRotation = j;
+            Quaternion c = left_Foot_Target.transform.localRotation;
+            Debug.Log("Quaternion c = " + c.eulerAngles);
+            c *= calculated_difference_of_leftFoot;
+            c *= Quaternion.Euler(0, 0, -90);
+            Debug.Log("Updated left_foot_target in Euler Angles = " + c.eulerAngles);
+            left_Foot_Target.transform.localRotation = c;
+            Debug.Log("New left_Foot_target in Euler Angles = " + left_Foot_Target.transform.localEulerAngles);
 
-            head_Updated_Rotation = head.transform.localRotation;
-            Quaternion k = head_Default_Rotation * Quaternion.Inverse(head_Updated_Rotation);
-            Quaternion l = head_Target.transform.localRotation;
-            l = l * k;
-            head_Target.transform.localRotation = l;
+            Quaternion d = right_Foot_Target.transform.localRotation;
+            Debug.Log("Quaternion d = " + d.eulerAngles);
+            d *= calculated_difference_of_rightFoot;
+            d *= Quaternion.Euler(0, 0, 90);
+            Debug.Log("Updated right_foot_target in Euler Angles = " + d.eulerAngles);
+            right_Foot_Target.transform.localRotation = d;
+            Debug.Log("New right_Foot_target in Euler Angles = " + right_Foot_Target.transform.localEulerAngles);
 
-            head_Target.transform.localPosition = new Vector3(0, 0.01f, -0.16f);
-            pelvis_Target.transform.localPosition = new Vector3(0, -0.14f, -0.14f);
-            right_Foot_Target.transform.localPosition = new Vector3(0, 0, -0.05f);
-            left_Foot_Target.transform.localPosition = new Vector3(0, 0, -0.05f);
+            Quaternion e = pelvis_Target.transform.localRotation;
+            Debug.Log("Quaternion e = " + e.eulerAngles);
+            e *= calculated_difference_of_pelvis;
+            Debug.Log("Updated pelvis_target in Euler Angles = " + e.eulerAngles);
+            pelvis_Target.transform.localRotation = e;
+            Debug.Log("New pelvis_target in Euler Angles = " + pelvis_Target.transform.localEulerAngles);
 
-            right_Foot_Target.transform.localRotation = Quaternion.Euler(new Vector3(18, -170, -25));
-            left_Foot_Target.transform.localRotation = Quaternion.Euler(new Vector3(-10, 165, -45));
-            configuration = true;
+            Quaternion f = head_Target.transform.localRotation;
+            Debug.Log("Quaternion f = " + f.eulerAngles);
+            f *= calculated_difference_of_head;
+            Debug.Log("Updated head_target in Euler Angles = " + f.eulerAngles);
+            head_Target.transform.localRotation = f;
+            Debug.Log("New head_target in Euler Angles = " + head_Target.transform.localEulerAngles);
+
+            Vector3 pelvis_target_position = pelvis_Target.transform.localPosition;
+            float value_1 = (-0.32f);
+            Debug.Log("pelvis_target_position = " + pelvis_target_position);
+            if (pelvis_target_position.z > value_1)
+            {
+                float pelvis_temp = pelvis_target_position.z - value_1;
+                pelvis_target_position.z -= pelvis_temp;
+            }
+            else if (pelvis_target_position.z < value_1)
+            {
+                float pelvis_temp = value_1 - pelvis_target_position.z;
+                pelvis_target_position.z += pelvis_temp;
+            }
+
+            Vector3 head_target_position = head_Target.transform.localPosition;
+            float value_2 = (-0.12f);
+            float value_3 = 0.03f;
+            if (head_target_position.z > value_2)
+            {
+                float head_temp = head_target_position.z - value_2;
+                head_target_position.z -= head_temp;
+            }
+            else if (head_target_position.z < value_2)
+            {
+                float head_temp = value_2 - head_target_position.z;
+                head_target_position.z += head_temp;
+            }
+
+            if (head_target_position.y > value_3)
+            {
+                float head_temp = head_target_position.y - value_3;
+                head_target_position.y -= head_temp;
+            }
+            else if (head_target_position.y < value_3)
+            {
+                float head_temp = value_3 - head_target_position.y;
+                head_target_position.y += head_temp;
+            }
+
+            //head_Target.transform.localPosition = new Vector3(0, 0.01f, -0.16f);
+            //pelvis_Target.transform.localPosition = new Vector3(0, -0.14f, -0.14f);
+            //right_Foot_Target.transform.localPosition = new Vector3(0, 0, -0.05f);
+            //left_Foot_Target.transform.localPosition = new Vector3(0, 0, -0.05f);
+
+            // right_Foot_Target.transform.localRotation = Quaternion.Euler(new Vector3(18, -170, -25));
+            // left_Foot_Target.transform.localRotation = Quaternion.Euler(new Vector3(-10, 165, -45));
+            m1.tracker_configuration = false;
         }
     }
 }
