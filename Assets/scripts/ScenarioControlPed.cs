@@ -14,6 +14,7 @@ class Joint
         m_t = t;
         m_q0 = t.localRotation;
         m_q0inv = Quaternion.Inverse(m_q0);
+        m_p0 = t.localPosition;
 
         Vector3 x_d_ub = new Vector3(0, 0, 1);
         Vector3 y_d_ub = new Vector3(-1, 0, 0);
@@ -37,6 +38,7 @@ class Joint
     public readonly Transform m_t;
     public readonly Quaternion m_q0;
     public readonly Quaternion m_q0inv;
+    public readonly Vector3 m_p0;
     public readonly Matrix4x4 m_u2d;
     public readonly Matrix4x4 m_d2u;
 };
@@ -363,25 +365,24 @@ public class ScenarioControlPed : MonoBehaviour {
                         {
                             Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
                             Vector3 a_unity_offset = q_unity_offset.eulerAngles;
-                            float epsilon_f = 0.1f;
-                            if (a_unity_offset.x < -epsilon_f || a_unity_offset.x > epsilon_f
-                                || a_unity_offset.y < -epsilon_f || a_unity_offset.y > epsilon_f
-                                || a_unity_offset.z < -epsilon_f || a_unity_offset.z > epsilon_f)
-                            {
-                                Vector3 a_sim_offset = q_sim_offset.eulerAngles;
-                                Vector3 a_unity_base = joint.m_q0.eulerAngles;
-                                Vector3 a_unity_prime = joint.m_t.localEulerAngles;
-                                string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
+
+                            Vector3 a_sim_offset = q_sim_offset.eulerAngles;
+                            Vector3 a_unity_base = joint.m_q0.eulerAngles;
+                            Vector3 a_unity_prime = joint.m_t.localEulerAngles;
+                            string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
                                                                                                             , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
                                                                                                             , a_sim_offset.x, a_sim_offset.y, a_sim_offset.z);
-                                strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
+                            strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
                                                                                                           , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
                                                                                                           , a_unity_prime.x, a_unity_prime.y, a_unity_prime.z);
-                                Debug.Log(strLog);
-                            }
+                            strLog += string.Format("\t\t[{0} {1} {2}]\n", v_x, v_y, v_z);
+
+                            Debug.Log(strLog);
+
                         }
-//end of debugging log
-                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
+                        //end of debugging log
+                        //m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
+                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z);
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
 
@@ -448,15 +449,18 @@ public class ScenarioControlPed : MonoBehaviour {
                         kv.Value.transform.rotation = q_unity;
                         double q_s_w, q_s_x, q_s_y, q_s_z;
                         double v_s_x, v_s_y, v_s_z;
+                        v_s_x = v_s_y = v_s_z = 0;
                         int nParts = m_id2PedPartN[kv.Key];
                         for (int i_part = 0; i_part < nParts; i_part ++)
                         {
                             //fixme: performance might be sacrified here from loop manage to native code call
                             long partId = PartID_U(kv.Key, i_part);
                             Joint joint = m_partId2tran[partId];
-                            m_ctrl.OnGetUpdateArt(kv.Key, i_part
+                            /*m_ctrl.OnGetUpdateArt(kv.Key, i_part
                                 , out q_s_w, out q_s_x, out q_s_y, out q_s_z
-                                , out v_s_x, out v_s_y, out v_s_z);
+                                , out v_s_x, out v_s_y, out v_s_z);*/
+                            m_ctrl.OnGetUpdateArt(kv.Key, i_part
+                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z);
                             Quaternion q_unity_offset;
                             JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
                             Vector3 v_unity_offset;
@@ -530,15 +534,25 @@ public class ScenarioControlPed : MonoBehaviour {
 
     void JointVectorU2D(Vector3 vec_offset_u, out double v_x, out double v_y, out double v_z, Matrix4x4 m)
     {
-        Vector3 vec_offset_d = m.MultiplyVector(vec_offset_u);
-        v_x = vec_offset_d.x;
-        v_y = vec_offset_d.y;
-        v_z = vec_offset_d.z;
+        float epsilon_10 = 0.001f; //unit in meters
+        if (vec_offset_u.x < epsilon_10 && vec_offset_u.x > -epsilon_10
+            && vec_offset_u.y < epsilon_10 && vec_offset_u.y > -epsilon_10
+            && vec_offset_u.z < epsilon_10 && vec_offset_u.z > -epsilon_10)
+        {
+            v_x = 0; v_y = 0; v_z = 0;
+        }
+        else
+        {
+            Vector3 vec_offset_d = m.MultiplyVector(vec_offset_u);
+            v_x = vec_offset_d.x;
+            v_y = vec_offset_d.y;
+            v_z = vec_offset_d.z;
+        }
     }
 
     void JointVectorD2U(double v_d_x, double v_d_y, double v_d_z, out Vector3 vec_offset_u, Matrix4x4 m)
     {
-        Vector3 vec_offset_d = new Vector3(v_d_x, v_d_y, v_d_z);
+        Vector3 vec_offset_d = new Vector3((float)v_d_x, (float)v_d_y, (float)v_d_z);
         vec_offset_u = m.MultiplyVector(vec_offset_d);
     }
 
