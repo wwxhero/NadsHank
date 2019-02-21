@@ -360,7 +360,6 @@ public class ScenarioControlPed : MonoBehaviour {
                         Vector3 vec_unity_offset = joint.m_t.localPosition - joint.m_p0;
 
                         JointVectorU2D(vec_unity_offset, out v_x, out v_y, out v_z, joint.m_u2d);
-//fixme debugging log:
                         if (DEF_LOGJOINTTRAN)
                         {
                             Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
@@ -380,9 +379,7 @@ public class ScenarioControlPed : MonoBehaviour {
                             Debug.Log(strLog);
 
                         }
-                        //end of debugging log
-                        //m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
-                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z);
+                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
 
@@ -456,11 +453,9 @@ public class ScenarioControlPed : MonoBehaviour {
                             //fixme: performance might be sacrified here from loop manage to native code call
                             long partId = PartID_U(kv.Key, i_part);
                             Joint joint = m_partId2tran[partId];
-                            /*m_ctrl.OnGetUpdateArt(kv.Key, i_part
-                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z
-                                , out v_s_x, out v_s_y, out v_s_z);*/
                             m_ctrl.OnGetUpdateArt(kv.Key, i_part
-                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z);
+                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z
+                                , out v_s_x, out v_s_y, out v_s_z);
                             Quaternion q_unity_offset;
                             JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
                             Vector3 v_unity_offset;
