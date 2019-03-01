@@ -13,6 +13,7 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
     //public GameObject makeHumanModel;
     private bool configuration/*, tracker_configuration*/;
     private Quaternion calculated_difference_of_leftHand, calculated_difference_of_rightHand, calculated_difference_of_leftFoot, calculated_difference_of_rightFoot, calculated_difference_of_pelvis, calculated_difference_of_head;
+    private Vector3 default_head_position, default_pelvis_position;
 
     // Use this for initialization
     void Start () {
@@ -38,6 +39,12 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
         right_Foot_Default_Rotation = Quaternion.Euler(new Vector3(287.2f, 0.0f, 355.9f)) /*rightLeg.transform.localRotation*/;
         pelvis_Default_Rotation = Quaternion.Euler(new Vector3(334.1f, 0.0f, 0.0f)) /*pelvis.transform.localRotation*/;
         head_Default_Rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f)) /*head.transform.localRotation*/;
+
+        default_head_position = new Vector3(0.0f, 0.1f, 0.0f);
+        default_pelvis_position = new Vector3(0.0f, 0.9f, 0.0f);
+
+        Debug.Log("Head position = " + default_head_position);
+        Debug.Log("Pelvis position = " + default_pelvis_position);
 
         SteamVR_Activator = GameObject.Find("Steam_VR_Activator_&_Avatar_Handler");
         m1 = SteamVR_Activator.GetComponent<model_and_Steam_VR_Controller>();
@@ -83,10 +90,7 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
             calculated_difference_of_pelvis = pelvis_Default_Rotation * Quaternion.Inverse(pelvis_Updated_Rotation);
             Debug.Log("calculated_difference_of_pelvis = " + calculated_difference_of_pelvis.eulerAngles);
 
-            head_Updated_Rotation = head.transform.localRotation;
-            Debug.Log("head Updated Local Rotation = " + head.transform.localEulerAngles);
-            calculated_difference_of_head = head_Default_Rotation * Quaternion.Inverse(head_Updated_Rotation);
-            Debug.Log("calculated_difference_of_head = " + calculated_difference_of_head.eulerAngles);
+            
 
             configuration = true;
         }
@@ -103,6 +107,11 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
             Debug.Log("right Hand Updated Local Rotation = " + rightHand.transform.localEulerAngles);
             calculated_difference_of_rightHand = rightHand_Default_Rotation * Quaternion.Inverse(rightHand_Updated_Rotation);
             Debug.Log("calculated_difference_of_rightHand = " + calculated_difference_of_rightHand.eulerAngles);
+
+            head_Updated_Rotation = head.transform.localRotation;
+            Debug.Log("head Updated Local Rotation = " + head.transform.localEulerAngles);
+            calculated_difference_of_head = head_Default_Rotation * Quaternion.Inverse(head_Updated_Rotation);
+            Debug.Log("calculated_difference_of_head = " + calculated_difference_of_head.eulerAngles);
 
             Quaternion a = left_Hand_Target.transform.localRotation;
             Debug.Log("Quaternion a = " + a.eulerAngles);
@@ -148,44 +157,49 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
             head_Target.transform.localRotation = f;
             Debug.Log("New head_target in Euler Angles = " + head_Target.transform.localEulerAngles);
 
-            Vector3 pelvis_target_position = pelvis_Target.transform.localPosition;
-            float value_1 = (-0.32f);
-            Debug.Log("pelvis_target_position = " + pelvis_target_position);
-            if (pelvis_target_position.z > value_1)
-            {
-                float pelvis_temp = pelvis_target_position.z - value_1;
-                pelvis_target_position.z -= pelvis_temp;
-            }
-            else if (pelvis_target_position.z < value_1)
-            {
-                float pelvis_temp = value_1 - pelvis_target_position.z;
-                pelvis_target_position.z += pelvis_temp;
-            }
-
             Vector3 head_target_position = head_Target.transform.localPosition;
-            float value_2 = (-0.12f);
-            float value_3 = 0.03f;
-            if (head_target_position.z > value_2)
-            {
-                float head_temp = head_target_position.z - value_2;
-                head_target_position.z -= head_temp;
-            }
-            else if (head_target_position.z < value_2)
-            {
-                float head_temp = value_2 - head_target_position.z;
-                head_target_position.z += head_temp;
-            }
+            Vector3 pelvis_target_position = pelvis_Target.transform.localPosition;
+            Quaternion left_hand_target_rotation = left_Hand_Target.transform.localRotation;
+            Quaternion right_hand_target_rotation = right_Hand_Target.transform.localRotation;
+            Quaternion left_foot_target_rotation = left_Foot_Target.transform.localRotation;
+            Quaternion right_foot_target_rotation = right_Foot_Target.transform.localRotation;
 
-            if (head_target_position.y > value_3)
-            {
-                float head_temp = head_target_position.y - value_3;
-                head_target_position.y -= head_temp;
-            }
-            else if (head_target_position.y < value_3)
-            {
-                float head_temp = value_3 - head_target_position.y;
-                head_target_position.y += head_temp;
-            }
+            Debug.Log("head_target_position = " + head_target_position);
+            Debug.Log("pelvis_target_position = " + pelvis_target_position);
+
+            //head_target_position.z += (-0.15f);
+            //head_target_position.y += 0.17f;
+            //head_Target.transform.localPosition = new Vector3 (head_target_position.x, head_target_position.y, head_target_position.z);
+
+            //pelvis_target_position.z += 0.25f;
+            //pelvis_Target.transform.localPosition = new Vector3(pelvis_target_position.x, pelvis_target_position.y, pelvis_target_position.z);
+
+            //head_Target.transform.localPosition = default_head_position;
+            //pelvis_Target.transform.localPosition = default_pelvis_position;
+
+            left_hand_target_rotation *= Quaternion.Euler(new Vector3(20, 0, 0));
+            left_Hand_Target.transform.localRotation = left_hand_target_rotation;
+
+            right_hand_target_rotation *= Quaternion.Euler(new Vector3(20, 0, 0));
+            right_Hand_Target.transform.localRotation = right_hand_target_rotation;
+
+            left_foot_target_rotation *= Quaternion.Euler(new Vector3(0, -20, 0));
+            left_Foot_Target.transform.localRotation = left_foot_target_rotation;
+
+            right_foot_target_rotation *= Quaternion.Euler(new Vector3(0, 20, 0));
+            right_Foot_Target.transform.localRotation = right_foot_target_rotation;
+
+            Vector3 left_Foot_Position = left_Foot_Target.transform.localPosition;
+            left_Foot_Position -= new Vector3(0.2f, 0.01f, 0.01f);
+            left_Foot_Target.transform.localPosition = left_Foot_Position;
+
+            Vector3 right_Foot_Position = right_Foot_Target.transform.localPosition;
+            right_Foot_Position -= new Vector3(0.13f, -0.18f, 0.01f);
+            right_Foot_Target.transform.localPosition = right_Foot_Position;
+
+            //head_target_position.z += (-0.1f);
+            //head_target_position.y += 0.06f;
+            //pelvis_target_position.z -= 0.15f;
 
             //head_Target.transform.localPosition = new Vector3(0, 0.01f, -0.16f);
             //pelvis_Target.transform.localPosition = new Vector3(0, -0.14f, -0.14f);

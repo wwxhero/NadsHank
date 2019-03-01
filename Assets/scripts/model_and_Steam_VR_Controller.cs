@@ -90,7 +90,7 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
 
             ////ik.solver.spine.maintainPelvisPosition = 0f;
         }
-
+        
         if (ik.calibration_done == true)
         {
             cameraRig.transform.eulerAngles = new Vector3(cameraRig.transform.eulerAngles.x,
