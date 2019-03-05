@@ -245,29 +245,32 @@ public class ScenarioControlPed : MonoBehaviour {
                                         RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
                                         ik.AutoDetectReferences();
 
-                                        m_mockTrackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
-                                        RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
-                                        caliCtrl.ik = ik;
-                                        Transform[] trackers = { caliCtrl.headTracker
-                                                            , caliCtrl.bodyTracker
-                                                            , caliCtrl.leftHandTracker
-                                                            , caliCtrl.rightHandTracker
-                                                            , caliCtrl.leftFootTracker
-                                                            , caliCtrl.rightFootTracker
-                                                        };
-                                        string[] targetNames = { "Pelvis/Spine1/Spine2/Spine3/Neck1/NeckHead/Tracker Mock (CenterEyeAnchor)"
-                                                            , "Pelvis/Tracker Mock (Body)"
-                                                            , "Pelvis/Spine1/Spine2/Spine3/LArmCollarbone/LArmUpper1/LArmUpper2/LArmForearm1/LArmForearm2/LArmHand/Tracker Mock (Left Hand)"
-                                                            , "Pelvis/Spine1/Spine2/Spine3/RArmCollarbone/RArmUpper1/RArmUpper2/RArmForearm1/RArmForearm2/RArmHand/Tracker Mock (Right Hand)"
-                                                            , "Pelvis/LLegUpper/LLegCalf/LLegAnkle/Tracker Mock (Left Foot)"
-                                                            , "Pelvis/RLegUpper/RLegCalf/RLegAnkle/Tracker Mock (Right Foot)"
-                                                        };
-                                        caliCtrl.headTracker = m_mockTrackers.transform.Find(targetNames[0]);
-                                        caliCtrl.bodyTracker = m_mockTrackers.transform.Find(targetNames[1]);
-                                        caliCtrl.leftHandTracker = m_mockTrackers.transform.Find(targetNames[2]);
-                                        caliCtrl.rightHandTracker = m_mockTrackers.transform.Find(targetNames[3]);
-                                        caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
-                                        caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
+                                        if (null != m_mockTrackersPrefab)
+                                        {
+                                            m_mockTrackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
+                                            RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
+                                            caliCtrl.ik = ik;
+                                            Transform[] trackers = { caliCtrl.headTracker
+                                                                , caliCtrl.bodyTracker
+                                                                , caliCtrl.leftHandTracker
+                                                                , caliCtrl.rightHandTracker
+                                                                , caliCtrl.leftFootTracker
+                                                                , caliCtrl.rightFootTracker
+                                                            };
+                                            string[] targetNames = { "Pelvis/Spine1/Spine2/Spine3/Neck1/NeckHead/Tracker Mock (CenterEyeAnchor)"
+                                                                , "Pelvis/Tracker Mock (Body)"
+                                                                , "Pelvis/Spine1/Spine2/Spine3/LArmCollarbone/LArmUpper1/LArmUpper2/LArmForearm1/LArmForearm2/LArmHand/Tracker Mock (Left Hand)"
+                                                                , "Pelvis/Spine1/Spine2/Spine3/RArmCollarbone/RArmUpper1/RArmUpper2/RArmForearm1/RArmForearm2/RArmHand/Tracker Mock (Right Hand)"
+                                                                , "Pelvis/LLegUpper/LLegCalf/LLegAnkle/Tracker Mock (Left Foot)"
+                                                                , "Pelvis/RLegUpper/RLegCalf/RLegAnkle/Tracker Mock (Right Foot)"
+                                                            };
+                                            caliCtrl.headTracker = m_mockTrackers.transform.Find(targetNames[0]);
+                                            caliCtrl.bodyTracker = m_mockTrackers.transform.Find(targetNames[1]);
+                                            caliCtrl.leftHandTracker = m_mockTrackers.transform.Find(targetNames[2]);
+                                            caliCtrl.rightHandTracker = m_mockTrackers.transform.Find(targetNames[3]);
+                                            caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
+                                            caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
+                                        }
 
                                         if (DEF_LOGMATRIXFAC)
                                             ped.AddComponent<JointDumper>();
@@ -379,7 +382,7 @@ public class ScenarioControlPed : MonoBehaviour {
                             Debug.Log(strLog);
 
                         }
-                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
+                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z); //, v_x, v_y, v_z);
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
 
@@ -454,8 +457,8 @@ public class ScenarioControlPed : MonoBehaviour {
                             long partId = PartID_U(kv.Key, i_part);
                             Joint joint = m_partId2tran[partId];
                             m_ctrl.OnGetUpdateArt(kv.Key, i_part
-                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z
-                                , out v_s_x, out v_s_y, out v_s_z);
+                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z);
+                                //, out v_s_x, out v_s_y, out v_s_z);
                             Quaternion q_unity_offset;
                             JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
                             Vector3 v_unity_offset;
