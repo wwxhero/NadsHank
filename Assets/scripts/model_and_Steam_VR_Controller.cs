@@ -5,7 +5,8 @@ using RootMotion.FinalIK;
 using RootMotion.Demos;
 
 public class model_and_Steam_VR_Controller : MonoBehaviour {
-    private GameObject pedestrian, cameraRig, actual_Targets, other_Targets;
+    public GameObject pedestrian;
+    private GameObject cameraRig, actual_Targets, other_Targets;
     public Transform actualTargets, otherTargets;
     public Transform CameraRig;
     public bool configuration, tracker_configuration;
@@ -23,7 +24,7 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
 	void Update () {
         if (pedestrian == null)
         {
-            pedestrian = GameObject.Find("Sim3");
+            pedestrian = GameObject.Find("Sim2");
         }
 
         if (pedestrian != null && configuration == false)
@@ -39,12 +40,12 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
             //pedestrian.AddComponent<Calibration_Script>();
 
             ik1 = pedestrian.GetComponent<VRIK>();
-            //Head_ik = GameObject.Find("[CameraRig]/Camera (eye)/Head");
-            //Pelvis_ik = GameObject.Find("Other Targets/Pelvis_Bone_Tracker/Pelvis");
-            //Left_Hand_ik = GameObject.Find("Other Targets/Left_Hand_Tracker/Left Hand");
-            //Right_Hand_ik = GameObject.Find("Other Targets/Right_Hand_Tracker/Right Hand");
-            //Left_Foot_ik = GameObject.Find("Other Targets/Left_Foot_Tracker/Left Foot");
-            //Right_Foot_ik = GameObject.Find("Other Targets/Right_Foot_Tracker/Right Foot");
+            Head_ik = GameObject.Find("[CameraRig]/Camera (eye)/Head");
+            Pelvis_ik = GameObject.Find("Other Targets/Pelvis_Bone_Tracker/Pelvis");
+            Left_Hand_ik = GameObject.Find("Other Targets/Left_Hand_Tracker/Left Hand");
+            Right_Hand_ik = GameObject.Find("Other Targets/Right_Hand_Tracker/Right Hand");
+            Left_Foot_ik = GameObject.Find("Other Targets/Left_Foot_Tracker/Left Foot");
+            Right_Foot_ik = GameObject.Find("Other Targets/Right_Foot_Tracker/Right Foot");
 
             ik = this.gameObject.GetComponent<VRIKCalibrationController>();
             Head = GameObject.Find("[CameraRig]/Camera (eye)");
@@ -54,20 +55,20 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
             Left_Foot = GameObject.Find("Other Targets/Left_Foot_Tracker");
             Right_Foot = GameObject.Find("Other Targets/Right_Foot_Tracker");
 
-            //ik1.solver.spine.headTarget = Head_ik.transform;
-            //ik1.solver.spine.pelvisTarget = Pelvis_ik.transform;
-            //ik1.solver.spine.pelvisPositionWeight = 1f;
-            //ik1.solver.spine.pelvisRotationWeight = 1f;
+            ik1.solver.spine.headTarget = Head_ik.transform;
+            ik1.solver.spine.pelvisTarget = Pelvis_ik.transform;
+            ik1.solver.spine.pelvisPositionWeight = 1f;
+            ik1.solver.spine.pelvisRotationWeight = 1f;
 
-            //ik1.solver.leftArm.target = Left_Hand_ik.transform;
-            //ik1.solver.rightArm.target = Right_Hand_ik.transform;
+            ik1.solver.leftArm.target = Left_Hand_ik.transform;
+            ik1.solver.rightArm.target = Right_Hand_ik.transform;
 
-            //ik1.solver.leftLeg.target = Left_Foot_ik.transform;
-            //ik1.solver.rightLeg.target = Right_Foot_ik.transform;
-            //ik1.solver.leftLeg.positionWeight = 1f;
-            //ik1.solver.leftLeg.rotationWeight = 1f;
-            //ik1.solver.rightLeg.positionWeight = 1f;
-            //ik1.solver.rightLeg.rotationWeight = 1f;
+            ik1.solver.leftLeg.target = Left_Foot_ik.transform;
+            ik1.solver.rightLeg.target = Right_Foot_ik.transform;
+            ik1.solver.leftLeg.positionWeight = 1f;
+            ik1.solver.leftLeg.rotationWeight = 1f;
+            ik1.solver.rightLeg.positionWeight = 1f;
+            ik1.solver.rightLeg.rotationWeight = 1f;
 
             ik.ik = ik1;
             ik.headTracker = Head.transform;
@@ -101,28 +102,28 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
                                                             90f,
                                                             other_Targets.transform.eulerAngles.z);
 
-            var new_scale = ik.data.scale;
-            if (new_scale > 1f)
-            {
-                var difference = new_scale - 1f;
-                var new_difference = difference * 3.3f;
-                var updated_scale = 3.3f + new_difference;
-                pedestrian.transform.localScale = new Vector3(updated_scale, updated_scale, updated_scale);
-            }
+            //var new_scale = ik.data.scale;
+            //if (new_scale > 1f)
+            //{
+            //    var difference = new_scale - 1f;
+            //    var new_difference = difference * 3.3f;
+            //    var updated_scale = 3.3f + new_difference;
+            //    pedestrian.transform.localScale = new Vector3(updated_scale, updated_scale, updated_scale);
+            //}
 
-            else if (new_scale < 1f && new_scale > 0f)
-            {
-                var difference = 1f - new_scale;
-                var new_difference = difference * 3.3f;
-                var updated_scale = 3.3f + new_difference;
-                pedestrian.transform.localScale = new Vector3(updated_scale, updated_scale, updated_scale);
-            }
+            //else if (new_scale < 1f && new_scale > 0f)
+            //{
+            //    var difference = 1f - new_scale;
+            //    var new_difference = difference * 3.3f;
+            //    var updated_scale = 3.3f + new_difference;
+            //    pedestrian.transform.localScale = new Vector3(updated_scale, updated_scale, updated_scale);
+            //}
 
-            else
-                pedestrian.transform.localScale = new Vector3(3.3f, 3.3f, 3.3f);
+            //else
+            //    pedestrian.transform.localScale = new Vector3(3.3f, 3.3f, 3.3f);
 
-            cameraRig.transform.localScale = new Vector3(3.3f, 3.3f, 3.3f);
-            other_Targets.transform.localScale = new Vector3(3.3f, 3.3f, 3.3f);
+            //cameraRig.transform.localScale = new Vector3(3.3f, 3.3f, 3.3f);
+            //other_Targets.transform.localScale = new Vector3(3.3f, 3.3f, 3.3f);
             ik1.solver.plantFeet = true;
 
             //rightHand_Updated_Rotation = rightHand.transform.rotation;
