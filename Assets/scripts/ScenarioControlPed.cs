@@ -271,6 +271,13 @@ public class ScenarioControlPed : MonoBehaviour {
                                             caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
                                             caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
                                         }
+                                        else
+                                        {
+                                            GameObject streamVR = GameObject.Find("Steam_VR_Activator_&_Avatar_Handler");
+                                            Debug.Assert(null != streamVR);
+                                            model_and_Steam_VR_Controller ctrl = streamVR.GetComponent<model_and_Steam_VR_Controller>();
+                                            ctrl.pedestrian = ped;
+                                        }
 
                                         if (DEF_LOGMATRIXFAC)
                                             ped.AddComponent<JointDumper>();

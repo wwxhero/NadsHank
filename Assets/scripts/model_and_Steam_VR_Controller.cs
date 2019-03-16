@@ -22,10 +22,10 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (pedestrian == null)
-        {
-            pedestrian = GameObject.Find("Sim2");
-        }
+        //if (pedestrian == null)
+        //{
+        //    pedestrian = GameObject.Find("Sim2");
+        //}
 
         if (pedestrian != null && configuration == false)
         {
@@ -92,7 +92,8 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
             ////ik.solver.spine.maintainPelvisPosition = 0f;
         }
         
-        if (ik.calibration_done == true)
+        if (null != ik
+            && ik.calibration_done == true)
         {
             cameraRig.transform.eulerAngles = new Vector3(cameraRig.transform.eulerAngles.x,
                                                             90f,
