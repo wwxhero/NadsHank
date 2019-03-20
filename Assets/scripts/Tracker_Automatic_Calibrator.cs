@@ -189,13 +189,13 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
             right_foot_target_rotation *= Quaternion.Euler(new Vector3(0, 20, 0));
             right_Foot_Target.transform.localRotation = right_foot_target_rotation;
 
-            Vector3 left_Foot_Position = left_Foot_Target.transform.localPosition;
-            left_Foot_Position -= new Vector3(0.2f, 0.01f, 0.01f);
-            left_Foot_Target.transform.localPosition = left_Foot_Position;
+            //Vector3 left_Foot_Position = left_Foot_Target.transform.localPosition;
+            //left_Foot_Position -= new Vector3(0.2f, 0.01f, 0.01f);
+            //left_Foot_Target.transform.localPosition = left_Foot_Position;
 
-            Vector3 right_Foot_Position = right_Foot_Target.transform.localPosition;
-            right_Foot_Position -= new Vector3(0.13f, -0.18f, 0.01f);
-            right_Foot_Target.transform.localPosition = right_Foot_Position;
+            //Vector3 right_Foot_Position = right_Foot_Target.transform.localPosition;
+            //right_Foot_Position -= new Vector3(0.13f, -0.18f, 0.01f);
+            //right_Foot_Target.transform.localPosition = right_Foot_Position;
 
             //head_target_position.z += (-0.1f);
             //head_target_position.y += 0.06f;

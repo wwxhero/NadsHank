@@ -40,12 +40,12 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
             //pedestrian.AddComponent<Calibration_Script>();
 
             ik1 = pedestrian.GetComponent<VRIK>();
-            Head_ik = GameObject.Find("[CameraRig]/Camera (eye)/Head");
-            Pelvis_ik = GameObject.Find("Other Targets/Pelvis_Bone_Tracker/Pelvis");
-            Left_Hand_ik = GameObject.Find("Other Targets/Left_Hand_Tracker/Left Hand");
-            Right_Hand_ik = GameObject.Find("Other Targets/Right_Hand_Tracker/Right Hand");
-            Left_Foot_ik = GameObject.Find("Other Targets/Left_Foot_Tracker/Left Foot");
-            Right_Foot_ik = GameObject.Find("Other Targets/Right_Foot_Tracker/Right Foot");
+            //Head_ik = GameObject.Find("[CameraRig]/Camera (eye)/Head");
+            //Pelvis_ik = GameObject.Find("Other Targets/Pelvis_Bone_Tracker/Pelvis");
+            //Left_Hand_ik = GameObject.Find("Other Targets/Left_Hand_Tracker/Left Hand");
+            //Right_Hand_ik = GameObject.Find("Other Targets/Right_Hand_Tracker/Right Hand");
+            //Left_Foot_ik = GameObject.Find("Other Targets/Left_Foot_Tracker/Left Foot");
+            //Right_Foot_ik = GameObject.Find("Other Targets/Right_Foot_Tracker/Right Foot");
 
             ik = this.gameObject.GetComponent<VRIKCalibrationController>();
             Head = GameObject.Find("[CameraRig]/Camera (eye)");
@@ -55,20 +55,20 @@ public class model_and_Steam_VR_Controller : MonoBehaviour {
             Left_Foot = GameObject.Find("Other Targets/Left_Foot_Tracker");
             Right_Foot = GameObject.Find("Other Targets/Right_Foot_Tracker");
 
-            ik1.solver.spine.headTarget = Head_ik.transform;
-            ik1.solver.spine.pelvisTarget = Pelvis_ik.transform;
-            ik1.solver.spine.pelvisPositionWeight = 1f;
-            ik1.solver.spine.pelvisRotationWeight = 1f;
+            //ik1.solver.spine.headTarget = Head_ik.transform;
+            //ik1.solver.spine.pelvisTarget = Pelvis_ik.transform;
+            //ik1.solver.spine.pelvisPositionWeight = 1f;
+            //ik1.solver.spine.pelvisRotationWeight = 1f;
 
-            ik1.solver.leftArm.target = Left_Hand_ik.transform;
-            ik1.solver.rightArm.target = Right_Hand_ik.transform;
+            //ik1.solver.leftArm.target = Left_Hand_ik.transform;
+            //ik1.solver.rightArm.target = Right_Hand_ik.transform;
 
-            ik1.solver.leftLeg.target = Left_Foot_ik.transform;
-            ik1.solver.rightLeg.target = Right_Foot_ik.transform;
-            ik1.solver.leftLeg.positionWeight = 1f;
-            ik1.solver.leftLeg.rotationWeight = 1f;
-            ik1.solver.rightLeg.positionWeight = 1f;
-            ik1.solver.rightLeg.rotationWeight = 1f;
+            //ik1.solver.leftLeg.target = Left_Foot_ik.transform;
+            //ik1.solver.rightLeg.target = Right_Foot_ik.transform;
+            //ik1.solver.leftLeg.positionWeight = 1f;
+            //ik1.solver.leftLeg.rotationWeight = 1f;
+            //ik1.solver.rightLeg.positionWeight = 1f;
+            //ik1.solver.rightLeg.rotationWeight = 1f;
 
             ik.ik = ik1;
             ik.headTracker = Head.transform;
