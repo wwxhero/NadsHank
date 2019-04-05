@@ -6,44 +6,6 @@ using SharpCom;
 using ExternalObjectsControlComLib;
 using System.Xml;
 
-class Joint
-{
-    public Joint(Transform t, Transform t_base)
-    {
-        //fixme: unnecessry computation for supported joints from DIGUY
-        m_t = t;
-        m_q0 = t.localRotation;
-        m_q0inv = Quaternion.Inverse(m_q0);
-        m_p0 = t.localPosition;
-
-        Vector3 x_d_ub = new Vector3(0, 0, 1);
-        Vector3 y_d_ub = new Vector3(-1, 0, 0);
-        Vector3 z_d_ub = new Vector3(0, 1, 0);
-        Matrix4x4 m_w2l = t.worldToLocalMatrix;
-        Matrix4x4 m_b2w = t_base.localToWorldMatrix;
-        Matrix4x4 m_b2l = m_w2l * m_b2w;
-        Vector3 x_d_ul = m_b2l.MultiplyVector(x_d_ub);
-        Vector3 y_d_ul = m_b2l.MultiplyVector(y_d_ub);
-        Vector3 z_d_ul = m_b2l.MultiplyVector(z_d_ub);
-        Vector4 x_d_ul_m = new Vector4(x_d_ul.x, x_d_ul.y, x_d_ul.z, 0);
-        Vector4 y_d_ul_m = new Vector4(y_d_ul.x, y_d_ul.y, y_d_ul.z, 0);
-        Vector4 z_d_ul_m = new Vector4(z_d_ul.x, z_d_ul.y, z_d_ul.z, 0);
-        Vector4 w_d_ul_m = new Vector4(0, 0, 0, 1);
-        m_d2u.SetColumn(0, x_d_ul_m);
-        m_d2u.SetColumn(1, y_d_ul_m);
-        m_d2u.SetColumn(2, z_d_ul_m);
-        m_d2u.SetColumn(3, w_d_ul_m);
-        m_u2d = m_d2u.inverse; //fixme: reconsider the use of this matrix
-    }
-    public readonly Transform m_t;
-    public readonly Quaternion m_q0;
-    public readonly Quaternion m_q0inv;
-    public readonly Vector3 m_p0;
-    public readonly Matrix4x4 m_u2d;
-    public readonly Matrix4x4 m_d2u;
-};
-
-
 public class ScenarioControlPed : MonoBehaviour {
 
     private string m_scenePath;
@@ -54,11 +16,7 @@ public class ScenarioControlPed : MonoBehaviour {
     Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
     Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
     GameObject m_mockTrackers;
-    //map: id->n_part
-    Dictionary<int, int>        m_id2PedPartN = new Dictionary<int, int>();
 
-    //map: (id, i_part)->Joint.transform.localRotation
-    Dictionary<long, Joint> m_partId2tran = new Dictionary<long, Joint>();
     Matrix4x4 c_sim2unity;
     Matrix4x4 c_unity2sim;
 
@@ -285,25 +243,25 @@ public class ScenarioControlPed : MonoBehaviour {
                                     }
 
 
-                                    m_id2PedPartN.Add(id, nParts);
-
-                                    for (int i_part = 0; i_part < nParts; i_part ++)
-                                    {
-                                        string namePartS;
-                                        m_ctrl.GetcrtPedPartName(id, i_part, out namePartS);
-                                        if (DEF_LOGJOINTIDNAME)
-                                        {
-                                            string log = string.Format("{0}:{1}", i_part, namePartS);
-                                            Debug.Log(log);
-                                        }
-                                        GameObject go = GameObject.Find(namePartS);
-                                        Debug.Assert(null != go);
-                                        Transform tran = go.transform;
-                                        Debug.Assert(null != tran);
-                                        long partId = PartID_U(id, i_part);
-                                        Joint j = new Joint(tran, t_base);
-                                        m_partId2tran.Add(partId, j);
-                                    }
+                                    
+                                    //bind joints with (id, name)
+                                    //for (int i_part = 0; i_part < nParts; i_part ++)
+                                    //{
+                                    //    string namePartS;
+                                    //    m_ctrl.GetcrtPedPartName(id, i_part, out namePartS);
+                                    //    if (DEF_LOGJOINTIDNAME)
+                                    //    {
+                                    //        string log = string.Format("{0}:{1}", i_part, namePartS);
+                                    //        Debug.Log(log);
+                                    //    }
+                                    //    GameObject go = GameObject.Find(namePartS);
+                                    //    Debug.Assert(null != go);
+                                    //    Transform tran = go.transform;
+                                    //    Debug.Assert(null != tran);
+                                    //    long partId = PartID_U(id, i_part);
+                                    //    Joint j = new Joint(tran, t_base);
+                                    //    m_partId2tran.Add(partId, j);
+                                    //}
 
                                     break;
                                 }
@@ -311,18 +269,6 @@ public class ScenarioControlPed : MonoBehaviour {
                                 {
                                     int id;
                                     m_ctrl.GetdelPedTuple(out id);
-
-                                    int n_parts = 0;
-                                    if (m_id2PedPartN.TryGetValue(id, out n_parts))
-                                    {
-                                        for (int i_part = 0; i_part < n_parts; i_part ++)
-                                        {
-                                            long partId = PartID_U(id, i_part);
-                                            m_partId2tran.Remove(partId);
-                                        }
-                                        m_id2PedPartN.Remove(id);
-                                    }
-
 
                                     GameObject o;
                                     if (m_id2Ped.TryGetValue(id, out o))
@@ -356,42 +302,42 @@ public class ScenarioControlPed : MonoBehaviour {
                     xTan = t.x; yTan = t.y; zTan = t.z;
                     xLat = l.x; yLat = l.y; zLat = l.z;
 
-                    int nParts = m_id2PedPartN[c_ownPedId];
-                    double q_w, q_x, q_y, q_z;
-                    double v_x, v_y, v_z;
-                    for (int i_part = 0; i_part < nParts; i_part ++)
-                    {
-                        long partId = PartID_U(c_ownPedId, i_part);
-                        Joint joint = m_partId2tran[partId];
-                        Quaternion q_unity = joint.m_t.localRotation;
-                        Quaternion q_0_inv = joint.m_q0inv;
-                        Quaternion q_unity_offset =  q_0_inv * q_unity;
-                        JointQuatU2D(q_unity_offset, out q_w, out q_x, out q_y, out q_z, joint.m_u2d);
-                        Vector3 vec_unity_offset = joint.m_t.localPosition - joint.m_p0;
+                    //fixme: would be driven by joint tree
+                    //double q_w, q_x, q_y, q_z;
+                    //double v_x, v_y, v_z;
+                    //for (int i_part = 0; i_part < nParts; i_part ++)
+                    //{
+                    //    long partId = PartID_U(c_ownPedId, i_part);
+                    //    Joint joint = m_partId2tran[partId];
+                    //    Quaternion q_unity = joint.m_t.localRotation;
+                    //    Quaternion q_0_inv = joint.m_q0inv;
+                    //    Quaternion q_unity_offset =  q_0_inv * q_unity;
+                    //    JointQuatU2D(q_unity_offset, out q_w, out q_x, out q_y, out q_z, joint.m_u2d);
+                    //    Vector3 vec_unity_offset = joint.m_t.localPosition - joint.m_p0;
 
-                        JointVectorU2D(vec_unity_offset, out v_x, out v_y, out v_z, joint.m_u2d);
-                        if (DEF_LOGJOINTTRAN)
-                        {
-                            Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
-                            Vector3 a_unity_offset = q_unity_offset.eulerAngles;
+                    //    JointVectorU2D(vec_unity_offset, out v_x, out v_y, out v_z, joint.m_u2d);
+                    //    if (DEF_LOGJOINTTRAN)
+                    //    {
+                    //        Quaternion q_sim_offset = new Quaternion((float)q_x, (float)q_y, (float)q_z, (float)q_w);
+                    //        Vector3 a_unity_offset = q_unity_offset.eulerAngles;
 
-                            Vector3 a_sim_offset = q_sim_offset.eulerAngles;
-                            Vector3 a_unity_base = joint.m_q0.eulerAngles;
-                            Vector3 a_unity_prime = joint.m_t.localEulerAngles;
-                            string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
-                                                                                                            , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
-                                                                                                            , a_sim_offset.x, a_sim_offset.y, a_sim_offset.z);
-                            strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
-                                                                                                          , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
-                                                                                                          , a_unity_prime.x, a_unity_prime.y, a_unity_prime.z);
-                            strLog += string.Format("\t\t[{0} {1} {2}]\n", v_x, v_y, v_z);
+                    //        Vector3 a_sim_offset = q_sim_offset.eulerAngles;
+                    //        Vector3 a_unity_base = joint.m_q0.eulerAngles;
+                    //        Vector3 a_unity_prime = joint.m_t.localEulerAngles;
+                    //        string strLog = string.Format("\t{0}:\t[{1} {2} {3}]_u===>[{4} {5} {6}]_s\n", joint.m_t.name
+                    //                                                                                        , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
+                    //                                                                                        , a_sim_offset.x, a_sim_offset.y, a_sim_offset.z);
+                    //        strLog += string.Format("\t\t[{0} {1} {2}]*[{3} {4} {5}]==[{6} {7} {8}]\n", a_unity_base.x, a_unity_base.y, a_unity_base.z
+                    //                                                                                      , a_unity_offset.x, a_unity_offset.y, a_unity_offset.z
+                    //                                                                                      , a_unity_prime.x, a_unity_prime.y, a_unity_prime.z);
+                    //        strLog += string.Format("\t\t[{0} {1} {2}]\n", v_x, v_y, v_z);
 
-                            Debug.Log(strLog);
+                    //        Debug.Log(strLog);
 
-                        }
-                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
-                        //fixme: performance might be sacrified here from loop manage to native code call
-                    }
+                    //    }
+                    //    m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
+                    //    //fixme: performance might be sacrified here from loop manage to native code call
+                    //}
 
                     m_ctrl.OnPostPushUpdateArt(c_ownPedId
                                         , xPos, yPos, zPos
@@ -457,25 +403,25 @@ public class ScenarioControlPed : MonoBehaviour {
                         double q_s_w, q_s_x, q_s_y, q_s_z;
                         double v_s_x, v_s_y, v_s_z;
                         v_s_x = v_s_y = v_s_z = 0;
-                        int nParts = m_id2PedPartN[kv.Key];
-                        for (int i_part = 0; i_part < nParts; i_part ++)
-                        {
-                            //fixme: performance might be sacrified here from loop manage to native code call
-                            long partId = PartID_U(kv.Key, i_part);
-                            Joint joint = m_partId2tran[partId];
-                            m_ctrl.OnGetUpdateArt(kv.Key, i_part
-                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z
-                                , out v_s_x, out v_s_y, out v_s_z);
-                            Quaternion q_unity_offset;
-                            JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
-                            Vector3 v_unity_offset;
-                            JointVectorD2U(v_s_x, v_s_y, v_s_z, out v_unity_offset, joint.m_d2u);
-                            q_unity = joint.m_q0 * q_unity_offset;
-                            p_unity = joint.m_p0 + v_unity_offset;
-                            Transform tran = joint.m_t;
-                            tran.localRotation = q_unity;
-                            tran.localPosition = p_unity;
-                        }
+                        //fixme: driven by diguy joint tree
+                        //for (int i_part = 0; i_part < nParts; i_part ++)
+                        //{
+                        //    //fixme: performance might be sacrified here from loop manage to native code call
+                        //    long partId = PartID_U(kv.Key, i_part);
+                        //    Joint joint = m_partId2tran[partId];
+                        //    m_ctrl.OnGetUpdateArt(kv.Key, i_part
+                        //        , out q_s_w, out q_s_x, out q_s_y, out q_s_z
+                        //        , out v_s_x, out v_s_y, out v_s_z);
+                        //    Quaternion q_unity_offset;
+                        //    JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
+                        //    Vector3 v_unity_offset;
+                        //    JointVectorD2U(v_s_x, v_s_y, v_s_z, out v_unity_offset, joint.m_d2u);
+                        //    q_unity = joint.m_q0 * q_unity_offset;
+                        //    p_unity = joint.m_p0 + v_unity_offset;
+                        //    Transform tran = joint.m_t;
+                        //    tran.localRotation = q_unity;
+                        //    tran.localPosition = p_unity;
+                        //}
                     }
 //fixme debugging log
                     //string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
