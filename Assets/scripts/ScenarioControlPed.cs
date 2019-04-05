@@ -33,7 +33,7 @@ class Joint
         m_d2u.SetColumn(1, y_d_ul_m);
         m_d2u.SetColumn(2, z_d_ul_m);
         m_d2u.SetColumn(3, w_d_ul_m);
-        m_u2d = m_d2u.inverse;
+        m_u2d = m_d2u.inverse; //fixme: reconsider the use of this matrix
     }
     public readonly Transform m_t;
     public readonly Quaternion m_q0;
@@ -389,7 +389,7 @@ public class ScenarioControlPed : MonoBehaviour {
                             Debug.Log(strLog);
 
                         }
-                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z); //, v_x, v_y, v_z);
+                        m_ctrl.OnPushUpdateArt(c_ownPedId, i_part, q_w, q_x, q_y, q_z, v_x, v_y, v_z);
                         //fixme: performance might be sacrified here from loop manage to native code call
                     }
 
@@ -464,8 +464,8 @@ public class ScenarioControlPed : MonoBehaviour {
                             long partId = PartID_U(kv.Key, i_part);
                             Joint joint = m_partId2tran[partId];
                             m_ctrl.OnGetUpdateArt(kv.Key, i_part
-                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z);
-                                //, out v_s_x, out v_s_y, out v_s_z);
+                                , out q_s_w, out q_s_x, out q_s_y, out q_s_z
+                                , out v_s_x, out v_s_y, out v_s_z);
                             Quaternion q_unity_offset;
                             JointQuatD2U(q_s_w, q_s_x, q_s_y, q_s_z, out q_unity_offset, joint.m_d2u);
                             Vector3 v_unity_offset;
