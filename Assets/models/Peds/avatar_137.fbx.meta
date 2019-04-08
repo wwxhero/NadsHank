@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 3e0b2635abd50f14f81d9039b6b6821f
-timeCreated: 1549662273
+guid: da289bcd063fc234c996fa536bab331f
+timeCreated: 1553467993
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -181,7 +181,37 @@ ModelImporter:
     13700010: Hats
     13700012: Shoes
     13700014: Tops
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bodymat
+    second: {fileID: 2100000, guid: 30c75298e2e2dfc4ebc388baed645be3, type: 3}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bottommat
+    second: {fileID: 2100000, guid: bee4cfbf3d15cba4db1eb2194e6a3523, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hairmat
+    second: {fileID: 10756, guid: 0000000000000000e000000000000000, type: 0}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Hatmat
+    second: {fileID: 2100000, guid: d7b90495f0f98874dbdbafc334023f9a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Shoesmat
+    second: {fileID: 2100000, guid: 440d6a9870aca7b4d94eebb649da8773, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Topmat
+    second: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
   materials:
     importMaterials: 1
     materialName: 0

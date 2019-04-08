@@ -242,6 +242,7 @@ namespace JointsReduction
 		{
 			Debug.Assert(oriJs.Length == DFN_NJDIGUY);
 			Transform root_src = root_s.Find(oriJs[0]);
+			Debug.Assert(null != root_src);
 			base.Initialize(root_src, oriJs, m_reduJs);
 
 			Dictionary<string, DiguyJoint> dictJoints = new Dictionary<string, DiguyJoint>();
