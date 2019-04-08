@@ -55,11 +55,23 @@ namespace JointsReduction
 		{
 			Debug.Assert(null != r_part);
 			Matrix4x4 deltaM_s = m_node.DeltaM_local();
+			Vector3 tran_s = new Vector3(deltaM_s.m03, deltaM_s.m13, deltaM_s.m23);
+			Vector3 tran_d = m_s2d.MultiplyVector(tran_s);
 			Matrix4x4 deltaM_d = m_s2d*deltaM_s*m_d2s;
+			deltaM_d.m03 = tran_d.x; deltaM_d.m13 = tran_d.y; deltaM_d.m23 = tran_d.z;
 			Matrix4x4 mt_d = localToParent * deltaM_d;
 			Quaternion rot = mt_d.rotation;
 			r_part.q.Set(rot.x, rot.y, rot.z, rot.w);
 			r_part.t.Set(mt_d.m03, mt_d.m13, mt_d.m23);
+			//if ("shoulder_l" == m_node.name)
+			//{
+			//	//string info = string.Format("deltaM_s:[{0,6:#.00} {1,6:#.00} {2,6:#.00}]", deltaM_s.m03, deltaM_s.m13, deltaM_s.m23);
+			//	//info += string.Format("\ndeltaM_d:[{0,6:#.00} {1,6:#.00} {2,6:#.00}]", deltaM_d.m03, deltaM_d.m13, deltaM_d.m23);
+			//	//Debug.Log(info);
+			//	string info = string.Format("deltaM_s:\n{0}", deltaM_s.ToString());
+			//	info += string.Format("\ndeltaM_d:\n{0}", deltaM_d.ToString());
+			//	Debug.Log(info);
+			//}
 		}
 
 		public void Mt_s()
@@ -67,7 +79,10 @@ namespace JointsReduction
 			Matrix4x4 mt_d = new Matrix4x4();
 			mt_d.SetTRS(r_part.t, r_part.q, new Vector3(1, 1, 1));
 			Matrix4x4 deltaM_d = parentToLocal * mt_d;
+			Vector3 tran_d = new Vector3(deltaM_d.m03, deltaM_d.m13, deltaM_d.m23);
+			Vector3 tran_s = m_d2s.MultiplyVector(tran_d);
 			Matrix4x4 deltaM_s = m_d2s * deltaM_d * m_s2d;
+			deltaM_s.m03 = tran_s.x; deltaM_s.m13 = tran_s.y; deltaM_s.m23 = tran_s.z;
 			m_node.Mt_s(deltaM_s);
 
 			// string info = string.Format("{0}:{1}=>{2}, {3}=>[{4,6:#.00} {5,6:#.00} {6,6:#.00}]", r_part.name
