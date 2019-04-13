@@ -31,10 +31,10 @@ namespace JointsReduction
 			}
 			else
 			{
-				for (Transform p = src.parent; p != parent.src; p = p.parent)
-				{
-					p.localRotation = new Quaternion(0, 0, 0, 1);
-				}
+				//for (Transform p = src.parent; p != parent.src; p = p.parent)
+				//{
+				//	p.localRotation = new Quaternion(0, 0, 0, 1);
+				//}
 				m0 = src.parent.worldToLocalMatrix * src.localToWorldMatrix;
 				m0Inv = src.worldToLocalMatrix * parent.src.localToWorldMatrix;
 				m0InvCmp = src.worldToLocalMatrix * src.parent.localToWorldMatrix;
