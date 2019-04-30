@@ -9,7 +9,7 @@ namespace JointsReduction
 {
 	class MapNode
 	{
-		private static bool DFN_DBGLOG = true;
+		private static bool DFN_DBGLOG = false;
 		public string name;
 		public Transform src;
 		public MapNode parent;
@@ -111,7 +111,7 @@ namespace JointsReduction
 
 	class JointsMap
 	{
-		public static bool DFN_DBGLOG = true;
+		public static bool DFN_DBGLOG = false;
 		protected MapNode m_rootOut;
 		class TransNodeDFT
 		{
