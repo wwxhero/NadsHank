@@ -2,13 +2,12 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank", "NadsHank.csproj", "{B1C8F4AD-A65B-AC8A-285B-B8261F1D8C65}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank.Plugins", "NadsHank.Plugins.csproj", "{C73BB81F-49E7-6858-7431-3F9BE1C32E67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank.Editor", "NadsHank.Editor.csproj", "{BC8412CD-5EEE-AF42-4FE2-6C87AF25E512}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank.Editor.Plugins", "NadsHank.Editor.Plugins.csproj", "{07B84561-BD2D-9663-489F-C6084818B416}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NadsHank", "Assembly-CSharp-Editor-firstpass.csproj", "{73FB010D-3F7E-E0DF-CBD0-35AA097A5BED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
