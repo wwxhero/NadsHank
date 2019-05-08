@@ -8,20 +8,18 @@ using System.Linq;
 
 public class TrackerCalibrationController : MonoBehaviour {
     public GameObject modelHead, modelPelvis, modelLeftFoot, modelRightFoot, modelLeftWrist, modelRightWrist;
-    public GameObject tracker1, tracker2, tracker3, /*controller1, controller2,*/ tracker4, tracker5;
+    [HideInInspector]
+    public GameObject tracker1, tracker2, tracker3, tracker4, tracker5;
     private int count;
     public static bool count1;
     private StringBuilder result;
-    private uint /*controller,*/ tracker;
+    private uint tracker;
 
     // Use this for initialization
     void Start() {
         count = 1;
         count1 = false;
-        // controller = 1;
         tracker = 1;
-        // controller1 = GameObject.Find("Controller 1");
-        // controller2 = GameObject.Find("Controller 2");
 
         modelHead = GameObject.Find("[CameraRig]/Camera (eye)");
         modelPelvis = GameObject.Find("Other Targets/Pelvis_Bone_Tracker");
@@ -67,9 +65,6 @@ public class TrackerCalibrationController : MonoBehaviour {
             count = 4;
         else
         {
-            //uint index4 = (uint)controller1.GetComponent<SteamVR_TrackedObject>().index;
-            //uint index5 = (uint)controller2.GetComponent<SteamVR_TrackedObject>().index;
-
             Debug.Log("Tracker 1 distance = " + Mathf.Round(tracker1.transform.position.y * 10f) / 10f);
             Debug.Log("Tracker 2 distance = " + Mathf.Round(tracker2.transform.position.y * 10f) / 10f);
             Debug.Log("Tracker 3 distance = " + Mathf.Round(tracker3.transform.position.y * 10f) / 10f);
