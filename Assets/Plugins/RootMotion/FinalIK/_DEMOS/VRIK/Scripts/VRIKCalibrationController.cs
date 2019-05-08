@@ -7,6 +7,7 @@ namespace RootMotion.Demos
 
     public class VRIKCalibrationController : MonoBehaviour
     {
+        [HideInInspector]
         public bool calibration_done = false;
         [Tooltip("Reference to the VRIK component on the avatar.")] public VRIK ik;
         [Tooltip("The settings for VRIK calibration.")] public VRIKCalibrator.Settings settings;
