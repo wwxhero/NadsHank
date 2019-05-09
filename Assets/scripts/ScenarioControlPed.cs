@@ -271,7 +271,7 @@ public class ScenarioControlPed : MonoBehaviour {
 								{
                                     int id_parent, id_child;
                                     m_ctrl.GetpegPedTuple(out id_parent, out id_child);
-                                    KeyValuePair<int, int> peg = new KeyValuePair<int, int>();
+                                    KeyValuePair<int, int> peg = new KeyValuePair<int, int>(id_parent, id_child);
                                     if (null == peg_pairs)
                                     	peg_pairs = new List<KeyValuePair<int, int>>();
                                     peg_pairs.Add(peg);
