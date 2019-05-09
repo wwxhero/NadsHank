@@ -11,7 +11,9 @@ public class ScenarioControlPed : MonoBehaviour {
 	private string m_scenePath;
 	public GameObject[] m_vehiPrefabs;
 	public GameObject m_pedPrefab;
+	public GameObject m_drvPrefab;
 	public GameObject m_mockTrackersPrefab;
+	public bool m_bDriver;
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
@@ -185,10 +187,15 @@ public class ScenarioControlPed : MonoBehaviour {
 									Vector3 l_unity = MultiplyDir(c_sim2unity, l);
 									Quaternion q_unity;
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
-									GameObject ped = Instantiate(m_pedPrefab, p_unity, q_unity);
+									GameObject ped = null;
+									bool own = (0 == id);
+									if (m_bDriver && own)
+										ped = Instantiate(m_drvPrefab, p_unity, q_unity);
+									else
+										ped = Instantiate(m_pedPrefab, p_unity, q_unity);
 									ped.name = name;
 									m_id2Ped.Add(id, ped);
-									if (0 == id)
+									if (own)
 									{
 										ped.AddComponent<Manipulator>();
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
@@ -249,7 +256,7 @@ public class ScenarioControlPed : MonoBehaviour {
 									   names[i_part] = namePartS;
 									}
 									DriverDiguy driver = ped.GetComponent<DriverDiguy>();
-									driver.Initialize(ids, names, 0 == id);
+									driver.Initialize(ids, names, own);
 
 									break;
 								}
