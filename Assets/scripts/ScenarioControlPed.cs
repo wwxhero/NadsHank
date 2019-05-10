@@ -145,7 +145,7 @@ public class ScenarioControlPed : MonoBehaviour {
 									Vector3 l_unity = MultiplyDir(c_sim2unity, l);
 									Quaternion q_unity;
 									FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
-									int idx = id % m_vehiPrefabs.Length;
+									int idx = solId % m_vehiPrefabs.Length;
 									GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
 									o.name = name;
 									m_id2Dyno.Add(id, o);
