@@ -227,7 +227,7 @@ public class ScenarioControlPed : MonoBehaviour {
 											caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
 											caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
 										}
-										else
+										else if(!m_bDriver)
 										{
 											GameObject streamVR = GameObject.Find("Steam_VR_Activator_&_Avatar_Handler");
 											Debug.Assert(null != streamVR);
