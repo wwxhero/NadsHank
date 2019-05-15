@@ -1,0 +1,78 @@
+newmtl 0
+map_Kd ./NadsCab_Taurus_2011.png
+Ka 0.996078 0.996078 0.996078
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 5
+illum 2
+
+newmtl 1
+map_Kd ./OwnshipMirrorLeft.png
+Ka 0.722 0.722 0.729
+Kd 0 0.501961 0.752941
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 2
+map_Kd ./Nadscab_Taurus_2011_interior.png
+illum 2
+
+newmtl 3
+map_Kd ./NadsCab_Taurus_2011.png
+illum 2
+
+newmtl 4
+map_Kd ./OwnshipMirrorRight.png
+Ka 0.722 0.722 0.729
+Kd 0 0.501961 0.752941
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 5
+map_Kd ./NadsCab_Taurus_2011.png
+Ka 0.805882 0.919608 0.831373
+Kd 0.560784 0.927451 0.927451
+Ks 0.533333 0.92549 0.92549
+Tr 0.65
+d 0.65
+Ns 31.2
+illum 2
+
+newmtl 6
+map_Kd ./ownshipWindowPlaceholder.png
+Ka 0.560784 0.929412 0.929412
+Kd 0.560784 0.929412 0.929412
+Ks 0.533333 0.92549 0.92549
+Tr 0.0633787
+d 0.0633787
+Ns 31.2
+illum 2
+
+newmtl 7
+map_Kd ./Nadscab_Taurus_2011_interior.png
+Ka 0.996078 0.996078 0.996078
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 5
+illum 2
+
+newmtl 8
+map_Kd ./NadsCab_Taurus_2011.png
+Ka 0 0 0
+Kd 0 0 0
+Ks 0 0 0
+Tr 1
+d 1
+Ns 0
+illum 2
+

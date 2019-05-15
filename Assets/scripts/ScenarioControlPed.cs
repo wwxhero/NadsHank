@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using SharpCom;
 using ExternalObjectsControlComLib;
 using System.Xml;
 using JointsReduction;
@@ -12,7 +11,9 @@ public class ScenarioControlPed : MonoBehaviour {
 	private string m_scenePath;
 	public GameObject[] m_vehiPrefabs;
 	public GameObject m_pedPrefab;
+	public GameObject m_drvPrefab;
 	public GameObject m_mockTrackersPrefab;
+	public bool m_bDriver;
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
@@ -112,6 +113,7 @@ public class ScenarioControlPed : MonoBehaviour {
 			try
 			{
 				m_ctrl.PreUpdateDynamicModels();
+				List<KeyValuePair<int, int>> peg_pairs = null;
 				EVT evt = EVT.evtUndefined;
 				bool nonEvt = true;
 				do
@@ -143,7 +145,7 @@ public class ScenarioControlPed : MonoBehaviour {
 									Vector3 l_unity = MultiplyDir(c_sim2unity, l);
 									Quaternion q_unity;
 									FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
-									int idx = id % m_vehiPrefabs.Length;
+									int idx = solId % m_vehiPrefabs.Length;
 									GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
 									o.name = name;
 									m_id2Dyno.Add(id, o);
@@ -185,10 +187,15 @@ public class ScenarioControlPed : MonoBehaviour {
 									Vector3 l_unity = MultiplyDir(c_sim2unity, l);
 									Quaternion q_unity;
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
-									GameObject ped = Instantiate(m_pedPrefab, p_unity, q_unity);
+									GameObject ped = null;
+									bool own = (0 == id);
+									if (m_bDriver && own)
+										ped = Instantiate(m_drvPrefab, p_unity, q_unity);
+									else
+										ped = Instantiate(m_pedPrefab, p_unity, q_unity);
 									ped.name = name;
 									m_id2Ped.Add(id, ped);
-									if (0 == id)
+									if (own)
 									{
 										ped.AddComponent<Manipulator>();
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
@@ -220,7 +227,7 @@ public class ScenarioControlPed : MonoBehaviour {
 											caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
 											caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
 										}
-										else
+										else if(!m_bDriver)
 										{
 											GameObject streamVR = GameObject.Find("Steam_VR_Activator_&_Avatar_Handler");
 											Debug.Assert(null != streamVR);
@@ -230,9 +237,7 @@ public class ScenarioControlPed : MonoBehaviour {
 
 										if (DEF_LOGMATRIXFAC)
 											ped.AddComponent<JointDumper>();
-
 									}
-
 
 
 									//bind joints with (id, name)
@@ -244,14 +249,14 @@ public class ScenarioControlPed : MonoBehaviour {
 									   m_ctrl.GetcrtPedPartName(id, i_part, out namePartS); //fixme: replace it with node name
 									   if (DEF_LOGJOINTIDNAME)
 									   {
-									       string log = string.Format("{0}:{1}", i_part, namePartS);
-									       Debug.Log(log);
+										   string log = string.Format("{0}:{1}", i_part, namePartS);
+										   Debug.Log(log);
 									   }
 									   ids[i_part] = i_part;
 									   names[i_part] = namePartS;
 									}
 									DriverDiguy driver = ped.GetComponent<DriverDiguy>();
-									driver.Initialize(ids, names, 0 == id);
+									driver.Initialize(ids, names, own);
 
 									break;
 								}
@@ -269,10 +274,48 @@ public class ScenarioControlPed : MonoBehaviour {
 
 									break;
 								}
+							case EVT.pegPed:
+								{
+                                    int id_parent, id_child;
+                                    m_ctrl.GetpegPedTuple(out id_parent, out id_child);
+                                    KeyValuePair<int, int> peg = new KeyValuePair<int, int>(id_parent, id_child);
+                                    if (null == peg_pairs)
+                                    	peg_pairs = new List<KeyValuePair<int, int>>();
+                                    peg_pairs.Add(peg);
+                                    break;
+								}
+
 						}
 						m_ctrl.QPopEvent();
 					}
 				} while (!nonEvt);
+
+				if (null != peg_pairs)
+				{
+					foreach (KeyValuePair<int, int> peg in peg_pairs)
+					{
+						int i_parent = peg.Key;
+						int i_child = peg.Value;
+						GameObject parent = null;
+						bool hit = m_id2Dyno.TryGetValue(i_parent, out parent);
+						Debug.Assert(hit);
+						GameObject child = null;
+						hit = m_id2Ped.TryGetValue(i_child, out child);
+						Debug.Assert(hit);
+						child.transform.parent = parent.transform;
+						if (0 == i_child)
+						{
+							if (null != m_mockTrackers)
+							{
+								m_mockTrackers.transform.parent = parent.transform;
+							}
+							else
+							{
+								Debug.Assert(false, "adjust trackers in child space of pegging parent");
+							}
+						}
+					}
+				}
 
 				GameObject pedOwn;
 				const int c_ownPedId = 0;
@@ -298,7 +341,7 @@ public class ScenarioControlPed : MonoBehaviour {
 					{
 						ArtPart art = driver.m_art[i_part];
 						m_ctrl.OnPushUpdateArt(c_ownPedId, art.id, art.q.w, art.q.x, art.q.y, art.q.z, art.t.x, art.t.y, art.t.z);
-					    //fixme: performance might be sacrified here from loop manage to native code call
+						//fixme: performance might be sacrified here from loop manage to native code call
 					}
 
 					m_ctrl.OnPostPushUpdateArt(c_ownPedId
@@ -363,17 +406,17 @@ public class ScenarioControlPed : MonoBehaviour {
 						kv.Value.transform.position = p_unity;
 						kv.Value.transform.rotation = q_unity;
 						DriverDiguy driver = kv.Value.GetComponent<DriverDiguy>();
-                        double q_w, q_x, q_y, q_z;
-                        double t_x, t_y, t_z;
-                        for (int i_part = 0; i_part < driver.m_art.Length; i_part ++)
+						double q_w, q_x, q_y, q_z;
+						double t_x, t_y, t_z;
+						for (int i_part = 0; i_part < driver.m_art.Length; i_part ++)
 						{
-						    //fixme: performance might be sacrified here from loop manage to native code call
-						    ArtPart art = driver.m_art[i_part];
-						    m_ctrl.OnGetUpdateArt(kv.Key, art.id
-						        , out q_w, out q_x, out q_y, out q_z
-						        , out t_x, out t_y, out t_z);
-						    art.q.Set((float)q_x, (float)q_y, (float)q_z, (float)q_w);
-						    art.t.Set((float)t_x, (float)t_y, (float)t_z);
+							//fixme: performance might be sacrified here from loop manage to native code call
+							ArtPart art = driver.m_art[i_part];
+							m_ctrl.OnGetUpdateArt(kv.Key, art.id
+								, out q_w, out q_x, out q_y, out q_z
+								, out t_x, out t_y, out t_z);
+							art.q.Set((float)q_x, (float)q_y, (float)q_z, (float)q_w);
+							art.t.Set((float)t_x, (float)t_y, (float)t_z);
 						}
 						driver.SyncIn();
 					}
