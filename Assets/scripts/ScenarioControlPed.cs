@@ -276,13 +276,13 @@ public class ScenarioControlPed : MonoBehaviour {
 								}
 							case EVT.pegPed:
 								{
-                                    int id_parent, id_child;
-                                    m_ctrl.GetpegPedTuple(out id_parent, out id_child);
-                                    KeyValuePair<int, int> peg = new KeyValuePair<int, int>(id_parent, id_child);
-                                    if (null == peg_pairs)
-                                    	peg_pairs = new List<KeyValuePair<int, int>>();
-                                    peg_pairs.Add(peg);
-                                    break;
+									int id_parent, id_child;
+									m_ctrl.GetpegPedTuple(out id_parent, out id_child);
+									KeyValuePair<int, int> peg = new KeyValuePair<int, int>(id_parent, id_child);
+									if (null == peg_pairs)
+										peg_pairs = new List<KeyValuePair<int, int>>();
+									peg_pairs.Add(peg);
+									break;
 								}
 
 						}
@@ -311,7 +311,14 @@ public class ScenarioControlPed : MonoBehaviour {
 							}
 							else
 							{
-								Debug.Assert(false, "adjust trackers in child space of pegging parent");
+								//Debug.Assert(false, "adjust trackers in child space of pegging parent");
+								GameObject vrik_targets_assigner_go = GameObject.Find("VRIK_Targets_Assigner");
+								Debug.Assert(null != vrik_targets_assigner_go);
+								VRIK_Targets_Assigner vrik_targets_assigner = vrik_targets_assigner_go.GetComponent<VRIK_Targets_Assigner>();
+								Debug.Assert(null != vrik_targets_assigner);
+								vrik_targets_assigner.avatar = child;
+								vrik_targets_assigner.car = parent;
+								child.AddComponent<Tracker_Automatic_Calibrator>();
 							}
 						}
 					}
