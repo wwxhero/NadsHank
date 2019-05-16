@@ -197,7 +197,6 @@ public class ScenarioControlPed : MonoBehaviour {
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
-										ped.AddComponent<Manipulator>();
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ik.AutoDetectReferences();
 

@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VRIK_Targets_Assigner : MonoBehaviour {
+public class VRIK_Targets_Assigner : MonoBehaviour
+{
     public GameObject headTarget, leftHandTarget, rightHandTarget, avatar, car, otherTargets;
     private Vector3 head_Position, head_Position_without_y, car_position_without_y;
     private int count;
     private Tracker_Automatic_Calibrator tac;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         count = 1;
-        tac = avatar.GetComponent<Tracker_Automatic_Calibrator>();
-        RootMotion.FinalIK.VRIK ik = avatar.GetComponent<RootMotion.FinalIK.VRIK>();
-        ik.solver.spine.headTarget = headTarget.transform;
-        ik.solver.leftArm.target = leftHandTarget.transform;
-        ik.solver.rightArm.target = rightHandTarget.transform;
-	}
+    }
 
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update()
+    {
+        if (count == 4)
+        {
+            tac = avatar.GetComponent<Tracker_Automatic_Calibrator>();
+            RootMotion.FinalIK.VRIK ik = avatar.GetComponent<RootMotion.FinalIK.VRIK>();
+            ik.solver.spine.headTarget = headTarget.transform;
+            ik.solver.leftArm.target = leftHandTarget.transform;
+            ik.solver.rightArm.target = rightHandTarget.transform;
+        }
         if (count == 4 && tac.configuration_done == true)
         {
             head_Position = headTarget.transform.position;
