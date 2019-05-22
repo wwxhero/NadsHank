@@ -5,9 +5,12 @@ using UnityEngine;
 public class VRIK_Targets_Assigner : MonoBehaviour
 {
     public GameObject headTarget, leftHandTarget, rightHandTarget, avatar, car, otherTargets;
+    public Vector3 car_pos;
+    public Quaternion car_ori;
     private Vector3 head_Position, head_Position_without_y, car_position_without_y;
     private int count;
     private Tracker_Automatic_Calibrator tac;
+    
 
     // Use this for initialization
     void Start()
@@ -25,6 +28,7 @@ public class VRIK_Targets_Assigner : MonoBehaviour
             ik.solver.spine.headTarget = headTarget.transform;
             ik.solver.leftArm.target = leftHandTarget.transform;
             ik.solver.rightArm.target = rightHandTarget.transform;
+            ik.solver.locomotion.weight = 0.0f;
         }
         if (count == 4 && tac.configuration_done == true)
         {
@@ -32,6 +36,8 @@ public class VRIK_Targets_Assigner : MonoBehaviour
             car_position_without_y = new Vector3(head_Position.x, 0, head_Position.z);
             head_Position_without_y = car_position_without_y;
 
+            car_pos = car.transform.position;
+            car_ori = car.transform.rotation;
             car.transform.position = car_position_without_y;
             otherTargets.transform.parent = car.transform;
             float offset = 0.5f;
@@ -42,6 +48,8 @@ public class VRIK_Targets_Assigner : MonoBehaviour
             avatar.transform.position = head_Offset_x;
             avatar.transform.parent = car.transform;
             avatar.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            car.transform.position = car_pos;
+            car.transform.rotation = car_ori;
             count++;
         }
 

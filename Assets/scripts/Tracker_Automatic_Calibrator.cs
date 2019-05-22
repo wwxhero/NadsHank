@@ -78,30 +78,26 @@ public class Tracker_Automatic_Calibrator : MonoBehaviour {
 
 			Quaternion head_Target_Offset_z = head_Target.transform.localRotation * Quaternion.Euler(0, 0, -90);
 			Quaternion head_Target_Offset_x = head_Target_Offset_z * Quaternion.Euler(40, 0, 0);
-			Quaternion head_Target_Offset_zxz = head_Target_Offset_x * Quaternion.Euler(0, 0, -15);
-			//Quaternion head_Target_Offset_y = head_Target_Offset_x * Quaternion.Euler(0, 0, 0);
-			////Quaternion head_Target_Offset_zyxy = head_Target_Offset_x * Quaternion.Euler(0, -10, 0);
-			////Quaternion head_Target_Offset_zyxyz = head_Target_Offset_zyxy * Quaternion.Euler(0, 0, 10);
-			head_Target.transform.localRotation = head_Target_Offset_zxz/*yxyz*/;
+			Quaternion head_Target_Offset_zxz = head_Target_Offset_x * Quaternion.Euler(0, 0, -30);
+            Quaternion head_Target_Offset_zxzy = head_Target_Offset_zxz * Quaternion.Euler(0, 5, 0);
+            head_Target.transform.localRotation = head_Target_Offset_zxzy;
 
-			//Quaternion rightHand_Target_Offset_x = right_Hand_Target.transform.localRotation * Quaternion.Euler(90, 0, 0);
-			//Quaternion rightHand_Target_Offset_y = rightHand_Target_Offset_x * Quaternion.Euler(0, 90, 0);
-			////Quaternion rightHand_Target_Offset_x = rightHand_Target_Offset_y * Quaternion.Euler(-130, 0, 0);
-			Quaternion rightHand_Target_Offset_x = right_Hand_Target.transform.localRotation * Quaternion.Euler(180, 0, 0);
-			Quaternion rightHand_Target_Offset_y = rightHand_Target_Offset_x * Quaternion.Euler(0, -180, 0);
-			Quaternion rightHand_Target_Offset_z = rightHand_Target_Offset_y * Quaternion.Euler(0, 0, 40);
-			Quaternion rightHand_Target_Offset_zy = rightHand_Target_Offset_z * Quaternion.Euler(0, 40, 0);
-			right_Hand_Target.transform.localRotation = rightHand_Target_Offset_zy;
+            Quaternion rightHand_Target_Offset_x = right_Hand_Target.transform.localRotation * Quaternion.Euler(30, 0, 0);
+            right_Hand_Target.transform.localRotation = rightHand_Target_Offset_x;
 
-			Quaternion leftHand_Target_Offset_x = left_Hand_Target.transform.localRotation * Quaternion.Euler(90, 0, 0);
-			Quaternion leftHand_Target_Offset_y = leftHand_Target_Offset_x * Quaternion.Euler(0, -70, 0);
-			Quaternion leftHand_Target_Offset_z = leftHand_Target_Offset_y * Quaternion.Euler(0, 0, -30);
-			Quaternion leftHand_Target_Offset_zx = leftHand_Target_Offset_z * Quaternion.Euler(-20, 0, 0);
-			//Quaternion leftHand_Target_Offset_z = leftHand_Target_Offset_x * Quaternion.Euler(0, 0, 90);
-			//Quaternion leftHand_Target_Offset_xzx = leftHand_Target_Offset_z * Quaternion.Euler(50, 0, 0);
-			left_Hand_Target.transform.localRotation = leftHand_Target_Offset_zx/*zx*/;
+            Quaternion leftHand_Target_Offset_x = left_Hand_Target.transform.localRotation * Quaternion.Euler(90, 0, 0);
+            Quaternion leftHand_Target_Offset_y = leftHand_Target_Offset_x * Quaternion.Euler(0, 180, 0);
+            Quaternion leftHand_Target_Offset_xyx = leftHand_Target_Offset_y * Quaternion.Euler(30, 0, 0);
+            left_Hand_Target.transform.localRotation = leftHand_Target_Offset_xyx/*zx*/;
 
-			configuration_done = true;
+            //Quaternion rightHand_Target_Offset_z = right_Hand_Target.transform.localRotation * Quaternion.Euler(0, 0, 180);
+            //Quaternion rightHand_Target_Offset_x = rightHand_Target_Offset_z * Quaternion.Euler(40, 0, 0);
+            //right_Hand_Target.transform.localRotation = rightHand_Target_Offset_x;
+
+            //Quaternion leftHand_Target_Offset_x = left_Hand_Target.transform.localRotation * Quaternion.Euler(-40, 0, 0);
+            //left_Hand_Target.transform.localRotation = leftHand_Target_Offset_x;
+
+            configuration_done = true;
 		}
 	}
 }
