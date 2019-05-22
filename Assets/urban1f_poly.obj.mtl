@@ -1,0 +1,1282 @@
+newmtl veg_treewall_05_0
+map_Kd ./veg_treewall_05.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+
+newmtl veg_manyTrees2_1
+map_Kd ./veg_manyTrees2.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl building2_2
+map_Kd ./building2.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl apartment3_3
+map_Kd ./apartment3.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bld_HighRise01_4
+map_Kd ./bld_HighRise01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bld_HighRise03_5
+map_Kd ./bld_HighRise03.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bldRoof_ind_01_gs_6
+map_Kd ./bldRoof_ind_01_gs.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_intRelated_2ln_straight_5x8_rural_7
+map_Kd ./sgn_intRelated_2ln_straight_5x8_rural.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl lightpole02_8
+map_Kd ./lightpole02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl terrain_9
+map_Kd ./terrain.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_wt_textured02_10
+map_Kd ./roadMarking_wt_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_yo_textured02_11
+map_Kd ./roadMarking_yo_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 2lnRd_Narrow_01_12
+map_Kd ./2lnRd_Narrow_01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl PapaJohn_veg_02_13
+map_Kd ./PapaJohn_veg_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl shops_14
+map_Kd ./shops.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bank_small_day_15
+map_Kd ./bank_small_day.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl gasStation_02_16
+map_Kd ./gasStation_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Was_feature_01_512_17
+map_Kd ./VIC_Was_feature_01_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_IowaSt1_features_512_18
+map_Kd ./VIC_IowaSt1_features_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bld_HighRise05_19
+map_Kd ./bld_HighRise05.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_PapaJohn_512_20
+map_Kd ./VIC_PapaJohn_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Was_Clin_lin_buildings_13_512_21
+map_Kd ./VIC_Was_Clin_lin_buildings_13_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Clin_signs_512_22
+map_Kd ./VIC_Clin_signs_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_bikeLaneEnds_23
+map_Kd ./sgn_bikeLaneEnds.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl AllCars_1024_24
+map_Kd ./AllCars_1024.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_05_25
+map_Kd ./veg_treesMany_05.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_04_26
+map_Kd ./veg_treesMany_04.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_03_27
+map_Kd ./veg_treesMany_03.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_04_28
+map_Kd ./veg_treesMany_04.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl AllCars_1024_29
+map_Kd ./AllCars_1024.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bld_HighRise03_5lnRd_01_30
+map_Kd ./5lnRd_01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_manyTrees_2_31
+map_Kd ./veg_manyTrees_2.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treewall_05_32
+map_Kd ./veg_treewall_05.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl parkingGarage_01_day_33
+map_Kd ./parkingGarage_01_day.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl PapaJohn_features_01_512_34
+map_Kd ./PapaJohn_features_01_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_dirt_01_35
+map_Kd ./VIC_dirt_01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl curbing_WT_01_36
+map_Kd ./curbing_WT_01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl commercial_01_256_37
+map_Kd ./commercial_01_256.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl truck_door3_38
+map_Kd ./truck_door3.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl window_1x1_39
+map_Kd ./window_1x1.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl comm_door_40
+map_Kd ./comm_door.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl white_cinderblk_nostag_41
+map_Kd ./white_cinderblk_nostag.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl mts_ft_42
+map_Kd ./mts_ft.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl airbuild61_rgb_43
+map_Kd ./airbuild61_rgb.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl asphault1_44
+map_Kd ./asphault1.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl mts_win_45
+map_Kd ./mts_win.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl building_quilt_46
+map_Kd ./building_quilt.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl purplewd_fc_128_47
+map_Kd ./purplewd_fc_128.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl e_s1_48
+map_Kd ./e_s1.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_manyTrees_49
+map_Kd ./veg_manyTrees.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl building7_50
+map_Kd ./building7.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl signsMosaic_003_1024_51
+map_Kd ./signsMosaic_003_1024.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_bushes2_52
+map_Kd ./veg_bushes2.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_intRelated_2ln_straight_5x8_rural_53
+map_Kd ./sgn_intRelated_2ln_straight_5x8_rural.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl City_dayscene01_54
+map_Kd ./City_dayscene01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl building42_55
+map_Kd ./building42.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Impact_building01_56
+map_Kd ./Impact_building01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl shops_small03_day_57
+map_Kd ./shops_small03_day.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl City_dayscene02_58
+map_Kd ./City_dayscene02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl shops_small02_59
+map_Kd ./shops_small02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Impact_building02_60
+map_Kd ./Impact_building02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl shops_small01_61
+map_Kd ./shops_small01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Impact_building03_62
+map_Kd ./Impact_building03.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl GasStations_63
+map_Kd ./GasStations.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_KeepRight_grc_64
+map_Kd ./sgn_KeepRight_grc.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_03_65
+map_Kd ./veg_treesMany_03.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Restaurant_Store01_66
+map_Kd ./Restaurant_Store01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Restaurant_Store_02_67
+map_Kd ./Restaurant_Store_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_leftOrRightOnly_68
+map_Kd ./sgn_leftOrRightOnly.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 2ln_way_rural_intSgn_69
+map_Kd ./2ln_way_rural_intSgn.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_TrafLightTurnLanes_70
+map_Kd ./sgn_TrafLightTurnLanes.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_05_71
+map_Kd ./veg_treesMany_05.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_04_72
+map_Kd ./veg_treesMany_04.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_treesMany_03_73
+map_Kd ./veg_treesMany_03.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl trafficLight02b_74
+map_Kd ./trafficLight02b.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_LeftOrRight_W1_7_75
+map_Kd ./sgn_LeftOrRight_W1_7.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Impact_building02_day_76
+map_Kd ./Impact_building02_day.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl fence_mailbox_77
+map_Kd ./fence_mailbox.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Lin_shop_02_512_78
+map_Kd ./VIC_Lin_shop_02_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Lin_shop_03_512_79
+map_Kd ./VIC_Lin_shop_03_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Was_Clin_lin_buildings_USBank_512_80
+map_Kd ./VIC_Was_Clin_lin_buildings_USBank_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Was_Clin_lin_buildings_USBank_02_512_81
+map_Kd ./VIC_Was_Clin_lin_buildings_USBank_02_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_IowaSt2_building_02_512_82
+map_Kd ./VIC_IowaSt2_building_02_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl terrain_83
+map_Kd ./terrain.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Lin_shop_01_512_84
+map_Kd ./VIC_Lin_shop_01_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_Was_feature_02_512_85
+map_Kd ./VIC_Was_feature_02_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_IowaSt2_trees_01_512_86
+map_Kd ./VIC_IowaSt2_trees_01_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl veg_manyTrees_2_87
+map_Kd ./veg_manyTrees_2.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl building44_512_88
+map_Kd ./building44_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl Concrete_sidewalk_512_89
+map_Kd ./Concrete_sidewalk_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl main_building02_512_90
+map_Kd ./main_building02_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl urban_10x8_bld1_91
+map_Kd ./urban_10x8_bld1.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_wt_textured02_92
+map_Kd ./roadMarking_wt_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_yo_textured02_93
+map_Kd ./roadMarking_yo_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl west_music_512_94
+map_Kd ./west_music_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_CommBuilding_512_95
+map_Kd ./VIC_CommBuilding_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bldRoof_ind_01_gs_96
+map_Kd ./bldRoof_ind_01_gs.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl urban_10x8_08_97
+map_Kd ./urban_10x8_08.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl building5_512_98
+map_Kd ./building5_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl AllCars_1024_99
+map_Kd ./AllCars_1024.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl AllCars_1024_100
+map_Kd ./AllCars_1024.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_KeepRight_grc_101
+map_Kd ./sgn_KeepRight_grc.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_IowaSt2_building_03_512_102
+map_Kd ./VIC_IowaSt2_building_03_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_IowaSt2_building_04_512_103
+map_Kd ./VIC_IowaSt2_building_04_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl VIC_IowaSt2_building_01_512_104
+map_Kd ./VIC_IowaSt2_building_01_512.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_leftOrRightOnly_105
+map_Kd ./sgn_leftOrRightOnly.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl TCD_trafficLight_LED_106
+map_Kd ./TCD_trafficLight_LED.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl trafficLight02b_107
+map_Kd ./trafficLight02b.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_TrafLightTurnLanes_108
+map_Kd ./sgn_TrafLightTurnLanes.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl RightLaneMustTurnRight_109
+map_Kd ./RightLaneMustTurnRight.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 2ln_way_rural_intSgn_110
+map_Kd ./2ln_way_rural_intSgn.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 2ln_way_rural_intSgn_111
+map_Kd ./2ln_way_rural_intSgn.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_fway_trumpet_CR1330_01_112
+map_Kd ./sgn_fway_trumpet_CR1330_01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_LeftOrRight_W1_7_113
+map_Kd ./sgn_LeftOrRight_W1_7.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_LeftOrRight_W1_7_114
+map_Kd ./sgn_LeftOrRight_W1_7.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl TCD_trafficLight_LED_115
+map_Kd ./TCD_trafficLight_LED.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl trafficLight02b_116
+map_Kd ./trafficLight02b.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bld_HighRise01_4lnRd_02_117
+map_Kd ./4lnRd_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl 2lnRd_Narrow_01_118
+map_Kd ./2lnRd_Narrow_01.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl lightpole02_119
+map_Kd ./lightpole02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sidewalkConcreteFull_02_120
+map_Kd ./sidewalkConcreteFull_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl lightpole02_121
+map_Kd ./lightpole02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sidewalkConcreteFull_02_122
+map_Kd ./sidewalkConcreteFull_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_yo_textured02_123
+map_Kd ./roadMarking_yo_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_wt_textured02_124
+map_Kd ./roadMarking_wt_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl bld_HighRise01_4lnRd_02_125
+map_Kd ./4lnRd_02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl roadMarking_wt_textured02_126
+map_Kd ./roadMarking_wt_textured02.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+newmtl sgn_ped_crossing_flr_yw_grn_127
+map_Kd ./sgn_ped_crossing_flr_yw_grn.png
+Ka 0.722 0.722 0.729
+Kd 0.918 0.918 0.918
+Ks 0.137 0.137 0.137
+Tr 1
+d 1
+Ns 10
+illum 2
+
+
