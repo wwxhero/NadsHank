@@ -1,0 +1,30 @@
+newmtl 0
+map_Kd ./roadMarking_wt_textured02.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 1
+map_Kd ./sgn_ped_crossing_flr_yw_grn.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 2
+map_Kd ./sgn_ped_crossing_flr_yw_grn.png
+Ka 0.431373 0.431373 0.431373
+Kd 0.901961 0.901961 0.901961
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+

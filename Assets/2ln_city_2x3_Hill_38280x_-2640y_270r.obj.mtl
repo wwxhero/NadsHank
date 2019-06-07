@@ -1,0 +1,139 @@
+newmtl 0
+map_Kd ./2lnRd_Narrow_01.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 1
+map_Kd ./roadMarking_yo_textured02.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 2
+map_Kd ./roadMarking_wt_textured02.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 3
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 4
+map_Kd ./terrain.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 5
+map_Kd ./lightpole02.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 6
+map_Kd ./sgn_intRelated_2ln_straight_5x8_rural.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 7
+map_Kd ./bldRoof_ind_01_gs.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 8
+map_Kd ./bld_HighRise03.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 9
+map_Kd ./bld_HighRise01.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 10
+map_Kd ./apartment3.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 11
+map_Kd ./building2.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 12
+map_Kd ./veg_manyTrees2.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
+newmtl 13
+map_Kd ./veg_treewall_05.png
+Ka 0.470588 0.470588 0.470588
+Kd 1 1 1
+Ks 0 0 0
+Tr 1
+d 1
+Ns 128
+illum 2
+
