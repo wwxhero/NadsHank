@@ -9,6 +9,7 @@ using Valve.VR;
 
 public class SteamVR_ControllerManager : MonoBehaviour
 {
+	public GameObject m_hmd;
 	public GameObject m_ctrlL, m_ctrlR;
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
@@ -23,6 +24,9 @@ public class SteamVR_ControllerManager : MonoBehaviour
 	// cached roles - may or may not be connected
 	uint m_ctrlLIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
 	uint m_ctrlRIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
+
+	enum State {initial, identifying, unidentified, identified, calibrating, tracking, teleporting, adjusting };
+	State m_state = State.initial;
 
 	// Helper function to avoid adding duplicates to object array.
 	void SetUniqueObject(GameObject o, int index)
