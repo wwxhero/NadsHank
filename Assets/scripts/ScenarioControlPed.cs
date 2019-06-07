@@ -227,12 +227,9 @@ public class ScenarioControlPed : MonoBehaviour {
 											caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
 											caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
 										}
-										else if(!m_bDriver)
+										else
 										{
-											GameObject streamVR = GameObject.Find("Steam_VR_Activator_&_Avatar_Handler");
-											Debug.Assert(null != streamVR);
-											model_and_Steam_VR_Controller ctrl = streamVR.GetComponent<model_and_Steam_VR_Controller>();
-											ctrl.pedestrian = ped;
+											//todo: universe tracking does not differ driver and pedestrain for tracking
 										}
 
 										if (DEF_LOGMATRIXFAC)
