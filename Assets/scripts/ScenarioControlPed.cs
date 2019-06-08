@@ -229,7 +229,10 @@ public class ScenarioControlPed : MonoBehaviour {
 										}
 										else
 										{
-											//todo: universe tracking does not differ driver and pedestrain for tracking
+                                            GameObject steamVR = GameObject.Find("[CameraRig]");
+                                            Debug.Assert(null != steamVR);
+                                            SteamVR_ControllerManager mgr = steamVR.GetComponent<SteamVR_ControllerManager>();
+                                            mgr.m_avatar = ped;
 										}
 
 										if (DEF_LOGMATRIXFAC)

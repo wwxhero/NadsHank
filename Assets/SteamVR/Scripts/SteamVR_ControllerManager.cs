@@ -9,6 +9,8 @@ using Valve.VR;
 
 public class SteamVR_ControllerManager : MonoBehaviour
 {
+	public bool DEF_DBG = true;
+	public GameObject m_avatar;
 	public GameObject m_hmd;
 	public GameObject m_ctrlL, m_ctrlR;
 
@@ -25,7 +27,7 @@ public class SteamVR_ControllerManager : MonoBehaviour
 	uint m_ctrlLIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
 	uint m_ctrlRIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
 
-	enum State {initial, identifying, unidentified, identified, calibrating, tracking, teleporting, adjusting };
+	enum State {initial, unidentified, identified, calibrating, tracking, teleporting, adjusting };
 	State m_state = State.initial;
 
 	// Helper function to avoid adding duplicates to object array.
@@ -68,6 +70,47 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		inputFocusAction = SteamVR_Events.InputFocusAction(OnInputFocus);
 		deviceConnectedAction = SteamVR_Events.DeviceConnectedAction(OnDeviceConnected);
 		trackedDeviceRoleChangedAction = SteamVR_Events.SystemAction(EVREventType.VREvent_TrackedDeviceRoleChanged, OnTrackedDeviceRoleChanged);
+	}
+
+	void Update()
+	{
+		State s = m_state;
+		bool ctrls_ready = (m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid
+						&& m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
+		if (State.initial == m_state
+			&& ctrls_ready)
+		{
+			if (Identify())
+				m_state = State.identified;
+			else
+				m_state = State.unidentified;
+		}
+
+		GameObject[] ctrls = {m_ctrlL, m_ctrlR};
+		bool [] trigger = {false, false};
+		for (int i_ctrl = 0; i_ctrl < ctrls.Length; i_ctrl ++)
+		{
+			if (null != ctrls[i_ctrl])
+			{
+				SteamVR_TrackedController ctrl = ctrls[i_ctrl].GetComponent<SteamVR_TrackedController>();
+				Debug.Assert(null != ctrl);
+				trigger[i_ctrl] = ctrl.triggerPressed;
+			}
+		}
+
+		if (State.identified == m_state
+			&& (trigger[0] || trigger[1])
+			&& null != m_avatar)
+		{
+			ConnectVirtualWorld();
+			m_state = State.tracking; //fixme: this code is for testing VW connection only
+		}
+		State s_prime = m_state;
+		if (DEF_DBG)
+		{
+			string strInfo = string.Format("state transition:{0}=>{1}", s.ToString(), s_prime.ToString());
+			Debug.Log(strInfo);
+		}
 	}
 
 	void OnEnable()
@@ -279,6 +322,48 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		{
 			SetTrackedDeviceIndex(objectIndex++, OpenVR.k_unTrackedDeviceIndexInvalid);
 		}
+	}
+
+	private bool Identify()
+	{
+		return true;
+	}
+
+	private void ConnectVirtualWorld()
+	{
+		Matrix4x4 v2p = transform.worldToLocalMatrix;
+		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
+		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
+		Vector3 r_p = Vector3.Cross(u_p, t_p);
+		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_p.x, t_p.y, t_p.z, 0f)
+									, new Vector4(u_p.x, u_p.y, u_p.z, 0f)
+									, new Vector4(r_p.x, r_p.y, r_p.z, 0f)
+									, new Vector4(0f, 0f, 0f, 1f));
+
+		Transform v = m_avatar.transform;
+		Vector3 t_v = v.forward;
+		Vector3 u_v = v.up;
+		Vector3 r_v = v.right;
+		Matrix4x4 m_v = new Matrix4x4(new Vector4(t_v.x, t_v.y, t_v.z, 0f)
+									, new Vector4(u_v.x, u_v.y, u_v.z, 0f)
+									, new Vector4(r_v.x, r_v.y, r_v.z, 0f)
+									, new Vector4(0f, 0f, 0f, 1f));
+
+		Matrix4x4 l = m_v.transpose * m_p;
+
+		Vector3 o_p = (m_ctrlL.transform.localPosition + m_ctrlR.transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
+		o_p.y = 0.0f;
+		Vector3 o_v = v.position;
+		Vector3 t = -l.MultiplyVector(o_p) + o_v;
+
+		Transport(l.rotation, t);
+	}
+
+	private void Transport(Quaternion r, Vector3 t)
+	{
+		//fixme: a smooth transit should happen for transport
+		transform.position = t;
+		transform.rotation = r;
 	}
 }
 
