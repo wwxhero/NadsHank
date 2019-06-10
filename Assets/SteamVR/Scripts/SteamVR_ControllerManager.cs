@@ -98,8 +98,7 @@ public class SteamVR_ControllerManager : MonoBehaviour
 			}
 		}
 
-		if (State.identified == m_state
-			&& (trigger[0] || trigger[1])
+		if ((trigger[0] && trigger[1])
 			&& null != m_avatar)
 		{
 			ConnectVirtualWorld();
