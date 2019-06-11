@@ -9,53 +9,47 @@ using Valve.VR;
 
 public class SteamVR_ControllerManager : MonoBehaviour
 {
-	public bool DEF_DBG = true;
-	public GameObject m_avatar;
-	public GameObject m_hmd;
-	public GameObject m_ctrlL, m_ctrlR;
+	public GameObject left, right;
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
-	public GameObject[] m_objects;
+	public GameObject[] objects;
 
 	[Tooltip("Set to true if you want objects arbitrarily assigned to controllers before their role (left vs right) is identified")]
-	public bool m_assignAllBeforeIdentified;
+	public bool assignAllBeforeIdentified;
 
-	uint[] m_indicesDev; // assigned
-	bool[] m_connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // controllers only
+	uint[] indices; // assigned
+	bool[] connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // controllers only
 
 	// cached roles - may or may not be connected
-	uint m_ctrlLIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
-	uint m_ctrlRIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
-
-	enum State {initial, unidentified, identified, calibrating, tracking, teleporting, adjusting };
-	State m_state = State.initial;
+	uint leftIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
+	uint rightIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
 
 	// Helper function to avoid adding duplicates to object array.
 	void SetUniqueObject(GameObject o, int index)
 	{
 		for (int i = 0; i < index; i++)
-			if (m_objects[i] == o)
+			if (objects[i] == o)
 				return;
 
-		m_objects[index] = o;
+		objects[index] = o;
 	}
 
 	// This needs to be called if you update left, right or objects at runtime (e.g. when dyanmically spawned).
 	public void UpdateTargets()
 	{
 		// Add left and right entries to the head of the list so we only have to operate on the list itself.
-		var objects = m_objects;
+		var objects = this.objects;
 		var additional = (objects != null) ? objects.Length : 0;
-		m_objects = new GameObject[2 + additional];
-		SetUniqueObject(m_ctrlR, 0);
-		SetUniqueObject(m_ctrlL, 1);
+		this.objects = new GameObject[2 + additional];
+		SetUniqueObject(right, 0);
+		SetUniqueObject(left, 1);
 		for (int i = 0; i < additional; i++)
 			SetUniqueObject(objects[i], 2 + i);
 
 		// Reset assignments.
-		m_indicesDev = new uint[2 + additional];
-		for (int i = 0; i < m_indicesDev.Length; i++)
-			m_indicesDev[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
+		indices = new uint[2 + additional];
+		for (int i = 0; i < indices.Length; i++)
+			indices[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
 	}
 
 	SteamVR_Events.Action inputFocusAction, deviceConnectedAction, trackedDeviceRoleChangedAction;
@@ -72,55 +66,15 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		trackedDeviceRoleChangedAction = SteamVR_Events.SystemAction(EVREventType.VREvent_TrackedDeviceRoleChanged, OnTrackedDeviceRoleChanged);
 	}
 
-	void Update()
-	{
-		State s = m_state;
-		bool ctrls_ready = (m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid
-						&& m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
-		if (State.initial == m_state
-			&& ctrls_ready)
-		{
-			if (Identify())
-				m_state = State.identified;
-			else
-				m_state = State.unidentified;
-		}
-
-		GameObject[] ctrls = {m_ctrlL, m_ctrlR};
-		bool [] trigger = {false, false};
-		for (int i_ctrl = 0; i_ctrl < ctrls.Length; i_ctrl ++)
-		{
-			if (null != ctrls[i_ctrl])
-			{
-				SteamVR_TrackedController ctrl = ctrls[i_ctrl].GetComponent<SteamVR_TrackedController>();
-				Debug.Assert(null != ctrl);
-				trigger[i_ctrl] = ctrl.triggerPressed;
-			}
-		}
-
-		if ((trigger[0] && trigger[1])
-			&& null != m_avatar)
-		{
-			ConnectVirtualWorld();
-			m_state = State.tracking; //fixme: this code is for testing VW connection only
-		}
-		State s_prime = m_state;
-		if (DEF_DBG)
-		{
-			string strInfo = string.Format("state transition:{0}=>{1}", s.ToString(), s_prime.ToString());
-			Debug.Log(strInfo);
-		}
-	}
-
 	void OnEnable()
 	{
-		for (int i = 0; i < m_objects.Length; i++)
+		for (int i = 0; i < objects.Length; i++)
 		{
-			var obj = m_objects[i];
+			var obj = objects[i];
 			if (obj != null)
 				obj.SetActive(false);
 
-			m_indicesDev[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
+			indices[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
 		}
 
 		Refresh();
@@ -149,9 +103,9 @@ public class SteamVR_ControllerManager : MonoBehaviour
 	{
 		if (hasFocus)
 		{
-			for (int i = 0; i < m_objects.Length; i++)
+			for (int i = 0; i < objects.Length; i++)
 			{
-				var obj = m_objects[i];
+				var obj = objects[i];
 				if (obj != null)
 				{
 					var label = (i < 2) ? labels[i] : (i - 1).ToString();
@@ -161,9 +115,9 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		}
 		else
 		{
-			for (int i = 0; i < m_objects.Length; i++)
+			for (int i = 0; i < objects.Length; i++)
 			{
-				var obj = m_objects[i];
+				var obj = objects[i];
 				if (obj != null)
 				{
 					var label = (i < 2) ? labels[i] : (i - 1).ToString();
@@ -201,25 +155,25 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		// First make sure no one else is already using this index.
 		if (trackedDeviceIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
 		{
-			for (int i = 0; i < m_objects.Length; i++)
+			for (int i = 0; i < objects.Length; i++)
 			{
-				if (i != objectIndex && m_indicesDev[i] == trackedDeviceIndex)
+				if (i != objectIndex && indices[i] == trackedDeviceIndex)
 				{
-					var obj = m_objects[i];
+					var obj = objects[i];
 					if (obj != null)
 						obj.SetActive(false);
 
-					m_indicesDev[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
+					indices[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
 				}
 			}
 		}
 
 		// Only set when changed.
-		if (trackedDeviceIndex != m_indicesDev[objectIndex])
+		if (trackedDeviceIndex != indices[objectIndex])
 		{
-			m_indicesDev[objectIndex] = trackedDeviceIndex;
+			indices[objectIndex] = trackedDeviceIndex;
 
-			var obj = m_objects[objectIndex];
+			var obj = objects[objectIndex];
 			if (obj != null)
 			{
 				if (trackedDeviceIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
@@ -242,8 +196,8 @@ public class SteamVR_ControllerManager : MonoBehaviour
 	// Keep track of connected controller indices.
 	private void OnDeviceConnected(int index, bool connected)
 	{
-		bool changed = m_connected[index];
-		m_connected[index] = false;
+		bool changed = this.connected[index];
+		this.connected[index] = false;
 
 		if (connected)
 		{
@@ -254,7 +208,7 @@ public class SteamVR_ControllerManager : MonoBehaviour
 				if (deviceClass == ETrackedDeviceClass.Controller ||
 					deviceClass == ETrackedDeviceClass.GenericTracker)
 				{
-					m_connected[index] = true;
+					this.connected[index] = true;
 					changed = !changed; // if we clear and set the same index, nothing has changed
 				}
 			}
@@ -271,44 +225,44 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		var system = OpenVR.System;
 		if (system != null)
 		{
-			m_ctrlLIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
-			m_ctrlRIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
+			leftIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
+			rightIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
 		}
 
 		// If neither role has been assigned yet, try hooking up at least the right controller.
-		if (m_ctrlLIndex == OpenVR.k_unTrackedDeviceIndexInvalid && m_ctrlRIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
+		if (leftIndex == OpenVR.k_unTrackedDeviceIndexInvalid && rightIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
 		{
-			for (uint deviceIndex = 0; deviceIndex < m_connected.Length; deviceIndex++)
+			for (uint deviceIndex = 0; deviceIndex < connected.Length; deviceIndex++)
 			{
-				if (objectIndex >= m_objects.Length)
+				if (objectIndex >= objects.Length)
 					break;
 
-				if (!m_connected[deviceIndex])
+				if (!connected[deviceIndex])
 					continue;
 
 				SetTrackedDeviceIndex(objectIndex++, deviceIndex);
 
-				if (!m_assignAllBeforeIdentified)
+				if (!assignAllBeforeIdentified)
 					break;
 			}
 		}
 		else
 		{
-			SetTrackedDeviceIndex(objectIndex++, (m_ctrlRIndex < m_connected.Length && m_connected[m_ctrlRIndex]) ? m_ctrlRIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
-			SetTrackedDeviceIndex(objectIndex++, (m_ctrlLIndex < m_connected.Length && m_connected[m_ctrlLIndex]) ? m_ctrlLIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
+			SetTrackedDeviceIndex(objectIndex++, (rightIndex < connected.Length && connected[rightIndex]) ? rightIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
+			SetTrackedDeviceIndex(objectIndex++, (leftIndex < connected.Length && connected[leftIndex]) ? leftIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
 
 			// Assign out any additional controllers only after both left and right have been assigned.
-			if (m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid && m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
+			if (leftIndex != OpenVR.k_unTrackedDeviceIndexInvalid && rightIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
 			{
-				for (uint deviceIndex = 0; deviceIndex < m_connected.Length; deviceIndex++)
+				for (uint deviceIndex = 0; deviceIndex < connected.Length; deviceIndex++)
 				{
-					if (objectIndex >= m_objects.Length)
+					if (objectIndex >= objects.Length)
 						break;
 
-					if (!m_connected[deviceIndex])
+					if (!connected[deviceIndex])
 						continue;
 
-					if (deviceIndex != m_ctrlLIndex && deviceIndex != m_ctrlRIndex)
+					if (deviceIndex != leftIndex && deviceIndex != rightIndex)
 					{
 						SetTrackedDeviceIndex(objectIndex++, deviceIndex);
 					}
@@ -317,52 +271,10 @@ public class SteamVR_ControllerManager : MonoBehaviour
 		}
 
 		// Reset the rest.
-		while (objectIndex < m_objects.Length)
+		while (objectIndex < objects.Length)
 		{
 			SetTrackedDeviceIndex(objectIndex++, OpenVR.k_unTrackedDeviceIndexInvalid);
 		}
-	}
-
-	private bool Identify()
-	{
-		return true;
-	}
-
-	private void ConnectVirtualWorld()
-	{
-		Matrix4x4 v2p = transform.worldToLocalMatrix;
-		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
-		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
-		Vector3 r_p = Vector3.Cross(u_p, t_p);
-		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_p.x, t_p.y, t_p.z, 0f)
-									, new Vector4(u_p.x, u_p.y, u_p.z, 0f)
-									, new Vector4(r_p.x, r_p.y, r_p.z, 0f)
-									, new Vector4(0f, 0f, 0f, 1f));
-
-		Transform v = m_avatar.transform;
-		Vector3 t_v = v.forward;
-		Vector3 u_v = v.up;
-		Vector3 r_v = v.right;
-		Matrix4x4 m_v = new Matrix4x4(new Vector4(t_v.x, t_v.y, t_v.z, 0f)
-									, new Vector4(u_v.x, u_v.y, u_v.z, 0f)
-									, new Vector4(r_v.x, r_v.y, r_v.z, 0f)
-									, new Vector4(0f, 0f, 0f, 1f));
-
-		Matrix4x4 l = m_v.transpose * m_p;
-
-		Vector3 o_p = (m_ctrlL.transform.localPosition + m_ctrlR.transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
-		o_p.y = 0.0f;
-		Vector3 o_v = v.position;
-		Vector3 t = -l.MultiplyVector(o_p) + o_v;
-
-		Transport(l.rotation, t);
-	}
-
-	private void Transport(Quaternion r, Vector3 t)
-	{
-		//fixme: a smooth transit should happen for transport
-		transform.position = t;
-		transform.rotation = r;
 	}
 }
 

@@ -231,7 +231,7 @@ public class ScenarioControlPed : MonoBehaviour {
 										{
                                             GameObject steamVR = GameObject.Find("[CameraRig]");
                                             Debug.Assert(null != steamVR);
-                                            SteamVR_ControllerManager mgr = steamVR.GetComponent<SteamVR_ControllerManager>();
+                                            SteamVR_ControllerManager2 mgr = steamVR.GetComponent<SteamVR_ControllerManager2>();
                                             mgr.m_avatar = ped;
 										}
 
