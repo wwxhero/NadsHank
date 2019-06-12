@@ -132,7 +132,7 @@ namespace RootMotion.FinalIK
 									, rightFootTracker
 								};
 
-			//Debug.Assert(GameObject.FindGameObjectsWithTag("head_target")[0].transform == ik.references.head);
+			Debug.Assert(GameObject.FindGameObjectsWithTag("head_target")[0].transform == ik.references.head);
 			Transform [] refs_target = {
 									  ik.references.head
 									, ik.references.pelvis
@@ -240,7 +240,7 @@ namespace RootMotion.FinalIK
 									, rightFootTracker
 								};
 
-			//Debug.Assert(GameObject.FindGameObjectsWithTag("head_target")[0].transform == ik.references.head);
+			Debug.Assert(GameObject.FindGameObjectsWithTag("head_target")[0].transform == ik.references.head);
 			Transform [] refs_target = {
 									  ik.references.head
 									, ik.references.pelvis
@@ -267,7 +267,7 @@ namespace RootMotion.FinalIK
 				if (null == ref_goals[i_tracker])
 					continue;
 				GameObject goal = new GameObject("goal");
-				goal.transform.position = ref_goals[i_tracker].position + Vector3.forward + Vector3.up;
+                goal.transform.position = ref_goals[i_tracker].position + ik.references.root.transform.forward + ik.references.root.transform.up;
 				goal.transform.parent = trackers[i_tracker];
 				goals[i_tracker] = goal;
 			}

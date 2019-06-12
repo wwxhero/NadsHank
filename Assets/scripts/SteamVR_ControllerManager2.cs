@@ -17,7 +17,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
 	public GameObject[] m_objects;
-	enum ObjType {tracker_rfoot=2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand};
+	enum ObjType {tracker_rfoot = 0, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand};
 
 	[Tooltip("Set to true if you want objects arbitrarily assigned to controllers before their role (left vs right) is identified")]
 	public bool m_assignAllBeforeIdentified;
@@ -82,14 +82,13 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		State s = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
-		bool stemtrackers_ready = (OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_pelvis]
-								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_lfoot]
-								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_rfoot]);
-		bool handstrackers_ready =(OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_lhand]
-								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_rhand]);
+		bool stemtrackers_ready = (OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_pelvis]
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_lfoot]
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_rfoot]);
+		bool handstrackers_ready =(OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_lhand]
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_rhand]);
 		GameObject[] ctrls = {m_ctrlR, m_ctrlL};
 		bool [] trigger = {false, false};
-		bool [] gripped = {false, false};
 		for (int i_ctrl = 0; i_ctrl < ctrls.Length; i_ctrl ++)
 		{
 			if (null != ctrls[i_ctrl])
@@ -97,7 +96,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				SteamVR_TrackedController ctrl = ctrls[i_ctrl].GetComponent<SteamVR_TrackedController>();
 				Debug.Assert(null != ctrl);
 				trigger[i_ctrl] = ctrl.triggerPressed;
-				gripped[i_ctrl] = ctrl.gripped;
 			}
 		}
 
@@ -128,14 +126,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 						m_donecali[(int)stem[i_part]] = true;
 				}
 				m_state = State.calibrating; //fixme: this code is for testing VW connection only
-				//m_data = VRIKCalibrator2.Calibrate(m_avatar.GetComponent<VRIK>()
-				//                , m_hmd.transform
-				//                , m_objects[(int)ObjType.tracker_pelvis].transform
-				//                , m_objects[(int)ObjType.tracker_lhand].transform
-				//                , m_objects[(int)ObjType.tracker_rhand].transform
-				//                , m_objects[(int)ObjType.tracker_lfoot].transform
-				//                , m_objects[(int)ObjType.tracker_rfoot].transform);
-
 			}
 		}
 		else if (State.calibrating == m_state
@@ -143,16 +133,16 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				&& ctrls_ready)
 		{
 			if(!m_donecali[(int)CaliPart.lhand]
-				&& gripped[0]) //calibrate for left hand
+				&& trigger[0]) //calibrate for left hand
 			{
-				m_donecali[(int)CaliPart.lhand] = VRIKCalibrator2.CalibrateLeftHand(m_avatar.GetComponent<VRIK>()
+				m_donecali[(int)CaliPart.lhand] = VRIKCalibrator2.CalibrateRightHand(m_avatar.GetComponent<VRIK>()
 																					, m_objects[(int)ObjType.tracker_lhand].transform
 																					, m_data);
 			}
 			else if (!m_donecali[(int)CaliPart.rhand]
-				&& gripped[1]) //calibrate for right hand
+				&& trigger[1]) //calibrate for right hand
 			{
-				m_donecali[(int)CaliPart.rhand] = VRIKCalibrator2.CalibrateRightHand(m_avatar.GetComponent<VRIK>()
+				m_donecali[(int)CaliPart.rhand] = VRIKCalibrator2.CalibrateLeftHand(m_avatar.GetComponent<VRIK>()
 																					, m_objects[(int)ObjType.tracker_rhand].transform
 																					, m_data);
 			}
@@ -412,8 +402,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 		Matrix4x4 l = m_v.transpose * m_p;
 
-		//Vector3 o_p = (m_ctrlL.transform.localPosition + m_ctrlR.transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
-		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
+		Vector3 o_p = (m_ctrlL.transform.localPosition + m_ctrlR.transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
