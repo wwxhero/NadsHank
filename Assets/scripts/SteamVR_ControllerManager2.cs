@@ -79,7 +79,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	void Update()
 	{
-		State s = m_state;
+		State s_n = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
 		bool stemtrackers_ready = (OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_pelvis]
@@ -100,7 +100,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				gripped[i_ctrl] = ctrl.gripped;
 			}
 		}
-
+		bool stateChanged = false;
 		if (State.initial == m_state
 			&& ctrls_ready)
 		{
@@ -109,67 +109,39 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			else
 				m_state = State.unidentified;
 		}
-		else if (State.identified == m_state
-				&& stemtrackers_ready)
+		stateChanged = (m_state != s_n);
+
+		if ((State.identified == m_state || State.calibrating == m_state)
+			&& !stateChanged)
 		{
-			if ((trigger[0] && trigger[1])
+			if ((gripped[0] && gripped[1])
 				&& null != m_avatar)
 			{
 				ConnectVirtualWorld();
-				if (VRIKCalibrator2.CalibrateStem(m_avatar.GetComponent<VRIK>()
-								, m_hmd.transform
-								, m_objects[(int)ObjType.tracker_pelvis].transform
-								, m_objects[(int)ObjType.tracker_lfoot].transform
-								, m_objects[(int)ObjType.tracker_rfoot].transform
-								, m_data))
-				{
-					CaliPart[] stem = new CaliPart[4] { CaliPart.head, CaliPart.pelvis, CaliPart.lfoot, CaliPart.rfoot };
-					for (int i_part = 0; i_part < stem.Length; i_part ++)
-						m_donecali[(int)stem[i_part]] = true;
-				}
 				m_state = State.calibrating; //fixme: this code is for testing VW connection only
-				//m_data = VRIKCalibrator2.Calibrate(m_avatar.GetComponent<VRIK>()
-				//                , m_hmd.transform
-				//                , m_objects[(int)ObjType.tracker_pelvis].transform
-				//                , m_objects[(int)ObjType.tracker_lhand].transform
-				//                , m_objects[(int)ObjType.tracker_rhand].transform
-				//                , m_objects[(int)ObjType.tracker_lfoot].transform
-				//                , m_objects[(int)ObjType.tracker_rfoot].transform);
-
 			}
 		}
-		else if (State.calibrating == m_state
-				&& handstrackers_ready
-				&& ctrls_ready)
+		stateChanged = (m_state != s_n);
+
+		if (State.calibrating == m_state
+				&& (trigger[0] || trigger[1])
+				&& !stateChanged)
 		{
-			if(!m_donecali[(int)CaliPart.lhand]
-				&& gripped[0]) //calibrate for left hand
-			{
-				m_donecali[(int)CaliPart.lhand] = VRIKCalibrator2.CalibrateLeftHand(m_avatar.GetComponent<VRIK>()
-																					, m_objects[(int)ObjType.tracker_lhand].transform
-																					, m_data);
-			}
-			else if (!m_donecali[(int)CaliPart.rhand]
-				&& gripped[1]) //calibrate for right hand
-			{
-				m_donecali[(int)CaliPart.rhand] = VRIKCalibrator2.CalibrateRightHand(m_avatar.GetComponent<VRIK>()
-																					, m_objects[(int)ObjType.tracker_rhand].transform
-																					, m_data);
-			}
-
-			bool cali_done = true;
-			for (int i_part = 0; i_part < m_donecali.Length; i_part ++)
-				cali_done = cali_done && m_donecali[i_part];
-			if (cali_done)
-				m_state = State.tracking;
+			m_data = VRIKCalibrator2.Calibrate(m_avatar.GetComponent<VRIK>()
+				, m_hmd.transform
+				, m_objects[(int)ObjType.tracker_pelvis].transform
+				, m_objects[(int)ObjType.tracker_lhand].transform
+				, m_objects[(int)ObjType.tracker_rhand].transform
+				, m_objects[(int)ObjType.tracker_lfoot].transform
+				, m_objects[(int)ObjType.tracker_rfoot].transform);
 		}
 
 
 
-		State s_prime = m_state;
+		State s_np = m_state;
 		if (DEF_DBG)
 		{
-			string strInfo = string.Format("state transition:{0}=>{1}", s.ToString(), s_prime.ToString());
+			string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
 			Debug.Log(strInfo);
 		}
 	}
