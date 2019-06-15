@@ -364,15 +364,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private void ConnectVirtualWorld()
 	{
-		Matrix4x4 v2p = transform.worldToLocalMatrix;
-		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
-		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
-		Vector3 r_p = Vector3.Cross(u_p, t_p);
-		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_p.x, t_p.y, t_p.z, 0f)
-									, new Vector4(u_p.x, u_p.y, u_p.z, 0f)
-									, new Vector4(r_p.x, r_p.y, r_p.z, 0f)
-									, new Vector4(0f, 0f, 0f, 1f));
-
 		Transform v = m_avatar.transform;
 		Vector3 t_v = v.forward;
 		Vector3 u_v = v.up;
@@ -382,10 +373,24 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Vector4(r_v.x, r_v.y, r_v.z, 0f)
 									, new Vector4(0f, 0f, 0f, 1f));
 
+		Matrix4x4 v2p = transform.worldToLocalMatrix;
+		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
+		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
+		Vector3 r_p = Vector3.Cross(u_p, t_p);
+
+		Vector3 u_prime_p = u_v;
+		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p);
+		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p);
+
+		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_prime_p.x, t_prime_p.y, t_prime_p.z, 0f)
+									, new Vector4(u_prime_p.x, u_prime_p.y, u_prime_p.z, 0f)
+									, new Vector4(r_prime_p.x, r_prime_p.y, r_prime_p.z, 0f)
+									, new Vector4(0f, 0f, 0f, 1f));
+
+
 		Matrix4x4 l = m_v.transpose * m_p;
 
-		//Vector3 o_p = (m_ctrlL.transform.localPosition + m_ctrlR.transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
-		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
+		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
