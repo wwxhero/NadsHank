@@ -17,7 +17,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
 	public GameObject[] m_objects;
-	enum ObjType {tracker_rfoot = 0, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand};
+	enum ObjType {tracker_rfoot=2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand};
 
 	[Tooltip("Set to true if you want objects arbitrarily assigned to controllers before their role (left vs right) is identified")]
 	public bool m_assignAllBeforeIdentified;
@@ -79,16 +79,17 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	void Update()
 	{
-		State s = m_state;
+		State s_n = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
-		bool stemtrackers_ready = (OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_pelvis]
-								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_lfoot]
-								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_rfoot]);
-		bool handstrackers_ready =(OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_lhand]
-								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[2+(int)ObjType.tracker_rhand]);
+		bool stemtrackers_ready = (OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_pelvis]
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_lfoot]
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_rfoot]);
+		bool handstrackers_ready =(OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_lhand]
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != m_indicesDev[(int)ObjType.tracker_rhand]);
 		GameObject[] ctrls = {m_ctrlR, m_ctrlL};
 		bool [] trigger = {false, false};
+		bool [] gripped = {false, false};
 		for (int i_ctrl = 0; i_ctrl < ctrls.Length; i_ctrl ++)
 		{
 			if (null != ctrls[i_ctrl])
@@ -96,9 +97,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				SteamVR_TrackedController ctrl = ctrls[i_ctrl].GetComponent<SteamVR_TrackedController>();
 				Debug.Assert(null != ctrl);
 				trigger[i_ctrl] = ctrl.triggerPressed;
+				gripped[i_ctrl] = ctrl.gripped;
 			}
 		}
-
+		bool stateChanged = false;
 		if (State.initial == m_state
 			&& ctrls_ready)
 		{
@@ -107,59 +109,39 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			else
 				m_state = State.unidentified;
 		}
-		else if (State.identified == m_state
-				&& stemtrackers_ready)
+		stateChanged = (m_state != s_n);
+
+		if ((State.identified == m_state || State.calibrating == m_state)
+			&& !stateChanged)
 		{
-			if ((trigger[0] && trigger[1])
+			if ((gripped[0] && gripped[1])
 				&& null != m_avatar)
 			{
 				ConnectVirtualWorld();
-				if (VRIKCalibrator2.CalibrateStem(m_avatar.GetComponent<VRIK>()
-								, m_hmd.transform
-								, m_objects[(int)ObjType.tracker_pelvis].transform
-								, m_objects[(int)ObjType.tracker_lfoot].transform
-								, m_objects[(int)ObjType.tracker_rfoot].transform
-								, m_data))
-				{
-					CaliPart[] stem = new CaliPart[4] { CaliPart.head, CaliPart.pelvis, CaliPart.lfoot, CaliPart.rfoot };
-					for (int i_part = 0; i_part < stem.Length; i_part ++)
-						m_donecali[(int)stem[i_part]] = true;
-				}
 				m_state = State.calibrating; //fixme: this code is for testing VW connection only
 			}
 		}
-		else if (State.calibrating == m_state
-				&& handstrackers_ready
-				&& ctrls_ready)
-		{
-			if(!m_donecali[(int)CaliPart.lhand]
-				&& trigger[0]) //calibrate for left hand
-			{
-				m_donecali[(int)CaliPart.lhand] = VRIKCalibrator2.CalibrateRightHand(m_avatar.GetComponent<VRIK>()
-																					, m_objects[(int)ObjType.tracker_lhand].transform
-																					, m_data);
-			}
-			else if (!m_donecali[(int)CaliPart.rhand]
-				&& trigger[1]) //calibrate for right hand
-			{
-				m_donecali[(int)CaliPart.rhand] = VRIKCalibrator2.CalibrateLeftHand(m_avatar.GetComponent<VRIK>()
-																					, m_objects[(int)ObjType.tracker_rhand].transform
-																					, m_data);
-			}
+		stateChanged = (m_state != s_n);
 
-			bool cali_done = true;
-			for (int i_part = 0; i_part < m_donecali.Length; i_part ++)
-				cali_done = cali_done && m_donecali[i_part];
-			if (cali_done)
-				m_state = State.tracking;
+		if (State.calibrating == m_state
+				&& (trigger[0] || trigger[1])
+				&& !stateChanged)
+		{
+			m_data = VRIKCalibrator2.Calibrate(m_avatar.GetComponent<VRIK>()
+				, m_hmd.transform
+				, m_objects[(int)ObjType.tracker_pelvis].transform
+				, m_objects[(int)ObjType.tracker_lhand].transform
+				, m_objects[(int)ObjType.tracker_rhand].transform
+				, m_objects[(int)ObjType.tracker_lfoot].transform
+				, m_objects[(int)ObjType.tracker_rfoot].transform);
 		}
 
 
 
-		State s_prime = m_state;
+		State s_np = m_state;
 		if (DEF_DBG)
 		{
-			string strInfo = string.Format("state transition:{0}=>{1}", s.ToString(), s_prime.ToString());
+			string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
 			Debug.Log(strInfo);
 		}
 	}
@@ -382,15 +364,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private void ConnectVirtualWorld()
 	{
-		Matrix4x4 v2p = transform.worldToLocalMatrix;
-		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
-		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
-		Vector3 r_p = Vector3.Cross(u_p, t_p);
-		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_p.x, t_p.y, t_p.z, 0f)
-									, new Vector4(u_p.x, u_p.y, u_p.z, 0f)
-									, new Vector4(r_p.x, r_p.y, r_p.z, 0f)
-									, new Vector4(0f, 0f, 0f, 1f));
-
 		Transform v = m_avatar.transform;
 		Vector3 t_v = v.forward;
 		Vector3 u_v = v.up;
@@ -400,9 +373,24 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Vector4(r_v.x, r_v.y, r_v.z, 0f)
 									, new Vector4(0f, 0f, 0f, 1f));
 
+		Matrix4x4 v2p = transform.worldToLocalMatrix;
+		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
+		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
+		Vector3 r_p = Vector3.Cross(u_p, t_p);
+
+		Vector3 u_prime_p = u_v;
+		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p);
+		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p);
+
+		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_prime_p.x, t_prime_p.y, t_prime_p.z, 0f)
+									, new Vector4(u_prime_p.x, u_prime_p.y, u_prime_p.z, 0f)
+									, new Vector4(r_prime_p.x, r_prime_p.y, r_prime_p.z, 0f)
+									, new Vector4(0f, 0f, 0f, 1f));
+
+
 		Matrix4x4 l = m_v.transpose * m_p;
 
-		Vector3 o_p = (m_ctrlL.transform.localPosition + m_ctrlR.transform.localPosition) * 0.5f; //fixme: orientation in tracking space should be decided in more sophisticated way
+		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
