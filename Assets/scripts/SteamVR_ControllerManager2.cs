@@ -62,7 +62,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		{
             bool hit = (cur == m_vec[0]
             			&& 0 != (cond & m_cond));
-            if (hit)
+            if (hit && null != m_acts)
             {
             	for (int i_act = 0; i_act < m_acts.Length; i_act ++)
             		m_acts[i_act](cond);
