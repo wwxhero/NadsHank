@@ -10,7 +10,9 @@ using RootMotion.FinalIK;
 
 public class SteamVR_ControllerManager2 : MonoBehaviour
 {
+	public bool DEF_MOCKSTEAM = true;
 	public bool DEF_DBG = true;
+
 	public GameObject m_avatar;
 	public GameObject m_hmd;
 	public GameObject m_ctrlL, m_ctrlR;
@@ -32,19 +34,19 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	VRIKCalibrator.CalibrationData m_data = new VRIKCalibrator.CalibrationData();
 
 	delegate void Action(uint cond);
-	enum State {initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking };
+	enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking };
 	class Transition
 	{
-        private State[] m_vec = new State[2];
-        private Action[] m_acts;
-        private uint m_cond = 0;
-        public Transition(State from, State to, uint cond)
-        {
-        	m_vec[0] = from;
-        	m_vec[1] = to;
-        	m_cond = cond;
-        }
-        public Transition(State from, State to, uint cond, Action act)
+		private State[] m_vec = new State[2];
+		private Action[] m_acts;
+		private uint m_cond = 0;
+		public Transition(State from, State to, uint cond)
+		{
+			m_vec[0] = from;
+			m_vec[1] = to;
+			m_cond = cond;
+		}
+		public Transition(State from, State to, uint cond, Action act)
 		{
 			m_vec[0] = from;
 			m_vec[1] = to;
@@ -60,14 +62,18 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 		public bool Exe(ref State cur, uint cond)
 		{
-            bool hit = (cur == m_vec[0]
-            			&& 0 != (cond & m_cond));
-            if (hit && null != m_acts)
-            {
-            	for (int i_act = 0; i_act < m_acts.Length; i_act ++)
-            		m_acts[i_act](cond);
-            }
-            return hit;
+			bool hit = (cur == m_vec[0]
+						&& ( m_cond == ALL || 0 != (cond & m_cond) ));
+			if (hit)
+			{
+                cur = m_vec[1];
+                if (null != m_acts)
+                {
+                    for (int i_act = 0; i_act < m_acts.Length; i_act++)
+                        m_acts[i_act](cond);
+                }
+			}
+			return hit;
 		}
 	};
 
@@ -98,78 +104,76 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[2]{ actHideMirror, actHideTracker })
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP)
 								};
-    static SteamVR_ControllerManager2 g_inst;
-    private static void actConnectVirtualWorld(uint cond)
-    {
-        if (g_inst)
-            g_inst.ConnectVirtualWorld();
-    }
-
-    private static void actShowMirror(uint cond)
-    {
-        //fixme: a mirror is supposed to show at a right position
-    }
-
-    private static void actAdjustMirror(uint cond)
-    {
-        //fixme: adjust the mirror with the ctrl code
-    }
-
-    private static void actCalibration(uint cond)
-    {
+	static SteamVR_ControllerManager2 g_inst;
+	private static void actConnectVirtualWorld(uint cond)
+	{
         Debug.Assert(null != g_inst
             && null != g_inst.m_avatar);
-		if (null != g_inst
-            && null != g_inst.m_avatar)
-        {
-            g_inst.IdentifyTrackers();
-            VRIK ik = g_inst.m_avatar.GetComponent<VRIK>();
-            g_inst.m_data =	VRIKCalibrator2.Calibrate(ik, g_inst.m_hmd.transform
-            			, g_inst.m_objects[(int)ObjType.tracker_pelvis].transform
-            			, g_inst.m_objects[(int)ObjType.tracker_lhand].transform
-            			, g_inst.m_objects[(int)ObjType.tracker_rhand].transform
-            			, g_inst.m_objects[(int)ObjType.tracker_lfoot].transform
-            			, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
-        }
-    }
+        if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("actConnectVirtualWorld");
+		else
+		{
+			if (g_inst)
+				g_inst.ConnectVirtualWorld();
+		}
+	}
 
-    private static void actHideMirror(uint cond)
-    {
-        //fixme: hide mirror
-    }
+	private static void actShowMirror(uint cond)
+	{
+		//fixme: a mirror is supposed to show at a right position
+	}
 
-    private static void actHideTracker(uint cond)
-    {
-        //fixme: hide trackers
-    }
+	private static void actAdjustMirror(uint cond)
+	{
+		//fixme: adjust the mirror with the ctrl code
+	}
 
-    State m_state = State.initial;
-	
+	private static void actCalibration(uint cond)
+	{
+        Debug.Assert(null != g_inst
+            && null != g_inst.m_avatar);
+        if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("actCalibration");
+		else
+		{
+			if (null != g_inst
+				&& null != g_inst.m_avatar)
+			{
+				g_inst.IdentifyTrackers();
+				VRIK ik = g_inst.m_avatar.GetComponent<VRIK>();
+				g_inst.m_data =	VRIKCalibrator2.Calibrate(ik, g_inst.m_hmd.transform
+							, g_inst.m_objects[(int)ObjType.tracker_pelvis].transform
+							, g_inst.m_objects[(int)ObjType.tracker_lhand].transform
+							, g_inst.m_objects[(int)ObjType.tracker_rhand].transform
+							, g_inst.m_objects[(int)ObjType.tracker_lfoot].transform
+							, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
+			}
+		}
+	}
+
+	private static void actHideMirror(uint cond)
+	{
+		//fixme: hide mirror
+	}
+
+	private static void actHideTracker(uint cond)
+	{
+		//fixme: hide trackers
+	}
+
+	State m_state = State.initial;
+
 	void Update()
 	{
 		State s_n = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
-		if (!ctrls_ready)
+		if (!ctrls_ready
+			&& !DEF_MOCKSTEAM)
 			return;
-		SteamVR_TrackedController ctrlR = m_ctrlR.GetComponent<SteamVR_TrackedController>();
-		SteamVR_TrackedController ctrlL = m_ctrlL.GetComponent<SteamVR_TrackedController>();
 		uint code_ctrl = 0x0;
-		bool [] ctrl_switch = new bool[2*(int)CtrlCode.n_code] {
-									  ctrlR.triggerPressed
-                                    , ctrlR.steamPressed
-                                    , ctrlR.menuPressed
-                                    , ctrlR.padPressed
-                                    , ctrlR.padTouched
-                                    , ctrlR.gripped
-                                    , ctrlL.triggerPressed
-                                    , ctrlL.steamPressed
-                                    , ctrlL.menuPressed
-                                    , ctrlL.padPressed
-                                    , ctrlL.padTouched
-                                    , ctrlL.gripped
-								};
-		uint [] switch_codes = new uint[2*(int)CtrlCode.n_code] {
+		bool [] ctrl_switch = new bool[2*(int)CtrlCode.n_code];
+		uint [] switch_codes = new uint[2*(int)CtrlCode.n_code]	{
 									  R_TRIGGER
 									, R_STEAM
 									, R_MENU
@@ -183,14 +187,50 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, L_PAD_T
 									, L_GRIP
 								};
+		if (DEF_MOCKSTEAM)
+		{
+            ctrl_switch[0]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[1]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[2]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[3]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[4]  = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[5]  = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[6]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift);
+			ctrl_switch[7]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift);
+			ctrl_switch[8]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftShift);
+			ctrl_switch[9]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift);
+			ctrl_switch[10] = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift);
+			ctrl_switch[11] = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift);
+		}
+		else
+		{
+			SteamVR_TrackedController ctrlR = m_ctrlR.GetComponent<SteamVR_TrackedController>();
+			SteamVR_TrackedController ctrlL = m_ctrlL.GetComponent<SteamVR_TrackedController>();
+			ctrl_switch[0]  = ctrlR.triggerPressed;
+			ctrl_switch[1]  = ctrlR.steamPressed;
+			ctrl_switch[2]  = ctrlR.menuPressed;
+			ctrl_switch[3]  = ctrlR.padPressed;
+			ctrl_switch[4]  = ctrlR.padTouched;
+			ctrl_switch[5]  = ctrlR.gripped;
+			ctrl_switch[6]  = ctrlL.triggerPressed;
+			ctrl_switch[7]  = ctrlL.steamPressed;
+			ctrl_switch[8]  = ctrlL.menuPressed;
+			ctrl_switch[9]  = ctrlL.padPressed;
+			ctrl_switch[10] = ctrlL.padTouched;
+			ctrl_switch[11] = ctrlL.gripped;
+		}
+
+
+
+
 		for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch ++)
 		{
-            if (ctrl_switch[i_switch])
-                code_ctrl |= switch_codes[i_switch];
+			if (ctrl_switch[i_switch])
+				code_ctrl |= switch_codes[i_switch];
 		}
 
 		bool state_tran = false;
-        int n_transi = m_transition.Length;
+		int n_transi = m_transition.Length;
 		for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi ++)
 			state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
 
@@ -201,7 +241,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			Debug.Log(strInfo);
 		}
 	}
-	
+
 	private void IdentifyTrackers()
 	{
 
@@ -289,8 +329,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		inputFocusAction = SteamVR_Events.InputFocusAction(OnInputFocus);
 		deviceConnectedAction = SteamVR_Events.DeviceConnectedAction(OnDeviceConnected);
 		trackedDeviceRoleChangedAction = SteamVR_Events.SystemAction(EVREventType.VREvent_TrackedDeviceRoleChanged, OnTrackedDeviceRoleChanged);
-        g_inst = this;
-    }
+		g_inst = this;
+	}
 
 	void OnEnable()
 	{
