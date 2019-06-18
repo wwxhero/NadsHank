@@ -117,7 +117,9 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
     private static void actCalibration(uint cond)
     {
-        if (null != g_inst
+        Debug.Assert(null != g_inst
+            && null != g_inst.m_avatar);
+		if (null != g_inst
             && null != g_inst.m_avatar)
         {
             g_inst.IdentifyTrackers();
@@ -142,50 +144,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
     }
 
     State m_state = State.initial;
-	// Helper function to avoid adding duplicates to object array.
-	void SetUniqueObject(GameObject o, int index)
-	{
-		for (int i = 0; i < index; i++)
-			if (m_objects[i] == o)
-				return;
-
-		m_objects[index] = o;
-	}
-
-	// This needs to be called if you update left, right or objects at runtime (e.g. when dyanmically spawned).
-	public void UpdateTargets()
-	{
-		// Add left and right entries to the head of the list so we only have to operate on the list itself.
-		var objects = m_objects;
-		var additional = (objects != null) ? objects.Length : 0;
-		m_objects = new GameObject[2 + additional];
-		SetUniqueObject(m_ctrlR, 0);
-		SetUniqueObject(m_ctrlL, 1);
-		for (int i = 0; i < additional; i++)
-			SetUniqueObject(objects[i], 2 + i);
-
-		// Reset assignments.
-		m_indicesDev = new uint[2 + additional];
-		for (int i = 0; i < m_indicesDev.Length; i++)
-			m_indicesDev[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
-	}
-
-	SteamVR_Events.Action inputFocusAction, deviceConnectedAction, trackedDeviceRoleChangedAction;
-
-	void Awake()
-	{
-		UpdateTargets();
-	}
-
-	SteamVR_ControllerManager2()
-	{
-		inputFocusAction = SteamVR_Events.InputFocusAction(OnInputFocus);
-		deviceConnectedAction = SteamVR_Events.DeviceConnectedAction(OnDeviceConnected);
-		trackedDeviceRoleChangedAction = SteamVR_Events.SystemAction(EVREventType.VREvent_TrackedDeviceRoleChanged, OnTrackedDeviceRoleChanged);
-        g_inst = this;
-    }
-
-
+	
 	void Update()
 	{
 		State s_n = m_state;
@@ -242,6 +201,96 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			Debug.Log(strInfo);
 		}
 	}
+	
+	private void IdentifyTrackers()
+	{
+
+	}
+
+	private void ConnectVirtualWorld()
+	{
+		Transform v = m_avatar.transform;
+		Vector3 t_v = v.forward;
+		Vector3 u_v = v.up;
+		Vector3 r_v = v.right;
+		Matrix4x4 m_v = new Matrix4x4(new Vector4(t_v.x, t_v.y, t_v.z, 0f)
+									, new Vector4(u_v.x, u_v.y, u_v.z, 0f)
+									, new Vector4(r_v.x, r_v.y, r_v.z, 0f)
+									, new Vector4(0f, 0f, 0f, 1f));
+
+		Matrix4x4 v2p = transform.worldToLocalMatrix;
+		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
+		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
+		Vector3 r_p = Vector3.Cross(u_p, t_p);
+
+		Vector3 u_prime_p = u_v;
+		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p);
+		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p);
+
+		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_prime_p.x, t_prime_p.y, t_prime_p.z, 0f)
+									, new Vector4(u_prime_p.x, u_prime_p.y, u_prime_p.z, 0f)
+									, new Vector4(r_prime_p.x, r_prime_p.y, r_prime_p.z, 0f)
+									, new Vector4(0f, 0f, 0f, 1f));
+
+
+		Matrix4x4 l = m_v.transpose * m_p;
+
+		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
+		o_p.y = 0.0f;
+		Vector3 o_v = v.position;
+		Vector3 t = -l.MultiplyVector(o_p) + o_v;
+
+		Transport(l.rotation, t);
+	}
+
+	private void Transport(Quaternion r, Vector3 t)
+	{
+		//fixme: a smooth transit should happen for transport
+		transform.position = t;
+		transform.rotation = r;
+	}
+	// Helper function to avoid adding duplicates to object array.
+	void SetUniqueObject(GameObject o, int index)
+	{
+		for (int i = 0; i < index; i++)
+			if (m_objects[i] == o)
+				return;
+
+		m_objects[index] = o;
+	}
+
+	// This needs to be called if you update left, right or objects at runtime (e.g. when dyanmically spawned).
+	public void UpdateTargets()
+	{
+		// Add left and right entries to the head of the list so we only have to operate on the list itself.
+		var objects = m_objects;
+		var additional = (objects != null) ? objects.Length : 0;
+		m_objects = new GameObject[2 + additional];
+		SetUniqueObject(m_ctrlR, 0);
+		SetUniqueObject(m_ctrlL, 1);
+		for (int i = 0; i < additional; i++)
+			SetUniqueObject(objects[i], 2 + i);
+
+		// Reset assignments.
+		m_indicesDev = new uint[2 + additional];
+		for (int i = 0; i < m_indicesDev.Length; i++)
+			m_indicesDev[i] = OpenVR.k_unTrackedDeviceIndexInvalid;
+	}
+
+	SteamVR_Events.Action inputFocusAction, deviceConnectedAction, trackedDeviceRoleChangedAction;
+
+	void Awake()
+	{
+		UpdateTargets();
+	}
+
+	SteamVR_ControllerManager2()
+	{
+		inputFocusAction = SteamVR_Events.InputFocusAction(OnInputFocus);
+		deviceConnectedAction = SteamVR_Events.DeviceConnectedAction(OnDeviceConnected);
+		trackedDeviceRoleChangedAction = SteamVR_Events.SystemAction(EVREventType.VREvent_TrackedDeviceRoleChanged, OnTrackedDeviceRoleChanged);
+        g_inst = this;
+    }
 
 	void OnEnable()
 	{
@@ -454,53 +503,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 	}
 
-	private void IdentifyTrackers()
-	{
 
-	}
-
-	private void ConnectVirtualWorld()
-	{
-		Transform v = m_avatar.transform;
-		Vector3 t_v = v.forward;
-		Vector3 u_v = v.up;
-		Vector3 r_v = v.right;
-		Matrix4x4 m_v = new Matrix4x4(new Vector4(t_v.x, t_v.y, t_v.z, 0f)
-									, new Vector4(u_v.x, u_v.y, u_v.z, 0f)
-									, new Vector4(r_v.x, r_v.y, r_v.z, 0f)
-									, new Vector4(0f, 0f, 0f, 1f));
-
-		Matrix4x4 v2p = transform.worldToLocalMatrix;
-		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
-		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
-		Vector3 r_p = Vector3.Cross(u_p, t_p);
-
-		Vector3 u_prime_p = u_v;
-		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p);
-		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p);
-
-		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_prime_p.x, t_prime_p.y, t_prime_p.z, 0f)
-									, new Vector4(u_prime_p.x, u_prime_p.y, u_prime_p.z, 0f)
-									, new Vector4(r_prime_p.x, r_prime_p.y, r_prime_p.z, 0f)
-									, new Vector4(0f, 0f, 0f, 1f));
-
-
-		Matrix4x4 l = m_v.transpose * m_p;
-
-		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
-		o_p.y = 0.0f;
-		Vector3 o_v = v.position;
-		Vector3 t = -l.MultiplyVector(o_p) + o_v;
-
-		Transport(l.rotation, t);
-	}
-
-	private void Transport(Quaternion r, Vector3 t)
-	{
-		//fixme: a smooth transit should happen for transport
-		transform.position = t;
-		transform.rotation = r;
-	}
 
 
 }
