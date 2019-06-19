@@ -9,6 +9,8 @@ namespace RootMotion.FinalIK
 	/// </summary>
 	public static class VRIKCalibrator2
 	{
+		static readonly string c_targetName = "target";
+		static readonly string c_goalName = "goal";
 		public static void UnCalibrate(VRIK ik, Transform headTracker, Transform bodyTracker, Transform leftHandTracker, Transform rightHandTracker, Transform leftFootTracker, Transform rightFootTracker)
 		{
 			VRIKBackup bk = ik.GetComponent<VRIKBackup>();
@@ -27,6 +29,8 @@ namespace RootMotion.FinalIK
 			{
 				Transform tracker = trackers[i_tracker];
 				foreach (Transform child in tracker)
+					if (child.name == c_targetName
+						|| child.name == c_goalName)
 					GameObject.Destroy(child.gameObject);
 			}
 		}
@@ -74,14 +78,14 @@ namespace RootMotion.FinalIK
 
 			for (int i_tracker = 0; i_tracker < n_tracker; i_tracker ++)
 			{
-				GameObject target = new GameObject("target");
+				GameObject target = new GameObject(c_targetName);
 				target.transform.rotation = refs_target[i_tracker].rotation;
 				target.transform.position = refs_target[i_tracker].position;
 				target.transform.parent = trackers[i_tracker];
 				targets[i_tracker] = target;
 				if (null == ref_goals[i_tracker])
 					continue;
-				GameObject goal = new GameObject("goal");
+				GameObject goal = new GameObject(c_goalName);
 				goal.transform.position = ref_goals[i_tracker].position + ik.references.root.transform.forward + ik.references.root.transform.up;
 				goal.transform.parent = trackers[i_tracker];
 				goals[i_tracker] = goal;
