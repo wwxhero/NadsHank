@@ -197,8 +197,8 @@ public class ScenarioControlPed : MonoBehaviour {
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
-										ped.AddComponent<Manipulator>();
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
+										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
 										ik.AutoDetectReferences();
 
 										if (null != m_mockTrackersPrefab)
@@ -229,10 +229,10 @@ public class ScenarioControlPed : MonoBehaviour {
 										}
 										else
 										{
-                                            GameObject steamVR = GameObject.Find("[CameraRig]");
-                                            Debug.Assert(null != steamVR);
-                                            SteamVR_ControllerManager2 mgr = steamVR.GetComponent<SteamVR_ControllerManager2>();
-                                            mgr.m_avatar = ped;
+											GameObject steamVR = GameObject.Find("[CameraRig]");
+											Debug.Assert(null != steamVR);
+											SteamVR_ControllerManager2 mgr = steamVR.GetComponent<SteamVR_ControllerManager2>();
+											mgr.m_avatar = ped;
 										}
 
 										if (DEF_LOGMATRIXFAC)
@@ -276,13 +276,13 @@ public class ScenarioControlPed : MonoBehaviour {
 								}
 							case EVT.pegPed:
 								{
-                                    int id_parent, id_child;
-                                    m_ctrl.GetpegPedTuple(out id_parent, out id_child);
-                                    KeyValuePair<int, int> peg = new KeyValuePair<int, int>(id_parent, id_child);
-                                    if (null == peg_pairs)
-                                    	peg_pairs = new List<KeyValuePair<int, int>>();
-                                    peg_pairs.Add(peg);
-                                    break;
+									int id_parent, id_child;
+									m_ctrl.GetpegPedTuple(out id_parent, out id_child);
+									KeyValuePair<int, int> peg = new KeyValuePair<int, int>(id_parent, id_child);
+									if (null == peg_pairs)
+										peg_pairs = new List<KeyValuePair<int, int>>();
+									peg_pairs.Add(peg);
+									break;
 								}
 
 						}

@@ -66,12 +66,12 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 						&& ( m_cond == ALL || 0 != (cond & m_cond) ));
 			if (hit)
 			{
-                cur = m_vec[1];
-                if (null != m_acts)
-                {
-                    for (int i_act = 0; i_act < m_acts.Length; i_act++)
-                        m_acts[i_act](cond);
-                }
+				cur = m_vec[1];
+				if (null != m_acts)
+				{
+					for (int i_act = 0; i_act < m_acts.Length; i_act++)
+						m_acts[i_act](cond);
+				}
 			}
 			return hit;
 		}
@@ -102,14 +102,14 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
 									, new Transition(State.post_calibra, State.post_calibra, ALL^(R_GRIP|L_GRIP), actAdjustMirror)
 									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[2]{ actHideMirror, actHideTracker })
-									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP)
+									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 								};
 	static SteamVR_ControllerManager2 g_inst;
 	private static void actConnectVirtualWorld(uint cond)
 	{
-        Debug.Assert(null != g_inst
-            && null != g_inst.m_avatar);
-        if (g_inst.DEF_MOCKSTEAM)
+		Debug.Assert(null != g_inst
+			&& null != g_inst.m_avatar);
+		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actConnectVirtualWorld");
 		else
 		{
@@ -130,9 +130,9 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private static void actCalibration(uint cond)
 	{
-        Debug.Assert(null != g_inst
-            && null != g_inst.m_avatar);
-        if (g_inst.DEF_MOCKSTEAM)
+		Debug.Assert(null != g_inst
+			&& null != g_inst.m_avatar);
+		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actCalibration");
 		else
 		{
@@ -142,6 +142,28 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				g_inst.IdentifyTrackers();
 				VRIK ik = g_inst.m_avatar.GetComponent<VRIK>();
 				g_inst.m_data =	VRIKCalibrator2.Calibrate(ik, g_inst.m_hmd.transform
+							, g_inst.m_objects[(int)ObjType.tracker_pelvis].transform
+							, g_inst.m_objects[(int)ObjType.tracker_lhand].transform
+							, g_inst.m_objects[(int)ObjType.tracker_rhand].transform
+							, g_inst.m_objects[(int)ObjType.tracker_lfoot].transform
+							, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
+			}
+		}
+	}
+
+	private static void actUnCalibration(uint cond)
+	{
+		Debug.Assert(null != g_inst
+			&& null != g_inst.m_avatar);
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("actUnCalibration");
+		else
+		{
+			if (null != g_inst
+				&& null != g_inst.m_avatar)
+			{
+				VRIK ik = g_inst.m_avatar.GetComponent<VRIK>();
+				VRIKCalibrator2.UnCalibrate(ik, g_inst.m_hmd.transform
 							, g_inst.m_objects[(int)ObjType.tracker_pelvis].transform
 							, g_inst.m_objects[(int)ObjType.tracker_lhand].transform
 							, g_inst.m_objects[(int)ObjType.tracker_rhand].transform
@@ -189,7 +211,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 								};
 		if (DEF_MOCKSTEAM)
 		{
-            ctrl_switch[0]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift);
+			ctrl_switch[0]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift);
 			ctrl_switch[1]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift);
 			ctrl_switch[2]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift);
 			ctrl_switch[3]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift);

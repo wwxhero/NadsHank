@@ -9,113 +9,33 @@ namespace RootMotion.FinalIK
 	/// </summary>
 	public static class VRIKCalibrator2
 	{
-
-		/// <summary>
-		/// The settings for VRIK tracker calibration.
-		/// </summary>
-		[System.Serializable]
-		public class Settings
+		public static void UnCalibrate(VRIK ik, Transform headTracker, Transform bodyTracker, Transform leftHandTracker, Transform rightHandTracker, Transform leftFootTracker, Transform rightFootTracker)
 		{
-
-			/// <summary>
-			/// Multiplies character scale.
-			/// </summary>
-			[Tooltip("Multiplies character scale")]
-			public float scaleMlp = 1f;
-
-			/// <summary>
-			/// Local axis of the HMD facing forward.
-			/// </summary>
-			[Tooltip("Local axis of the HMD facing forward.")]
-			public Vector3 headTrackerForward = Vector3.forward;
-
-			/// <summary>
-			/// Local axis of the HMD facing up.
-			/// </summary>
-			[Tooltip("Local axis of the HMD facing up.")]
-			public Vector3 headTrackerUp = Vector3.up;
-
-			/// <summary>
-			/// Local axis of the body tracker towards the player's forward direction.
-			/// </summary>
-			[Tooltip("Local axis of the body tracker towards the player's forward direction.")]
-			public Vector3 bodyTrackerForward = Vector3.forward;
-
-			/// <summary>
-			/// Local axis of the body tracker towards the up direction.
-			/// </summary>
-			[Tooltip("Local axis of the body tracker towards the up direction.")]
-			public Vector3 bodyTrackerUp = Vector3.up;
-
-			/// <summary>
-			/// Local axis of the hand trackers pointing from the wrist towards the palm.
-			/// </summary>
-			[Tooltip("Local axis of the hand trackers pointing from the wrist towards the palm.")]
-			public Vector3 handTrackerForward = Vector3.forward;
-
-			/// <summary>
-			/// Local axis of the hand trackers pointing in the direction of the surface normal of the back of the hand.
-			/// </summary>
-			[Tooltip("Local axis of the hand trackers pointing in the direction of the surface normal of the back of the hand.")]
-			public Vector3 handTrackerUp = Vector3.up;
-
-			/// <summary>
-			/// Local axis of the foot trackers towards the player's forward direction.
-			/// </summary>
-			[Tooltip("Local axis of the foot trackers towards the player's forward direction.")]
-			public Vector3 footTrackerForward = Vector3.forward;
-
-			/// <summary>
-			/// Local axis of the foot tracker towards the up direction.
-			/// </summary>
-			[Tooltip("Local axis of the foot tracker towards the up direction.")]
-			public Vector3 footTrackerUp = Vector3.up;
-
-			[Space(10f)]
-			/// <summary>
-			/// Offset of the head bone from the HMD in (headTrackerForward, headTrackerUp) space relative to the head tracker.
-			/// </summary>
-			[Tooltip("Offset of the head bone from the HMD in (headTrackerForward, headTrackerUp) space relative to the head tracker.")]
-			public Vector3 headOffset;
-
-			/// <summary>
-			/// Offset of the hand bones from the hand trackers in (handTrackerForward, handTrackerUp) space relative to the hand trackers.
-			/// </summary>
-			[Tooltip("Offset of the hand bones from the hand trackers in (handTrackerForward, handTrackerUp) space relative to the hand trackers.")]
-			public Vector3 handOffset;
-
-			/// <summary>
-			/// Forward offset of the foot bones from the foot trackers.
-			/// </summary>
-			[Tooltip("Forward offset of the foot bones from the foot trackers.")]
-			public float footForwardOffset;
-
-			/// <summary>
-			/// Inward offset of the foot bones from the foot trackers.
-			/// </summary>
-			[Tooltip("Inward offset of the foot bones from the foot trackers.")]
-			public float footInwardOffset;
-
-			/// <summary>
-			/// Used for adjusting foot heading relative to the foot trackers.
-			/// </summary>
-			[Tooltip("Used for adjusting foot heading relative to the foot trackers.")]
-			[Range(-180f, 180f)]
-			public float footHeadingOffset;
-
-			/// <summary>
-			/// Pelvis target position weight. If the body tracker is on the backpack or somewhere else not very close to the pelvis of the player, position weight needs to be reduced to allow some bending for the spine.
-			/// </summary>
-			[Range(0f, 1f)] public float pelvisPositionWeight = 1f;
-
-			/// <summary>
-			/// Pelvis target rotation weight. If the body tracker is on the backpack or somewhere else not very close to the pelvis of the player, rotation weight needs to be reduced to allow some bending for the spine.
-			/// </summary>
-			[Range(0f, 1f)] public float pelvisRotationWeight = 1f;
+			VRIKBackup bk = ik.GetComponent<VRIKBackup>();
+			Debug.Assert(null != bk);
+			bk.Restore(ik);
+			Transform [] trackers = {
+									  headTracker
+									, bodyTracker
+									, leftHandTracker
+									, rightHandTracker
+									, leftFootTracker
+									, rightFootTracker
+								};
+			int n_tracker = trackers.Length;
+			for (int i_tracker = 0; i_tracker < n_tracker; i_tracker ++)
+			{
+				Transform tracker = trackers[i_tracker];
+				foreach (Transform child in tracker)
+					GameObject.Destroy(child.gameObject);
+			}
 		}
 
 		public static VRIKCalibrator.CalibrationData Calibrate(VRIK ik, Transform headTracker, Transform bodyTracker, Transform leftHandTracker, Transform rightHandTracker, Transform leftFootTracker, Transform rightFootTracker)
 		{
+			VRIKBackup bk = ik.GetComponent<VRIKBackup>();
+			Debug.Assert(null != bk);
+			bk.Save(ik);
 			if (!ik.solver.initiated)
 			{
 				Debug.LogError("Can not calibrate before VRIK has initiated.");
@@ -132,7 +52,6 @@ namespace RootMotion.FinalIK
 									, rightFootTracker
 								};
 
-			//Debug.Assert(GameObject.FindGameObjectsWithTag("head_target")[0].transform == ik.references.head);
 			Transform [] refs_target = {
 									  ik.references.head
 									, ik.references.pelvis
@@ -168,7 +87,7 @@ namespace RootMotion.FinalIK
 				goals[i_tracker] = goal;
 			}
 
-            VRIKCalibrator.CalibrationData data = new VRIKCalibrator.CalibrationData();
+			VRIKCalibrator.CalibrationData data = new VRIKCalibrator.CalibrationData();
 			data.scale = 1;
 			data.pelvisRotationWeight = 1;
 			data.pelvisPositionWeight = 1;
@@ -320,31 +239,31 @@ namespace RootMotion.FinalIK
 
 		public static bool CalibrateLeftHand(VRIK ik, Transform leftHandTracker, VRIKCalibrator.CalibrationData data)
 		{
-            Transform ref_target = ik.references.leftHand;
-            GameObject target = new GameObject("target");
-            target.transform.rotation = ref_target.rotation;
-            target.transform.position = ref_target.position;
-            target.transform.parent = leftHandTracker;
-            data.leftHand = new VRIKCalibrator.CalibrationData.Target(target.transform);
-            ik.solver.leftArm.target = target.transform;
-            ik.solver.leftArm.positionWeight = 1f;
-            ik.solver.leftArm.rotationWeight = 1f;
-            return true;
+			Transform ref_target = ik.references.leftHand;
+			GameObject target = new GameObject("target");
+			target.transform.rotation = ref_target.rotation;
+			target.transform.position = ref_target.position;
+			target.transform.parent = leftHandTracker;
+			data.leftHand = new VRIKCalibrator.CalibrationData.Target(target.transform);
+			ik.solver.leftArm.target = target.transform;
+			ik.solver.leftArm.positionWeight = 1f;
+			ik.solver.leftArm.rotationWeight = 1f;
+			return true;
 		}
 
 		public static bool CalibrateRightHand(VRIK ik, Transform rightHandTracker, VRIKCalibrator.CalibrationData data)
 		{
-            Transform ref_target = ik.references.rightHand;
-            GameObject target = new GameObject("target");
-            target.transform.rotation = ref_target.rotation;
-            target.transform.position = ref_target.position;
-            target.transform.parent = rightHandTracker;
-            data.rightHand = new VRIKCalibrator.CalibrationData.Target(target.transform);
-            ik.solver.rightArm.target = target.transform;
-            ik.solver.rightArm.positionWeight = 1f;
-            ik.solver.rightArm.rotationWeight = 1f;
-            return true;
-        }
+			Transform ref_target = ik.references.rightHand;
+			GameObject target = new GameObject("target");
+			target.transform.rotation = ref_target.rotation;
+			target.transform.position = ref_target.position;
+			target.transform.parent = rightHandTracker;
+			data.rightHand = new VRIKCalibrator.CalibrationData.Target(target.transform);
+			ik.solver.rightArm.target = target.transform;
+			ik.solver.rightArm.positionWeight = 1f;
+			ik.solver.rightArm.rotationWeight = 1f;
+			return true;
+		}
 
 	}
 }
