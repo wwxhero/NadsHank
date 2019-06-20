@@ -449,8 +449,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private void SetTrackedDeviceIndex(int objectIndex, uint trackedDeviceIndex)
 	{
-		Debug.Assert((objectIndex < 2)
-					== (OpenVR.System.GetTrackedDeviceClass((uint)trackedDeviceIndex)== ETrackedDeviceClass.Controller));
+		//object index 0 and 1 are reserved for controllers
+		Debug.Assert(objectIndex > 1
+					|| OpenVR.k_unTrackedDeviceIndexInvalid == trackedDeviceIndex
+					|| OpenVR.System.GetTrackedDeviceClass((uint)trackedDeviceIndex)== ETrackedDeviceClass.Controller);
 		// First make sure no one else is already using this index.
 		if (trackedDeviceIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
 		{
