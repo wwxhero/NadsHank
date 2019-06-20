@@ -33,7 +33,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	VRIKCalibrator.CalibrationData m_data = new VRIKCalibrator.CalibrationData();
 
-	delegate void Action(uint cond);
+	delegate bool Action(uint cond);
 	enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking };
 	class Transition
 	{
@@ -64,16 +64,18 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		{
 			bool hit = (cur == m_vec[0]
 						&& ( m_cond == ALL || 0 != (cond & m_cond) ));
+			bool executed = false;
 			if (hit)
 			{
 				cur = m_vec[1];
+				executed = true;
 				if (null != m_acts)
 				{
-					for (int i_act = 0; i_act < m_acts.Length; i_act++)
-						m_acts[i_act](cond);
+					for (int i_act = 0; i_act < m_acts.Length && executed; i_act++)
+						executed = executed && m_acts[i_act](cond);
 				}
 			}
-			return hit;
+			return executed;
 		}
 	};
 
@@ -105,7 +107,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 								};
 	static SteamVR_ControllerManager2 g_inst;
-	private static void actConnectVirtualWorld(uint cond)
+	private static bool actConnectVirtualWorld(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
@@ -116,19 +118,22 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			if (g_inst)
 				g_inst.ConnectVirtualWorld();
 		}
+		return true;
 	}
 
-	private static void actShowMirror(uint cond)
+	private static bool actShowMirror(uint cond)
 	{
 		//fixme: a mirror is supposed to show at a right position
+		return true;
 	}
 
-	private static void actAdjustMirror(uint cond)
+	private static bool actAdjustMirror(uint cond)
 	{
 		//fixme: adjust the mirror with the ctrl code
+		return true;
 	}
 
-	private static void actCalibration(uint cond)
+	private static bool actCalibration(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
@@ -149,9 +154,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 							, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
 			}
 		}
+		return true;
 	}
 
-	private static void actUnCalibration(uint cond)
+	private static bool actUnCalibration(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
@@ -171,16 +177,19 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 							, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
 			}
 		}
+		return true;
 	}
 
-	private static void actHideMirror(uint cond)
+	private static bool actHideMirror(uint cond)
 	{
 		//fixme: hide mirror
+		return true;
 	}
 
-	private static void actHideTracker(uint cond)
+	private static bool actHideTracker(uint cond)
 	{
 		//fixme: hide trackers
+		return true;
 	}
 
 	State m_state = State.initial;
