@@ -449,6 +449,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private void SetTrackedDeviceIndex(int objectIndex, uint trackedDeviceIndex)
 	{
+		Debug.Assert((objectIndex < 2)
+					== (OpenVR.System.GetTrackedDeviceClass((uint)trackedDeviceIndex)== ETrackedDeviceClass.Controller));
 		// First make sure no one else is already using this index.
 		if (trackedDeviceIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
 		{
@@ -526,24 +528,24 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			m_ctrlRIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
 		}
 
-		// If neither role has been assigned yet, try hooking up at least the right controller.
-		if (m_ctrlLIndex == OpenVR.k_unTrackedDeviceIndexInvalid && m_ctrlRIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
-		{
-			for (uint deviceIndex = 0; deviceIndex < m_connected.Length; deviceIndex++)
-			{
-				if (objectIndex >= m_objects.Length)
-					break;
+		// // If neither role has been assigned yet, try hooking up at least the right controller.
+		// if (m_ctrlLIndex == OpenVR.k_unTrackedDeviceIndexInvalid && m_ctrlRIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
+		// {
+		// 	for (uint deviceIndex = 0; deviceIndex < m_connected.Length; deviceIndex++)
+		// 	{
+		// 		if (objectIndex >= m_objects.Length)
+		// 			break;
 
-				if (!m_connected[deviceIndex])
-					continue;
+		// 		if (!m_connected[deviceIndex])
+		// 			continue;
 
-				SetTrackedDeviceIndex(objectIndex++, deviceIndex);
+		// 		SetTrackedDeviceIndex(objectIndex++, deviceIndex);
 
-				if (!m_assignAllBeforeIdentified)
-					break;
-			}
-		}
-		else
+		// 		if (!m_assignAllBeforeIdentified)
+		// 			break;
+		// 	}
+		// }
+		// else
 		{
 			SetTrackedDeviceIndex(objectIndex++, (m_ctrlRIndex < m_connected.Length && m_connected[m_ctrlRIndex]) ? m_ctrlRIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
 			SetTrackedDeviceIndex(objectIndex++, (m_ctrlLIndex < m_connected.Length && m_connected[m_ctrlLIndex]) ? m_ctrlLIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
