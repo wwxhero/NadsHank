@@ -97,7 +97,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									  new Transition(State.initial, State.pre_transport, ALL)
 									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, actConnectVirtualWorld)
 									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, actConnectVirtualWorld)
-									, new Transition(State.post_transport, State.pre_transport, L_GRIP)
+									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
 									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL^(R_TRIGGER|L_TRIGGER), actAdjustMirror)
 									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
@@ -119,6 +119,14 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				g_inst.ConnectVirtualWorld();
 		}
 		return true;
+	}
+
+	private static bool actUnConnectVirtualWorld(uint cond)
+	{
+        Quaternion q = new Quaternion(0, 0, 0, 1);
+        Vector3 p = new Vector3(0, 0, 0);
+        g_inst.Transport(q, p);
+        return true;
 	}
 
 	private static bool actShowMirror(uint cond)
