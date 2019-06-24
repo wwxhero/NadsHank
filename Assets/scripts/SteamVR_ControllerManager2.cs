@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+﻿//====== Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Enables/disables objects based on connectivity and assigned roles.
 //
@@ -13,6 +13,9 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	public bool DEF_MOCKSTEAM = true;
 	public bool DEF_DBG = true;
 
+	public GameObject m_prefMirror;
+	private GameObject m_mirrow;
+	[HideInInspector]
 	public GameObject m_avatar;
 	public GameObject m_hmd;
 	public GameObject m_ctrlL, m_ctrlR;
@@ -63,7 +66,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		public bool Exe(ref State cur, uint cond)
 		{
 			bool hit = (cur == m_vec[0]
-						&& ( m_cond == ALL || 0 != (cond & m_cond) ));
+						&& ( m_cond == ALL || m_cond == cond ));
 			bool executed = false;
 			if (hit)
 			{
@@ -99,12 +102,14 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, actConnectVirtualWorld)
 									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
 									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
-									, new Transition(State.pre_calibra, State.pre_calibra, ALL^(R_TRIGGER|L_TRIGGER), actAdjustMirror)
+									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
 									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
 									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
-									, new Transition(State.post_calibra, State.post_calibra, ALL^(R_GRIP|L_GRIP), actAdjustMirror)
-									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[2]{ actHideMirror, actHideTracker })
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
+									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[2]{ actUnShowMirror, actHideTracker })
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
+									, new Transition(State.post_calibra, State.pre_transport, L_PAD_P|R_PAD_P, new Action[3]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.pre_transport, L_PAD_P|R_PAD_P, new Action[2]{actUnCalibration, actUnConnectVirtualWorld})
 								};
 	static SteamVR_ControllerManager2 g_inst;
 	private static bool actConnectVirtualWorld(uint cond)
@@ -123,23 +128,82 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private static bool actUnConnectVirtualWorld(uint cond)
 	{
-        Quaternion q = new Quaternion(0, 0, 0, 1);
-        Vector3 p = new Vector3(0, 0, 0);
-        g_inst.Transport(q, p);
-        return true;
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("actUnConnectVirtualWorld");
+		else
+		{
+			Quaternion q = new Quaternion(0, 0, 0, 1);
+			Vector3 p = new Vector3(0, 0, 0);
+			g_inst.Transport(q, p);
+		}
+		return true;
 	}
 
 	private static bool actShowMirror(uint cond)
 	{
 		//fixme: a mirror is supposed to show at a right position
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("actShowMirror");
+		else
+		{
+			Debug.Assert(null == g_inst.m_mirrow && null != g_inst.m_avatar);
+			g_inst.m_mirrow = Instantiate(g_inst.m_prefMirror);
+			g_inst.m_mirrow.transform.parent = g_inst.m_avatar.transform;
+			g_inst.m_mirrow.transform.localPosition = new Vector3(0f, 0f, 1.4f);
+			g_inst.m_mirrow.transform.localRotation = new Quaternion(0, 0, 0, 1);
+		}
+		return true;
+	}
+
+	private static bool actUnShowMirror(uint cond)
+	{
+		//fixme: a mirror is supposed to show at a right position
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("actUnShowMirror");
+		else
+		{
+			Debug.Assert(null != g_inst.m_mirrow && null != g_inst.m_avatar);
+			GameObject.Destroy(g_inst.m_mirrow);
+			g_inst.m_mirrow = null;
+		}
 		return true;
 	}
 
 	private static bool actAdjustMirror(uint cond)
 	{
 		//fixme: adjust the mirror with the ctrl code
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("actAdjustMirror");
+			return false;
+		}
+		else
+		{
+			Debug.Assert(null != g_inst.m_mirrow);
+			bool acted = false;
+			if (L_PAD_P == cond)
+			{
+				g_inst.m_mirrow.transform.Translate(0, 0, 0.05f);
+				acted = true;
+			}
+			else if (R_PAD_P == cond)
+			{
+				g_inst.m_mirrow.transform.Translate(0, 0, -0.05f);
+				acted = true;
+			}
+			return acted;
+		}
+
+
+	}
+
+	private static bool actHideTracker(uint cond)
+	{
+		//fixme: hide trackers
 		return true;
 	}
+
+
 
 	private static bool actCalibration(uint cond)
 	{
@@ -188,17 +252,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		return true;
 	}
 
-	private static bool actHideMirror(uint cond)
-	{
-		//fixme: hide mirror
-		return true;
-	}
 
-	private static bool actHideTracker(uint cond)
-	{
-		//fixme: hide trackers
-		return true;
-	}
 
 	State m_state = State.initial;
 
