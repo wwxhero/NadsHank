@@ -28,6 +28,30 @@ public class ScenarioControlPed : MonoBehaviour {
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
 
+	class ConfAvatar
+	{
+		public uint height;
+		public uint width;
+		private const uint height0 = 178;
+		private const uint width0 = 140;
+		public ConfAvatar(uint a_height, uint a_width)
+		{
+			height = a_height;
+			width = a_width;
+		}
+
+		public void Apply(RootMotion.FinalIK.VRIK ped)
+		{
+			float s_h = (float)height / (float)height0;
+			float s_w = (float)width / ((float)width0 * s_h);
+			ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
+			ped.references.leftShoulder.localScale = new Vector3(1f, s_w, 1f);
+			ped.references.rightShoulder.localScale = new Vector3(1f, s_w, 1f);
+		}
+	};
+
+	ConfAvatar m_confAvatar;
+
 	// Use this for initialization
 	ScenarioControlPed()
 	{
@@ -83,6 +107,21 @@ public class ScenarioControlPed : MonoBehaviour {
 				m_ctrl = new DistriObjsCtrlClass();
 				m_ctrl.CreateNetworkExternalObjectControl((int)IMPLE.DISVRLINK, (int)TERMINAL.ped_controller);
 				m_ctrl.Initialize(m_scenePath);
+
+				XmlNodeList children = root.ChildNodes;
+				for (int i_node = 0; i_node < children.Count; i_node ++)
+				{
+					XmlNode n_child = children[i_node];
+					if ("avatar" == n_child.Name)
+					{
+						XmlElement e_avatar = (XmlElement)n_child;
+						XmlAttribute height_attr = e_avatar.GetAttributeNode("height");
+						XmlAttribute width_attr = e_avatar.GetAttributeNode("width");
+						uint height = uint.Parse(height_attr.Value);
+						uint width = uint.Parse(width_attr.Value);
+						m_confAvatar = new ConfAvatar(height, width);
+					}
+				}
 			}
 			catch (System.IO.FileNotFoundException)
 			{
@@ -233,6 +272,8 @@ public class ScenarioControlPed : MonoBehaviour {
 											Debug.Assert(null != steamVR);
 											SteamVR_ControllerManager2 mgr = steamVR.GetComponent<SteamVR_ControllerManager2>();
 											mgr.m_avatar = ped;
+											Debug.Assert(null != m_confAvatar);
+											m_confAvatar.Apply(ik);
 										}
 
 										if (DEF_LOGMATRIXFAC)
