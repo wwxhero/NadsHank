@@ -148,9 +148,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		{
 			Debug.Assert(null == g_inst.m_mirrow && null != g_inst.m_avatar);
 			g_inst.m_mirrow = Instantiate(g_inst.m_prefMirror);
-			g_inst.m_mirrow.transform.parent = g_inst.m_avatar.transform;
-			g_inst.m_mirrow.transform.localPosition = new Vector3(0f, 0f, 1.4f);
-			g_inst.m_mirrow.transform.localRotation = new Quaternion(0, 0, 0, 1);
+			g_inst.m_mirrow.transform.position = g_inst.m_avatar.transform.position + 1.4f * g_inst.m_avatar.transform.forward;
+			g_inst.m_mirrow.transform.rotation = g_inst.m_avatar.transform.rotation;
 		}
 		return true;
 	}
