@@ -22,7 +22,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
 	public GameObject[] m_objects;
-	enum ObjType {tracker_rfoot=2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand};
+	enum ObjType {tracker_rfoot=2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_end};
 
 	[Tooltip("Set to true if you want objects arbitrarily assigned to controllers before their role (left vs right) is identified")]
 	public bool m_assignAllBeforeIdentified;
@@ -106,10 +106,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
 									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
-									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[2]{ actUnShowMirror, actHideTracker })
+									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
-									, new Transition(State.post_calibra, State.pre_transport, L_PAD_P|R_PAD_P, new Action[3]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.pre_transport, L_PAD_P|R_PAD_P, new Action[2]{actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.post_calibra, State.pre_transport, L_PAD_P|R_PAD_P, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.pre_transport, L_PAD_P|R_PAD_P, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
 								};
 	static SteamVR_ControllerManager2 g_inst;
 	private static bool actConnectVirtualWorld(uint cond)
@@ -199,9 +199,49 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private static bool actHideTracker(uint cond)
 	{
-		//fixme: hide trackers
-		return true;
+        if (g_inst.DEF_MOCKSTEAM)
+        {
+            Debug.LogWarning("actHideTracker");
+            return true;
+        }
+        else
+        {
+            GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+            Camera cam = eyeCam.GetComponent<Camera>();
+            Debug.Assert(null != cam);
+            cam.nearClipPlane = 0.1f;
+            for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
+            {
+                GameObject tracker = g_inst.m_objects[i_tracker];
+                foreach (Transform sub_t in tracker.transform)
+                    sub_t.gameObject.SetActive(false);
+            }
+            return true;
+        }
 	}
+
+	private static bool actUnHideTracker(uint cond)
+	{
+        if (g_inst.DEF_MOCKSTEAM)
+        {
+            Debug.LogWarning("actUnHideTracker");
+            return true;
+        }
+        else
+        {
+            GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+            Camera cam = eyeCam.GetComponent<Camera>();
+            Debug.Assert(null != cam);
+            cam.nearClipPlane = 0.05f;
+            for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
+            {
+                GameObject tracker = g_inst.m_objects[i_tracker];
+                foreach (Transform sub_t in tracker.transform)
+                    sub_t.gameObject.SetActive(true);
+            }
+            return true;
+        }
+    }
 
 
 
