@@ -179,21 +179,20 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		else
 		{
 			Debug.Assert(null != g_inst.m_mirrow);
-			bool acted = false;
+			bool acted = ((L_PAD_P == cond)
+						|| (R_PAD_P == cond));
+			float dz = 0;
 			if (L_PAD_P == cond)
-			{
-				g_inst.m_mirrow.transform.Translate(0, 0, 0.05f);
-				acted = true;
-			}
+				dz = 0.01f;
 			else if (R_PAD_P == cond)
+				dz = -0.01f;
+			if (acted)
 			{
-				g_inst.m_mirrow.transform.Translate(0, 0, -0.05f);
-				acted = true;
+				Vector3 tran = dz * g_inst.m_mirrow.transform.forward;
+				g_inst.m_mirrow.transform.Translate(tran);
 			}
 			return acted;
 		}
-
-
 	}
 
 	private static bool actHideTracker(uint cond)
