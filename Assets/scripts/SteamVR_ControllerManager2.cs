@@ -179,12 +179,14 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		else
 		{
 			Debug.Assert(null != g_inst.m_mirrow);
-			bool acted = ((L_PAD_P == cond)
-						|| (R_PAD_P == cond));
+			bool l_pad_t = (cond == L_PAD_T);
+			bool r_pad_t = (cond == R_PAD_T);
+			bool acted = (l_pad_t
+						|| r_pad_t);
 			float dz = 0;
-			if (L_PAD_P == cond)
+			if (l_pad_t)
 				dz = 0.01f;
-			else if (R_PAD_P == cond)
+			else if (r_pad_t)
 				dz = -0.01f;
 			if (acted)
 			{
