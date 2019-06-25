@@ -261,7 +261,20 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
 		uint code_ctrl = 0x0;
-		bool [] ctrl_switch = new bool[2*(int)CtrlCode.n_code];
+		bool [] ctrl_switch = new bool[2*(int)CtrlCode.n_code] {
+									  Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift)
+								};
 		uint [] switch_codes = new uint[2*(int)CtrlCode.n_code]	{
 									  R_TRIGGER
 									, R_STEAM
@@ -276,19 +289,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, L_PAD_T
 									, L_GRIP
 								};
-
-		ctrl_switch[0]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift);
-		ctrl_switch[1]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift);
-		ctrl_switch[2]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift);
-		ctrl_switch[3]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift);
-		ctrl_switch[4]  = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.RightShift);
-		ctrl_switch[5]  = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.RightShift);
-		ctrl_switch[6]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift);
-		ctrl_switch[7]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift);
-		ctrl_switch[8]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftShift);
-		ctrl_switch[9]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift);
-		ctrl_switch[10] = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift);
-		ctrl_switch[11] = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift);
 
 		if (ctrls_ready)
 		{
@@ -308,14 +308,12 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			ctrl_switch[11] = ctrl_switch[11]||ctrlL.gripped;
 		}
 
-
-
-
 		for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch ++)
 		{
 			if (ctrl_switch[i_switch])
 				code_ctrl |= switch_codes[i_switch];
 		}
+
 
 		bool state_tran = false;
 		int n_transi = m_transition.Length;
@@ -325,6 +323,29 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		State s_np = m_state;
 		if (DEF_DBG)
 		{
+			string switches = null;
+			bool switched = false;
+			string [] switch_names = {
+				  "R_TRIGGER"
+				, "R_STEAM"
+				, "R_MENU"
+				, "R_PAD_P"
+				, "R_PAD_T"
+				, "R_GRIP"
+				, "L_TRIGGER"
+				, "L_STEAM"
+				, "L_MENU"
+				, "L_PAD_P"
+				, "L_PAD_T"
+				, "L_GRIP"
+			};
+			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch ++)
+			{
+				switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
+				switched = switched || ctrl_switch[i_switch];
+			}
+			if (switched)
+				Debug.LogWarning(switches);
 			string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
 			Debug.Log(strInfo);
 		}
