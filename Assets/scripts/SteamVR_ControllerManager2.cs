@@ -148,7 +148,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		{
 			Debug.Assert(null == g_inst.m_mirrow && null != g_inst.m_avatar);
 			g_inst.m_mirrow = Instantiate(g_inst.m_prefMirror);
-			g_inst.m_mirrow.transform.position = g_inst.m_avatar.transform.position + 1.4f * g_inst.m_avatar.transform.forward;
+			g_inst.m_mirrow.transform.position = g_inst.m_avatar.transform.position + 2f * g_inst.m_avatar.transform.forward;
 			g_inst.m_mirrow.transform.rotation = g_inst.m_avatar.transform.rotation;
 		}
 		return true;
@@ -260,9 +260,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		State s_n = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
-		if (!ctrls_ready
-			&& !DEF_MOCKSTEAM)
-			return;
 		uint code_ctrl = 0x0;
 		bool [] ctrl_switch = new bool[2*(int)CtrlCode.n_code];
 		uint [] switch_codes = new uint[2*(int)CtrlCode.n_code]	{
@@ -279,37 +276,36 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, L_PAD_T
 									, L_GRIP
 								};
-		if (DEF_MOCKSTEAM)
-		{
-			ctrl_switch[0]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift);
-			ctrl_switch[1]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift);
-			ctrl_switch[2]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift);
-			ctrl_switch[3]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift);
-			ctrl_switch[4]  = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.RightShift);
-			ctrl_switch[5]  = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.RightShift);
-			ctrl_switch[6]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift);
-			ctrl_switch[7]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift);
-			ctrl_switch[8]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftShift);
-			ctrl_switch[9]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift);
-			ctrl_switch[10] = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift);
-			ctrl_switch[11] = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift);
-		}
-		else
+
+		ctrl_switch[0]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift);
+		ctrl_switch[1]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift);
+		ctrl_switch[2]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift);
+		ctrl_switch[3]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift);
+		ctrl_switch[4]  = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.RightShift);
+		ctrl_switch[5]  = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.RightShift);
+		ctrl_switch[6]  = Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift);
+		ctrl_switch[7]  = Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift);
+		ctrl_switch[8]  = Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftShift);
+		ctrl_switch[9]  = Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift);
+		ctrl_switch[10] = Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift);
+		ctrl_switch[11] = Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift);
+
+		if (ctrls_ready)
 		{
 			SteamVR_TrackedController ctrlR = m_ctrlR.GetComponent<SteamVR_TrackedController>();
 			SteamVR_TrackedController ctrlL = m_ctrlL.GetComponent<SteamVR_TrackedController>();
-			ctrl_switch[0]  = ctrlR.triggerPressed;
-			ctrl_switch[1]  = ctrlR.steamPressed;
-			ctrl_switch[2]  = ctrlR.menuPressed;
-			ctrl_switch[3]  = ctrlR.padPressed;
-			ctrl_switch[4]  = ctrlR.padTouched;
-			ctrl_switch[5]  = ctrlR.gripped;
-			ctrl_switch[6]  = ctrlL.triggerPressed;
-			ctrl_switch[7]  = ctrlL.steamPressed;
-			ctrl_switch[8]  = ctrlL.menuPressed;
-			ctrl_switch[9]  = ctrlL.padPressed;
-			ctrl_switch[10] = ctrlL.padTouched;
-			ctrl_switch[11] = ctrlL.gripped;
+			ctrl_switch[0]  = ctrl_switch[0] ||ctrlR.triggerPressed;
+			ctrl_switch[1]  = ctrl_switch[1] ||ctrlR.steamPressed;
+			ctrl_switch[2]  = ctrl_switch[2] ||ctrlR.menuPressed;
+			ctrl_switch[3]  = ctrl_switch[3] ||ctrlR.padPressed;
+			ctrl_switch[4]  = ctrl_switch[4] ||ctrlR.padTouched;
+			ctrl_switch[5]  = ctrl_switch[5] ||ctrlR.gripped;
+			ctrl_switch[6]  = ctrl_switch[6] ||ctrlL.triggerPressed;
+			ctrl_switch[7]  = ctrl_switch[7] ||ctrlL.steamPressed;
+			ctrl_switch[8]  = ctrl_switch[8] ||ctrlL.menuPressed;
+			ctrl_switch[9]  = ctrl_switch[9] ||ctrlL.padPressed;
+			ctrl_switch[10] = ctrl_switch[10]||ctrlL.padTouched;
+			ctrl_switch[11] = ctrl_switch[11]||ctrlL.gripped;
 		}
 
 
