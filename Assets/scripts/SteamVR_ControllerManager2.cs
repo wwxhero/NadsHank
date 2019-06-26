@@ -108,8 +108,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
 									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
-									, new Transition(State.post_calibra, State.pre_transport, L_PAD_P|R_PAD_P, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.pre_transport, L_PAD_P|R_PAD_P, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
 								};
 	static SteamVR_ControllerManager2 g_inst;
 	private static bool actConnectVirtualWorld(uint cond)
@@ -199,49 +199,57 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private static bool actHideTracker(uint cond)
 	{
-        if (g_inst.DEF_MOCKSTEAM)
-        {
-            Debug.LogWarning("actHideTracker");
-            return true;
-        }
-        else
-        {
-            GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
-            Camera cam = eyeCam.GetComponent<Camera>();
-            Debug.Assert(null != cam);
-            cam.nearClipPlane = 0.1f;
-            for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
-            {
-                GameObject tracker = g_inst.m_objects[i_tracker];
-                foreach (Transform sub_t in tracker.transform)
-                    sub_t.gameObject.SetActive(false);
-            }
-            return true;
-        }
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("actHideTracker");
+			return true;
+		}
+		else
+		{
+			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+			Camera cam = eyeCam.GetComponent<Camera>();
+			Debug.Assert(null != cam);
+			cam.nearClipPlane = 0.1f;
+			for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
+			{
+				GameObject tracker = g_inst.m_objects[i_tracker];
+				foreach (Transform sub_t in tracker.transform)
+				{
+					SteamVR_RenderModel render = sub_t.GameObject.GetComponent<SteamVR_RenderModel>();
+					if (null != render)
+						sub_t.gameObject.SetActive(false);
+				}
+			}
+			return true;
+		}
 	}
 
 	private static bool actUnHideTracker(uint cond)
 	{
-        if (g_inst.DEF_MOCKSTEAM)
-        {
-            Debug.LogWarning("actUnHideTracker");
-            return true;
-        }
-        else
-        {
-            GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
-            Camera cam = eyeCam.GetComponent<Camera>();
-            Debug.Assert(null != cam);
-            cam.nearClipPlane = 0.05f;
-            for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
-            {
-                GameObject tracker = g_inst.m_objects[i_tracker];
-                foreach (Transform sub_t in tracker.transform)
-                    sub_t.gameObject.SetActive(true);
-            }
-            return true;
-        }
-    }
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("actUnHideTracker");
+			return true;
+		}
+		else
+		{
+			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+			Camera cam = eyeCam.GetComponent<Camera>();
+			Debug.Assert(null != cam);
+			cam.nearClipPlane = 0.05f;
+			for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
+			{
+				GameObject tracker = g_inst.m_objects[i_tracker];
+				foreach (Transform sub_t in tracker.transform)
+				{
+					SteamVR_RenderModel render = sub_t.GameObject.GetComponent<SteamVR_RenderModel>();
+					if (null != render)
+						sub_t.gameObject.SetActive(true);
+				}
+			}
+			return true;
+		}
+	}
 
 
 
