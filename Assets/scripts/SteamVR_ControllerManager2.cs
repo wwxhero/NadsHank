@@ -206,16 +206,12 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 		else
 		{
-			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
-			Camera cam = eyeCam.GetComponent<Camera>();
-			Debug.Assert(null != cam);
-			cam.nearClipPlane = 0.1f;
 			for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
 			{
 				GameObject tracker = g_inst.m_objects[i_tracker];
 				foreach (Transform sub_t in tracker.transform)
 				{
-					SteamVR_RenderModel render = sub_t.GameObject.GetComponent<SteamVR_RenderModel>();
+					SteamVR_RenderModel render = sub_t.gameObject.GetComponent<SteamVR_RenderModel>();
 					if (null != render)
 						sub_t.gameObject.SetActive(false);
 				}
@@ -233,16 +229,12 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 		else
 		{
-			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
-			Camera cam = eyeCam.GetComponent<Camera>();
-			Debug.Assert(null != cam);
-			cam.nearClipPlane = 0.05f;
 			for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
 			{
 				GameObject tracker = g_inst.m_objects[i_tracker];
 				foreach (Transform sub_t in tracker.transform)
 				{
-					SteamVR_RenderModel render = sub_t.GameObject.GetComponent<SteamVR_RenderModel>();
+					SteamVR_RenderModel render = sub_t.gameObject.GetComponent<SteamVR_RenderModel>();
 					if (null != render)
 						sub_t.gameObject.SetActive(true);
 				}
@@ -273,6 +265,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 							, g_inst.m_objects[(int)ObjType.tracker_lfoot].transform
 							, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
 			}
+			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+			Camera cam = eyeCam.GetComponent<Camera>();
+			Debug.Assert(null != cam);
+			cam.nearClipPlane = 0.1f;
 		}
 		return true;
 	}
@@ -296,6 +292,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 							, g_inst.m_objects[(int)ObjType.tracker_lfoot].transform
 							, g_inst.m_objects[(int)ObjType.tracker_rfoot].transform);
 			}
+			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+			Camera cam = eyeCam.GetComponent<Camera>();
+			Debug.Assert(null != cam);
+			cam.nearClipPlane = 0.05f;
 		}
 		return true;
 	}
