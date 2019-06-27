@@ -182,16 +182,22 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	{
 		Transform ori = g_inst.m_hmd.transform;
 		Tracker[] trackers = new Tracker[(int)ObjType.tracker_end - (int)ObjType.tracker_start];
-		for (int i_tracker = (int)ObjType.tracker_start; i_tracker < (int)ObjType.tracker_end; i_tracker ++)
+		List<Tracker> lst_r = new List<Tracker>();
+		List<Tracker> lst_u = new List<Tracker>();
+		for (int i_obj = (int)ObjType.tracker_start; i_obj < (int)ObjType.tracker_end; i_obj ++)
 		{
-			GameObject o_t = g_inst.m_objects[i_tracker + (int)ObjType.tracker_start];
+			GameObject o_t = g_inst.m_objects[i_obj];
+			if (!o_t.activeSelf)
+				return false;
 			Vector3 v_t = o_t.transform.position - ori.position;
 			float r_t = Vector3.Dot(ori.right, v_t);
 			float u_t = Vector3.Dot(ori.up, v_t);
-			trackers[i_tracker] = new Tracker(o_t, r_t, u_t);
+			int i_tracker = i_obj - (int)ObjType.tracker_start;
+			Tracker t = new Tracker(o_t, r_t, u_t);
+			trackers[i_tracker] = t;
+			lst_r.Add(t);
+			lst_u.Add(t);
 		}
-		List<Tracker> lst_r = new List<Tracker>();
-		List<Tracker> lst_u = new List<Tracker>();
 		lst_r.Sort(Tracker.Compare_r);
 		lst_u.Sort(Tracker.Compare_u);
 		List<Tracker>.Enumerator it = lst_r.GetEnumerator();
@@ -218,18 +224,27 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			Tracker.IsRightFoot, Tracker.IsLeftFoot, Tracker.IsPelvis, Tracker.IsRightHand, Tracker.IsLeftHand
 		};
 
-		foreach (Tracker t in trackers)
+		bool [] hits = new bool[] {
+			false, false, false, false, false
+		};
+
+		for (int i_tracker = 0; i_tracker < trackers.Length; i_tracker ++)
 		{
 			bool identified = false;
+			Tracker t = trackers[i_tracker];
 			int id = 0;
 			for (; id < predicates.Length && !identified; id ++)
 				identified = predicates[id](t);
 			if (!identified)
-				return false;
+				break;
 			g_inst.m_objects[id + 2] = t.tracker; //the first 2 are reserved for controllers
 		}
 
-		return true;
+		return hits[0]
+			&& hits[1]
+			&& hits[2]
+			&& hits[3]
+			&& hits[4];
 	}
 
 	private static bool actConnectVirtualWorld(uint cond)
@@ -765,6 +780,9 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	private uint GetControllerIndex(ETrackedControllerRole role)
 	{
 		uint i_dev = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
+		if (OpenVR.k_unTrackedDeviceIndexInvalid == i_dev)
+			return OpenVR.k_unTrackedDeviceIndexInvalid;
+
 		var error = ETrackedPropertyError.TrackedProp_Success;
 		var capacity = OpenVR.System.GetStringTrackedDeviceProperty((uint)i_dev, ETrackedDeviceProperty.Prop_RenderModelName_String, null, 0, ref error);
 		if (capacity <= 1)
