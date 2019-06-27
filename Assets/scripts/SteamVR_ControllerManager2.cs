@@ -7,6 +7,7 @@
 using UnityEngine;
 using Valve.VR;
 using RootMotion.FinalIK;
+using System.Collections.Generic;
 
 public class SteamVR_ControllerManager2 : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
 	public GameObject[] m_objects;
-	enum ObjType {tracker_rfoot=2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_end};
+	enum ObjType {tracker_start=2, tracker_rfoot = tracker_start, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_end};
 
 	[Tooltip("Set to true if you want objects arbitrarily assigned to controllers before their role (left vs right) is identified")]
 	public bool m_assignAllBeforeIdentified;
@@ -98,8 +99,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	static uint ALL 		= 0xffffffff;
 	Transition [] m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_transport, ALL)
-									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, actConnectVirtualWorld)
-									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, actConnectVirtualWorld)
+									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
+									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
 									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
 									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
@@ -112,6 +113,125 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
 								};
 	static SteamVR_ControllerManager2 g_inst;
+
+	class Tracker
+	{
+		public GameObject tracker;
+		public float r, u;
+		public int r_d, u_d;
+		public Tracker(GameObject a_tracker, float a_r, float a_u)
+		{
+			tracker = a_tracker;
+			r = a_r;
+			u = a_u;
+		}
+
+		static public int Compare_r(Tracker x, Tracker y)
+		{
+			float d = x.r - y.r;
+			if (d < 0)
+				return -1;
+			else if (d > 0)
+				return +1;
+			else
+				return 0;
+		}
+
+		static public int Compare_u(Tracker x, Tracker y)
+		{
+			float d = x.u - y.u;
+			if (d < 0)
+				return -1;
+			else if (d > 0)
+				return +1;
+			else
+				return 0;
+		}
+
+		static public bool IsRightFoot(Tracker t)
+		{
+			return (0 == t.u_d || 1 == t.u_d)
+				&& (3 == t.r_d || 4 == t.r_d);
+		}
+
+		static public bool IsLeftFoot(Tracker t)
+		{
+			return (0 == t.u_d || 1 == t.u_d)
+				&& (0 == t.r_d || 1 == t.r_d);
+		}
+
+		static public bool IsPelvis(Tracker t)
+		{
+			return 2 == t.u_d && 2 == t.r_d;
+		}
+
+		static public bool IsRightHand(Tracker t)
+		{
+			return (3 == t.u_d || 4 == t.u_d)
+				&& (3 == t.r_d || 4 == t.r_d);
+		}
+
+		static public bool IsLeftHand(Tracker t)
+		{
+			return (3 == t.u_d || 4 == t.u_d)
+				&& (0 == t.r_d || 1 == t.r_d);
+		}
+		public delegate bool Predicate(Tracker t);
+	};
+	private static bool actIdentifyTrackers(uint cond)
+	{
+		Transform ori = g_inst.m_hmd.transform;
+		Tracker[] trackers = new Tracker[(int)ObjType.tracker_end - (int)ObjType.tracker_start];
+		for (int i_tracker = (int)ObjType.tracker_start; i_tracker < (int)ObjType.tracker_end; i_tracker ++)
+		{
+			GameObject o_t = g_inst.m_objects[i_tracker + (int)ObjType.tracker_start];
+			Vector3 v_t = o_t.transform.position - ori.position;
+			float r_t = Vector3.Dot(ori.right, v_t);
+			float u_t = Vector3.Dot(ori.up, v_t);
+			trackers[i_tracker] = new Tracker(o_t, r_t, u_t);
+		}
+		List<Tracker> lst_r = new List<Tracker>();
+		List<Tracker> lst_u = new List<Tracker>();
+		lst_r.Sort(Tracker.Compare_r);
+		lst_u.Sort(Tracker.Compare_u);
+		List<Tracker>.Enumerator it = lst_r.GetEnumerator();
+		bool next = it.MoveNext();
+		for (int i_r = 0
+			; next && i_r < trackers.Length
+			; i_r ++, next = it.MoveNext())
+		{
+			Tracker t = it.Current;
+			t.r_d = i_r;
+		}
+
+		it = lst_u.GetEnumerator();
+		next = it.MoveNext();
+		for (int i_u = 0
+			; next && i_u < trackers.Length
+			; i_u++, next = it.MoveNext())
+		{
+			Tracker t = it.Current;
+			t.u_d = i_u;
+		}
+
+		Tracker.Predicate[] predicates = new Tracker.Predicate[] {
+			Tracker.IsRightFoot, Tracker.IsLeftFoot, Tracker.IsPelvis, Tracker.IsRightHand, Tracker.IsLeftHand
+		};
+
+		foreach (Tracker t in trackers)
+		{
+			bool identified = false;
+			int id = 0;
+			for (; id < predicates.Length && !identified; id ++)
+				identified = predicates[id](t);
+			if (!identified)
+				return false;
+			g_inst.m_objects[id + 2] = t.tracker; //the first 2 are reserved for controllers
+		}
+
+		return true;
+	}
+
 	private static bool actConnectVirtualWorld(uint cond)
 	{
 		Debug.Assert(null != g_inst
@@ -256,7 +376,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			if (null != g_inst
 				&& null != g_inst.m_avatar)
 			{
-				g_inst.IdentifyTrackers();
 				VRIK ik = g_inst.m_avatar.GetComponent<VRIK>();
 				g_inst.m_data =	VRIKCalibrator2.Calibrate(ik, g_inst.m_hmd.transform
 							, g_inst.m_objects[(int)ObjType.tracker_pelvis].transform
@@ -400,10 +519,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 	}
 
-	private void IdentifyTrackers()
-	{
 
-	}
 
 	private void ConnectVirtualWorld()
 	{
