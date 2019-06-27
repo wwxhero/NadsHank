@@ -646,6 +646,27 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			Refresh();
 	}
 
+	private uint GetControllerIndex(ETrackedControllerRole role)
+	{
+		uint i_dev = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
+		var error = ETrackedPropertyError.TrackedProp_Success;
+		var capacity = OpenVR.System.GetStringTrackedDeviceProperty((uint)i_dev, ETrackedDeviceProperty.Prop_RenderModelName_String, null, 0, ref error);
+		if (capacity <= 1)
+		{
+			Debug.LogError("Failed to get render model name for tracked object " + i_dev);
+			return OpenVR.k_unTrackedDeviceIndexInvalid;
+		}
+
+		var buffer = new System.Text.StringBuilder((int)capacity);
+		OpenVR.System.GetStringTrackedDeviceProperty((uint)i_dev, ETrackedDeviceProperty.Prop_RenderModelName_String, buffer, capacity, ref error);
+
+		var s = buffer.ToString();
+		if (s.Contains("tracker")) //messed up, controller turns to be a tracker
+			return OpenVR.k_unTrackedDeviceIndexInvalid;
+		else
+			return i_dev;
+	}
+
 	public void Refresh()
 	{
 		int objectIndex = 0;
@@ -653,28 +674,30 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		var system = OpenVR.System;
 		if (system != null)
 		{
-			m_ctrlLIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.LeftHand);
-			m_ctrlRIndex = system.GetTrackedDeviceIndexForControllerRole(ETrackedControllerRole.RightHand);
+			m_ctrlLIndex = GetControllerIndex(ETrackedControllerRole.LeftHand);
+			m_ctrlRIndex = GetControllerIndex(ETrackedControllerRole.RightHand);
 		}
 
-		// // If neither role has been assigned yet, try hooking up at least the right controller.
-		// if (m_ctrlLIndex == OpenVR.k_unTrackedDeviceIndexInvalid && m_ctrlRIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
-		// {
-		// 	for (uint deviceIndex = 0; deviceIndex < m_connected.Length; deviceIndex++)
-		// 	{
-		// 		if (objectIndex >= m_objects.Length)
-		// 			break;
+		// we need both controllers to be enabled
+		if (m_ctrlLIndex == OpenVR.k_unTrackedDeviceIndexInvalid || m_ctrlRIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
+		{
+			SetTrackedDeviceIndex(objectIndex++, OpenVR.k_unTrackedDeviceIndexInvalid);
+			SetTrackedDeviceIndex(objectIndex++, OpenVR.k_unTrackedDeviceIndexInvalid);
+			for (uint deviceIndex = 0; deviceIndex < m_connected.Length; deviceIndex++)
+			{
+				if (objectIndex >= m_objects.Length)
+					break;
 
-		// 		if (!m_connected[deviceIndex])
-		// 			continue;
+				if (!m_connected[deviceIndex])
+					continue;
 
-		// 		SetTrackedDeviceIndex(objectIndex++, deviceIndex);
+				SetTrackedDeviceIndex(objectIndex++, deviceIndex);
 
-		// 		if (!m_assignAllBeforeIdentified)
-		// 			break;
-		// 	}
-		// }
-		// else
+				if (!m_assignAllBeforeIdentified)
+					break;
+			}
+		}
+		else
 		{
 			SetTrackedDeviceIndex(objectIndex++, (m_ctrlRIndex < m_connected.Length && m_connected[m_ctrlRIndex]) ? m_ctrlRIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
 			SetTrackedDeviceIndex(objectIndex++, (m_ctrlLIndex < m_connected.Length && m_connected[m_ctrlLIndex]) ? m_ctrlLIndex : OpenVR.k_unTrackedDeviceIndexInvalid);
