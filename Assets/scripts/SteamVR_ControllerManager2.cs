@@ -23,7 +23,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
 	public GameObject[] m_objects;
-	enum ObjType {tracker_start=2, tracker_rfoot = tracker_start, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_end};
+	enum ObjType { tracker_start = 2, tracker_rfoot = tracker_start, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_end };
 
 	uint[] m_indicesDev; // assigned
 	bool[] m_connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // controllers only
@@ -52,7 +52,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			m_vec[0] = from;
 			m_vec[1] = to;
 			m_cond = cond;
-			m_acts = new Action[1]{act};
+			m_acts = new Action[1] { act };
 		}
 		public Transition(State from, State to, uint cond, Action[] acts)
 		{
@@ -64,7 +64,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		public bool Exe(ref State cur, uint cond)
 		{
 			bool hit = (cur == m_vec[0]
-						&& ( m_cond == ALL || m_cond == cond ));
+						&& (m_cond == ALL || m_cond == cond));
 			bool executed = false;
 			if (hit)
 			{
@@ -81,21 +81,21 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 	};
 
-	enum CtrlCode {trigger, steam, menu, pad_p, pad_t, grip, n_code};
-	static uint R_TRIGGER 	= 0x0001;
-	static uint R_STEAM 	= 0x0002;
-	static uint R_MENU		= 0x0004;
-	static uint R_PAD_P 	= 0x0008;
-	static uint R_PAD_T 	= 0x0010;
-	static uint R_GRIP 		= 0x0020;
-	static uint L_TRIGGER 	= 0x0100;
-	static uint L_STEAM 	= 0x0200;
-	static uint L_MENU		= 0x0400;
-	static uint L_PAD_P 	= 0x0800;
-	static uint L_PAD_T 	= 0x1000;
-	static uint L_GRIP 		= 0x2000;
-	static uint ALL 		= 0xffffffff;
-	Transition [] m_transition = new Transition[] {
+	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, n_code };
+	static uint R_TRIGGER = 0x0001;
+	static uint R_STEAM = 0x0002;
+	static uint R_MENU = 0x0004;
+	static uint R_PAD_P = 0x0008;
+	static uint R_PAD_T = 0x0010;
+	static uint R_GRIP = 0x0020;
+	static uint L_TRIGGER = 0x0100;
+	static uint L_STEAM = 0x0200;
+	static uint L_MENU = 0x0400;
+	static uint L_PAD_P = 0x0800;
+	static uint L_PAD_T = 0x1000;
+	static uint L_GRIP = 0x2000;
+	static uint ALL = 0xffffffff;
+	Transition[] m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_transport, ALL)
 									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
 									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
@@ -114,17 +114,17 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	class Tracker
 	{
-		public GameObject tracker;
-		public float r, u;
-		public int r_d, u_d;
-		public Tracker(GameObject a_tracker, float a_r, float a_u)
+		GameObject tracker;
+		float r, u;
+		int r_d, u_d;
+		Tracker(GameObject a_tracker, float a_r, float a_u)
 		{
 			tracker = a_tracker;
 			r = a_r;
 			u = a_u;
 		}
 
-		static public int Compare_r(Tracker x, Tracker y)
+		static int Compare_r(Tracker x, Tracker y)
 		{
 			float d = x.r - y.r;
 			if (d < 0)
@@ -135,7 +135,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				return 0;
 		}
 
-		static public int Compare_u(Tracker x, Tracker y)
+		static int Compare_u(Tracker x, Tracker y)
 		{
 			float d = x.u - y.u;
 			if (d < 0)
@@ -146,104 +146,143 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				return 0;
 		}
 
-		static public bool IsRightFoot(Tracker t)
+		static bool IsRightFoot(Tracker t)
 		{
 			return (0 == t.u_d || 1 == t.u_d)
-				&& (3 == t.r_d || 4 == t.r_d );
+				&& (3 == t.r_d || 4 == t.r_d);
 		}
 
-		static public bool IsLeftFoot(Tracker t)
+		static bool IsLeftFoot(Tracker t)
 		{
 			return (0 == t.u_d || 1 == t.u_d)
-				&& (0 == t.r_d || 1 == t.r_d );
+				&& (0 == t.r_d || 1 == t.r_d);
 		}
 
-		static public bool IsPelvis(Tracker t)
+		static bool IsPelvis(Tracker t)
 		{
 			return 2 == t.u_d && 2 == t.r_d;
 		}
 
-		static public bool IsRightHand(Tracker t)
+		static bool IsRightHand(Tracker t)
 		{
 			return (3 == t.u_d || 4 == t.u_d)
 				&& (3 == t.r_d || 4 == t.r_d);
 		}
 
-		static public bool IsLeftHand(Tracker t)
+		static bool IsLeftHand(Tracker t)
 		{
 			return (3 == t.u_d || 4 == t.u_d)
 				&& (0 == t.r_d || 1 == t.r_d);
 		}
-		public delegate bool Predicate(Tracker t);
+		delegate bool Predicate(Tracker t);
+		public static bool IdentifyTrackers(GameObject[] a_trackers, Transform a_hmd)
+		{
+			Debug.Assert(a_trackers.Length == 5); //supports 5 trackers only
+			if (5 != a_trackers.Length)
+				return false;
+			Tracker[] trackers = new Tracker[5];
+			List<Tracker> lst_r = new List<Tracker>();
+			List<Tracker> lst_u = new List<Tracker>();
+			for (int i_tracker = 0; i_tracker < 5; i_tracker++)
+			{
+				GameObject o_t = a_trackers[i_tracker];
+				if (!o_t.activeSelf)
+					return false;
+				Vector3 v_t = o_t.transform.position - a_hmd.position;
+				float r_t = Vector3.Dot(a_hmd.right, v_t);
+				float u_t = Vector3.Dot(a_hmd.up, v_t);
+				Tracker t = new Tracker(o_t, r_t, u_t);
+				trackers[i_tracker] = t;
+				lst_r.Add(t);
+				lst_u.Add(t);
+			}
+			lst_r.Sort(Tracker.Compare_r);
+			lst_u.Sort(Tracker.Compare_u);
+			List<Tracker>.Enumerator it = lst_r.GetEnumerator();
+			bool next = it.MoveNext();
+			for (int i_r = 0
+				; next && i_r < trackers.Length
+				; i_r++, next = it.MoveNext())
+			{
+				Tracker t = it.Current;
+				t.r_d = i_r;
+			}
+
+			it = lst_u.GetEnumerator();
+			next = it.MoveNext();
+			for (int i_u = 0
+				; next && i_u < trackers.Length
+				; i_u++, next = it.MoveNext())
+			{
+				Tracker t = it.Current;
+				t.u_d = i_u;
+			}
+
+			Tracker.Predicate[] predicates = new Tracker.Predicate[] {
+				Tracker.IsRightFoot, Tracker.IsLeftFoot, Tracker.IsPelvis, Tracker.IsRightHand, Tracker.IsLeftHand
+			};
+
+			int[] hit_trackers = new int[] {
+				-1, -1, -1, -1, -1
+			};
+
+			for (int i_tracker = 0; i_tracker < trackers.Length; i_tracker++)
+			{
+				bool identified = false;
+				Tracker t = trackers[i_tracker];
+				int id = 0;
+				while (id < predicates.Length)
+				{
+					identified = predicates[id](t);
+					if (identified)
+						break;
+					else
+						id++;
+				}
+				if (!identified)
+					break;
+				hit_trackers[id] = i_tracker;
+
+			}
+
+			if (hit_trackers[0] > -1
+			 && hit_trackers[1] > -1
+			 && hit_trackers[2] > -1
+			 && hit_trackers[3] > -1
+			 && hit_trackers[4] > -1)
+			{
+				a_trackers[0] = trackers[hit_trackers[0]].tracker;
+				a_trackers[1] = trackers[hit_trackers[1]].tracker;
+				a_trackers[2] = trackers[hit_trackers[2]].tracker;
+				a_trackers[3] = trackers[hit_trackers[3]].tracker;
+				a_trackers[4] = trackers[hit_trackers[4]].tracker;
+				return true;
+			}
+			else
+				return false;
+		}
 	};
 	private static bool actIdentifyTrackers(uint cond)
 	{
 		Transform ori = g_inst.m_hmd.transform;
-		Tracker[] trackers = new Tracker[(int)ObjType.tracker_end - (int)ObjType.tracker_start];
-		List<Tracker> lst_r = new List<Tracker>();
-		List<Tracker> lst_u = new List<Tracker>();
-		for (int i_obj = (int)ObjType.tracker_start; i_obj < (int)ObjType.tracker_end; i_obj ++)
-		{
-			GameObject o_t = g_inst.m_objects[i_obj];
-			if (!o_t.activeSelf)
-				return false;
-			Vector3 v_t = o_t.transform.position - ori.position;
-			float r_t = Vector3.Dot(ori.right, v_t);
-			float u_t = Vector3.Dot(ori.up, v_t);
-			int i_tracker = i_obj - (int)ObjType.tracker_start;
-			Tracker t = new Tracker(o_t, r_t, u_t);
-			trackers[i_tracker] = t;
-			lst_r.Add(t);
-			lst_u.Add(t);
-		}
-		lst_r.Sort(Tracker.Compare_r);
-		lst_u.Sort(Tracker.Compare_u);
-		List<Tracker>.Enumerator it = lst_r.GetEnumerator();
-		bool next = it.MoveNext();
-		for (int i_r = 0
-			; next && i_r < trackers.Length
-			; i_r ++, next = it.MoveNext())
-		{
-			Tracker t = it.Current;
-			t.r_d = i_r;
-		}
-
-		it = lst_u.GetEnumerator();
-		next = it.MoveNext();
-		for (int i_u = 0
-			; next && i_u < trackers.Length
-			; i_u++, next = it.MoveNext())
-		{
-			Tracker t = it.Current;
-			t.u_d = i_u;
-		}
-
-		Tracker.Predicate[] predicates = new Tracker.Predicate[] {
-			Tracker.IsRightFoot, Tracker.IsLeftFoot, Tracker.IsPelvis, Tracker.IsRightHand, Tracker.IsLeftHand
+		GameObject [] trackers = new GameObject[5] {
+			  g_inst.m_objects[(int)ObjType.tracker_rfoot]
+			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+			, g_inst.m_objects[(int)ObjType.tracker_rhand]
+			, g_inst.m_objects[(int)ObjType.tracker_lhand]
 		};
-
-		bool [] hits = new bool[] {
-			false, false, false, false, false
-		};
-
-		for (int i_tracker = 0; i_tracker < trackers.Length; i_tracker ++)
+		if (Tracker.IdentifyTrackers(trackers, ori))
 		{
-			bool identified = false;
-			Tracker t = trackers[i_tracker];
-			int id = 0;
-			for (; id < predicates.Length && !identified; id ++)
-				identified = predicates[id](t);
-			if (!identified)
-				break;
-			hits[id] = true;
-			g_inst.m_objects[id + 1] = t.tracker; //the first 2 are reserved for controllers
+			g_inst.m_objects[(int)ObjType.tracker_rfoot] = trackers[0];
+			g_inst.m_objects[(int)ObjType.tracker_lfoot] = trackers[1];
+			g_inst.m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
+			g_inst.m_objects[(int)ObjType.tracker_rhand] = trackers[3];
+			g_inst.m_objects[(int)ObjType.tracker_lhand] = trackers[4];
+			return true;
 		}
-
-		return hits[0]
-			&& hits[1]
-			&& hits[2]
-			&& hits[3]
-			&& hits[4];
+		else
+			return false;
 	}
 
 	private static bool actConnectVirtualWorld(uint cond)
@@ -340,7 +379,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 		else
 		{
-			for (int i_tracker = (int)ObjType.tracker_rfoot; i_tracker < (int)ObjType.tracker_end; i_tracker++)
+			for (int i_tracker = (int)ObjType.tracker_start; i_tracker < (int)ObjType.tracker_end; i_tracker++)
 			{
 				GameObject tracker = g_inst.m_objects[i_tracker];
 				foreach (Transform sub_t in tracker.transform)
@@ -391,7 +430,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				&& null != g_inst.m_avatar)
 			{
 				VRIK ik = g_inst.m_avatar.GetComponent<VRIK>();
-				g_inst.m_data =	VRIKCalibrator2.Calibrate(ik, g_inst.m_hmd.transform
+				g_inst.m_data = VRIKCalibrator2.Calibrate(ik, g_inst.m_hmd.transform
 							, g_inst.m_objects[(int)ObjType.tracker_pelvis].transform
 							, g_inst.m_objects[(int)ObjType.tracker_lhand].transform
 							, g_inst.m_objects[(int)ObjType.tracker_rhand].transform
@@ -443,7 +482,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
 		uint code_ctrl = 0x0;
-		bool [] ctrl_switch = new bool[2*(int)CtrlCode.n_code] {
+		bool[] ctrl_switch = new bool[2 * (int)CtrlCode.n_code] {
 									  Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift)
 									, Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift)
 									, Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift)
@@ -457,7 +496,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift)
 									, Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift)
 								};
-		uint [] switch_codes = new uint[2*(int)CtrlCode.n_code]	{
+		uint[] switch_codes = new uint[2 * (int)CtrlCode.n_code] {
 									  R_TRIGGER
 									, R_STEAM
 									, R_MENU
@@ -476,21 +515,21 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		{
 			SteamVR_TrackedController ctrlR = m_ctrlR.GetComponent<SteamVR_TrackedController>();
 			SteamVR_TrackedController ctrlL = m_ctrlL.GetComponent<SteamVR_TrackedController>();
-			ctrl_switch[0]  = ctrl_switch[0] ||ctrlR.triggerPressed;
-			ctrl_switch[1]  = ctrl_switch[1] ||ctrlR.steamPressed;
-			ctrl_switch[2]  = ctrl_switch[2] ||ctrlR.menuPressed;
-			ctrl_switch[3]  = ctrl_switch[3] ||ctrlR.padPressed;
-			ctrl_switch[4]  = ctrl_switch[4] ||ctrlR.padTouched;
-			ctrl_switch[5]  = ctrl_switch[5] ||ctrlR.gripped;
-			ctrl_switch[6]  = ctrl_switch[6] ||ctrlL.triggerPressed;
-			ctrl_switch[7]  = ctrl_switch[7] ||ctrlL.steamPressed;
-			ctrl_switch[8]  = ctrl_switch[8] ||ctrlL.menuPressed;
-			ctrl_switch[9]  = ctrl_switch[9] ||ctrlL.padPressed;
-			ctrl_switch[10] = ctrl_switch[10]||ctrlL.padTouched;
-			ctrl_switch[11] = ctrl_switch[11]||ctrlL.gripped;
+			ctrl_switch[0] = ctrl_switch[0] || ctrlR.triggerPressed;
+			ctrl_switch[1] = ctrl_switch[1] || ctrlR.steamPressed;
+			ctrl_switch[2] = ctrl_switch[2] || ctrlR.menuPressed;
+			ctrl_switch[3] = ctrl_switch[3] || ctrlR.padPressed;
+			ctrl_switch[4] = ctrl_switch[4] || ctrlR.padTouched;
+			ctrl_switch[5] = ctrl_switch[5] || ctrlR.gripped;
+			ctrl_switch[6] = ctrl_switch[6] || ctrlL.triggerPressed;
+			ctrl_switch[7] = ctrl_switch[7] || ctrlL.steamPressed;
+			ctrl_switch[8] = ctrl_switch[8] || ctrlL.menuPressed;
+			ctrl_switch[9] = ctrl_switch[9] || ctrlL.padPressed;
+			ctrl_switch[10] = ctrl_switch[10] || ctrlL.padTouched;
+			ctrl_switch[11] = ctrl_switch[11] || ctrlL.gripped;
 		}
 
-		for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch ++)
+		for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
 		{
 			if (ctrl_switch[i_switch])
 				code_ctrl |= switch_codes[i_switch];
@@ -499,7 +538,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 		bool state_tran = false;
 		int n_transi = m_transition.Length;
-		for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi ++)
+		for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
 			state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
 
 		State s_np = m_state;
@@ -507,7 +546,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		{
 			string switches = null;
 			bool switched = false;
-			string [] switch_names = {
+			string[] switch_names = {
 				  "R_TRIGGER"
 				, "R_STEAM"
 				, "R_MENU"
@@ -521,7 +560,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				, "L_PAD_T"
 				, "L_GRIP"
 			};
-			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch ++)
+			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
 			{
 				switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
 				switched = switched || ctrl_switch[i_switch];
@@ -709,7 +748,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		//object index 0 and 1 are reserved for controllers
 		Debug.Assert(objectIndex > 1
 					|| OpenVR.k_unTrackedDeviceIndexInvalid == trackedDeviceIndex
-					|| OpenVR.System.GetTrackedDeviceClass((uint)trackedDeviceIndex)== ETrackedDeviceClass.Controller);
+					|| OpenVR.System.GetTrackedDeviceClass((uint)trackedDeviceIndex) == ETrackedDeviceClass.Controller);
 		// First make sure no one else is already using this index.
 		if (trackedDeviceIndex != OpenVR.k_unTrackedDeviceIndexInvalid)
 		{
