@@ -25,9 +25,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	public GameObject[] m_objects;
 	enum ObjType {tracker_start=2, tracker_rfoot = tracker_start, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_end};
 
-	[Tooltip("Set to true if you want objects arbitrarily assigned to controllers before their role (left vs right) is identified")]
-	public bool m_assignAllBeforeIdentified;
-
 	uint[] m_indicesDev; // assigned
 	bool[] m_connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // controllers only
 
@@ -71,13 +68,14 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 			bool executed = false;
 			if (hit)
 			{
-				cur = m_vec[1];
 				executed = true;
 				if (null != m_acts)
 				{
 					for (int i_act = 0; i_act < m_acts.Length && executed; i_act++)
 						executed = executed && m_acts[i_act](cond);
 				}
+				if (executed)
+					cur = m_vec[1];
 			}
 			return executed;
 		}
@@ -151,13 +149,13 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		static public bool IsRightFoot(Tracker t)
 		{
 			return (0 == t.u_d || 1 == t.u_d)
-				&& (3 == t.r_d || 4 == t.r_d);
+				&& (3 == t.r_d || 4 == t.r_d );
 		}
 
 		static public bool IsLeftFoot(Tracker t)
 		{
 			return (0 == t.u_d || 1 == t.u_d)
-				&& (0 == t.r_d || 1 == t.r_d);
+				&& (0 == t.r_d || 1 == t.r_d );
 		}
 
 		static public bool IsPelvis(Tracker t)
@@ -237,7 +235,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 				identified = predicates[id](t);
 			if (!identified)
 				break;
-			g_inst.m_objects[id + 2] = t.tracker; //the first 2 are reserved for controllers
+			hits[id] = true;
+			g_inst.m_objects[id + 1] = t.tracker; //the first 2 are reserved for controllers
 		}
 
 		return hits[0]
@@ -826,9 +825,6 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 					continue;
 
 				SetTrackedDeviceIndex(objectIndex++, deviceIndex);
-
-				if (!m_assignAllBeforeIdentified)
-					break;
 			}
 		}
 		else
