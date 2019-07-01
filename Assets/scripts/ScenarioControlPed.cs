@@ -34,6 +34,10 @@ public class ScenarioControlPed : MonoBehaviour {
 		public uint width;
 		private const uint height0 = 178;
 		private const uint width0 = 140;
+		private Vector3 posTel, tanTel, latTel;
+		private ArrayList lstPos_test = new ArrayList();
+		private ArrayList lstTan_test = new ArrayList();
+		private ArrayList lstLat_test = new ArrayList();
 		public ConfAvatar(uint a_height, uint a_width)
 		{
 			height = a_height;
@@ -48,6 +52,39 @@ public class ScenarioControlPed : MonoBehaviour {
 			ped.references.leftShoulder.localScale = new Vector3(1f, s_w, 1f);
 			ped.references.rightShoulder.localScale = new Vector3(1f, s_w, 1f);
 		}
+
+		public void setTeleport(Vector3 p_sim, Vector3 t_sim, Vector3 l_sim)
+		{
+			posTel = p_sim; tanTel = t_sim; latTel = l_sim;
+			Vector3 u = new Vector3(0, 0, 1);
+			Vector3 l = Vector3.Cross(t_sim, u);
+			Debug.Assert(Vector3.Dot(l, l_sim) > 1 - 0.01 
+                        && Vector3.Dot(l, l_sim) < 1 + 0.01);
+		}
+
+		public void getTeleport(out Vector3 p_sim, out Vector3 t_sim, out Vector3 l_sim)
+		{
+			p_sim = new Vector3(posTel.x, posTel.y, posTel.z);
+			t_sim = new Vector3(tanTel.x, tanTel.y, tanTel.z);
+			l_sim = new Vector3(latTel.x, latTel.y, latTel.z);
+		}
+
+		public void testTeleport(int idx, out Vector3 pos, out Vector3 tan, out Vector3 lat)
+		{
+			int i = idx % lstLat_test.Count;
+			pos = (Vector3)lstPos_test[i];
+			tan = (Vector3)lstTan_test[i];
+			lat = (Vector3)lstLat_test[i];
+		}
+
+		public void testAddTeleport(Vector3 p_sim, Vector3 t_sim, Vector3 l_sim)
+		{
+			lstPos_test.Add(p_sim);
+			lstTan_test.Add(t_sim);
+			lstLat_test.Add(l_sim);
+		}
+
+
 	};
 
 	ConfAvatar m_confAvatar;
@@ -92,6 +129,43 @@ public class ScenarioControlPed : MonoBehaviour {
 
 	}
 
+	public bool testTeleport(int idx)
+	{
+		Vector3 pos, tan, lat;
+		m_confAvatar.testTeleport(idx, out pos, out tan, out lat);
+		Teleport(pos, tan, lat);
+		return true;
+	}
+
+	void Teleport(Vector3 pos_s, Vector3 tan_s, Vector3 lat_s)
+	{
+		Vector3 t, l, p, u;
+		Vector3 t_prime, l_prime, p_prime, u_prime;
+		m_confAvatar.getTeleport(out p, out t, out l);
+		t_prime = tan_s; l_prime = lat_s;p_prime = pos_s;
+		m_confAvatar.setTeleport(p_prime, t_prime, l_prime);
+		u = Vector3.Cross(t, l); u_prime = Vector3.Cross(t_prime, l_prime);
+		Matrix4x4 m = new Matrix4x4(  new Vector4(t.x, t.y, t.z, 0)
+									, new Vector4(l.x, l.y, l.z, 0)
+									, new Vector4(u.x, u.y, u.z, 0)
+									, new Vector4(p.x, p.y, p.z, 1));
+		Matrix4x4 m_prime = new Matrix4x4(new Vector4(t_prime.x, t_prime.y, t_prime.z, 0)
+										, new Vector4(l_prime.x, l_prime.y, l_prime.z, 0)
+										, new Vector4(u_prime.x, u_prime.y, u_prime.z, 0)
+										, new Vector4(p_prime.x, p_prime.y, p_prime.z, 1));
+		Matrix4x4 t_s = m_prime * m.inverse;
+
+		Matrix4x4 t_u = c_sim2unity * t_s * c_unity2sim;
+		GameObject rigCam = GameObject.Find("[CameraRig]");
+		Quaternion q_rig = rigCam.transform.rotation;
+		Vector3 sin_alpha_u = new Vector3(q_rig.x, q_rig.y, q_rig.z);
+		Vector3 t_sin_alpha_u = t_u.MultiplyVector(sin_alpha_u);
+		q_rig.x = t_sin_alpha_u.x; q_rig.y = t_sin_alpha_u.y; q_rig.z = t_sin_alpha_u.z;
+		Vector3 p_rig = rigCam.transform.position;
+		p_rig = t_u.MultiplyPoint3x4(p_rig);
+		SteamVR_ControllerManager2 rigCamMgr = rigCam.GetComponent<SteamVR_ControllerManager2>();
+		rigCamMgr.Transport(q_rig, p_rig);
+	}
 
 
 	void Start () {
@@ -120,6 +194,29 @@ public class ScenarioControlPed : MonoBehaviour {
 						uint height = uint.Parse(height_attr.Value);
 						uint width = uint.Parse(width_attr.Value);
 						m_confAvatar = new ConfAvatar(height, width);
+						XmlNodeList teleports = n_child.ChildNodes;
+						if (null != teleports)
+						{
+							for (int i_tel = 0; i_tel < teleports.Count; i_tel ++)
+							{
+								XmlNode tel = teleports[i_tel];
+                                if ("teleport" != tel.Name)
+                                    continue;
+                                XmlElement telElement = (XmlElement)tel;
+								string [] name = {"x", "y", "z", "i", "j", "k"};
+								float [] val  = new float[name.Length];
+								for (int i_attr = 0; i_attr < name.Length; i_attr ++)
+								{
+									XmlElement v_text = telElement[name[i_attr]];
+									val[i_attr] = float.Parse(v_text.InnerXml);
+								}
+								Vector3 u = new Vector3(0, 0, 1);
+								Vector3 p = new Vector3(val[0], val[1], val[2]);
+								Vector3 t = new Vector3(val[3], val[4], val[5]);
+								Vector3 l = Vector3.Cross(t, u); //fixme: not yet confirmed the cross product order
+								m_confAvatar.testAddTeleport(p, t, l);
+							}
+						}
 					}
 				}
 			}
@@ -218,12 +315,12 @@ public class ScenarioControlPed : MonoBehaviour {
 											, out xTan, out yTan, out zTan
 											, out xLat, out yLat, out zLat
 											, out nParts);
-									Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
-									Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
-									Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
-									Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-									Vector3 t_unity = MultiplyDir(c_sim2unity, t);
-									Vector3 l_unity = MultiplyDir(c_sim2unity, l);
+									Vector3 p_sim = new Vector3((float)xPos, (float)yPos, (float)zPos);
+									Vector3 t_sim = new Vector3((float)xTan, (float)yTan, (float)zTan);
+									Vector3 l_sim = new Vector3((float)xLat, (float)yLat, (float)zLat);
+									Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p_sim);
+									Vector3 t_unity = MultiplyDir(c_sim2unity, t_sim);
+									Vector3 l_unity = MultiplyDir(c_sim2unity, l_sim);
 									Quaternion q_unity;
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
 									GameObject ped = null;
@@ -236,6 +333,7 @@ public class ScenarioControlPed : MonoBehaviour {
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
+										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
 										ik.AutoDetectReferences();

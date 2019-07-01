@@ -14,6 +14,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	public bool DEF_MOCKSTEAM = true;
 	public bool DEF_DBG = true;
 
+	public GameObject m_senarioCtrl;
 	public GameObject m_prefMirror;
 	private GameObject m_mirrow;
 	[HideInInspector]
@@ -109,6 +110,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
 									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.tracking, R_GRIP, actTeleportP)
+									, new Transition(State.tracking, State.tracking, L_GRIP, actTeleportM)
 								};
 	static SteamVR_ControllerManager2 g_inst;
 
@@ -283,6 +286,29 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		}
 		else
 			return false;
+	}
+
+	static int s_idx = 0;
+	private static bool actTeleportP(uint cond)
+	{
+		if (g_inst.DEF_MOCKTRANSPORT)
+		{
+			ScenarioControlPed scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>();
+			return scenario.testTeleport(++s_idx);
+		}
+		else
+			return true;
+	}
+
+	private static bool actTeleportM(uint cond)
+	{
+		if (g_inst.DEF_MOCKTRANSPORT)
+		{
+			ScenarioControlPed scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>();
+			return scenario.testTeleport(--s_idx);
+		}
+		else
+			return true;
 	}
 
 	private static bool actConnectVirtualWorld(uint cond)
@@ -610,7 +636,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 		Transport(l.rotation, t);
 	}
 
-	private void Transport(Quaternion r, Vector3 t)
+	public void Transport(Quaternion r, Vector3 t)
 	{
 		//fixme: a smooth transit should happen for transport
 		transform.position = t;
