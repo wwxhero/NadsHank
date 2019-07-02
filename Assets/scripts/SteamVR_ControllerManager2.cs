@@ -13,6 +13,8 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 {
 	public bool DEF_MOCKSTEAM = true;
 	public bool DEF_DBG = true;
+	public bool DEF_TESTTELEPORT = true;
+
 
 	public GameObject m_senarioCtrl;
 	public GameObject m_prefMirror;
@@ -291,7 +293,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	static int s_idx = 0;
 	private static bool actTeleportP(uint cond)
 	{
-		if (g_inst.DEF_MOCKTRANSPORT)
+		if (g_inst.DEF_TESTTELEPORT)
 		{
 			ScenarioControlPed scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>();
 			return scenario.testTeleport(++s_idx);
@@ -302,7 +304,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 
 	private static bool actTeleportM(uint cond)
 	{
-		if (g_inst.DEF_MOCKTRANSPORT)
+		if (g_inst.DEF_TESTTELEPORT)
 		{
 			ScenarioControlPed scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>();
 			return scenario.testTeleport(--s_idx);

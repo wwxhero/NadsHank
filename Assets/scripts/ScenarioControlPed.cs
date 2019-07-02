@@ -25,6 +25,7 @@ public class ScenarioControlPed : MonoBehaviour {
 	public bool DEF_LOGMATRIXFAC;
 	public bool DEF_LOGJOINTTRAN;
 	public bool DEF_LOGJOINTIDNAME;
+	public bool DEF_TESTTELEPORT;
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
 
@@ -58,8 +59,8 @@ public class ScenarioControlPed : MonoBehaviour {
 			posTel = p_sim; tanTel = t_sim; latTel = l_sim;
 			Vector3 u = new Vector3(0, 0, 1);
 			Vector3 l = Vector3.Cross(t_sim, u);
-			Debug.Assert(Vector3.Dot(l, l_sim) > 1 - 0.01 
-                        && Vector3.Dot(l, l_sim) < 1 + 0.01);
+			Debug.Assert(Vector3.Dot(l, l_sim) > 1 - 0.01
+						&& Vector3.Dot(l, l_sim) < 1 + 0.01);
 		}
 
 		public void getTeleport(out Vector3 p_sim, out Vector3 t_sim, out Vector3 l_sim)
@@ -154,17 +155,32 @@ public class ScenarioControlPed : MonoBehaviour {
 										, new Vector4(u_prime.x, u_prime.y, u_prime.z, 0)
 										, new Vector4(p_prime.x, p_prime.y, p_prime.z, 1));
 		Matrix4x4 t_s = m_prime * m.inverse;
-
 		Matrix4x4 t_u = c_sim2unity * t_s * c_unity2sim;
-		GameObject rigCam = GameObject.Find("[CameraRig]");
-		Quaternion q_rig = rigCam.transform.rotation;
-		Vector3 sin_alpha_u = new Vector3(q_rig.x, q_rig.y, q_rig.z);
-		Vector3 t_sin_alpha_u = t_u.MultiplyVector(sin_alpha_u);
-		q_rig.x = t_sin_alpha_u.x; q_rig.y = t_sin_alpha_u.y; q_rig.z = t_sin_alpha_u.z;
-		Vector3 p_rig = rigCam.transform.position;
-		p_rig = t_u.MultiplyPoint3x4(p_rig);
-		SteamVR_ControllerManager2 rigCamMgr = rigCam.GetComponent<SteamVR_ControllerManager2>();
-		rigCamMgr.Transport(q_rig, p_rig);
+
+		if (DEF_TESTTELEPORT)
+		{
+			GameObject ped = m_id2Ped[0];
+			Debug.Assert(null != ped);
+			string logStr = string.Format("tran_s:\n{0}\ntran_u:\n{1}", t_s.ToString(), t_u.ToString());
+			Vector3 p_rig = ped.transform.position;
+			p_rig = t_u.MultiplyPoint3x4(p_rig);
+			Quaternion q_rig = ped.transform.rotation;
+			q_rig = q_rig * t_u.rotation;
+			ped.transform.position = p_rig;
+			ped.transform.rotation = q_rig;
+			Debug.LogWarning(logStr);
+		}
+		else
+		{
+			GameObject rigCam = GameObject.Find("[CameraRig]");
+			Vector3 p_rig = rigCam.transform.position;
+			p_rig = t_u.MultiplyPoint3x4(p_rig);
+			Quaternion q_rig = rigCam.transform.rotation;
+			q_rig = q_rig * t_u.rotation;
+			SteamVR_ControllerManager2 rigCamMgr = rigCam.GetComponent<SteamVR_ControllerManager2>();
+			rigCamMgr.Transport(q_rig, p_rig);
+		}
+
 	}
 
 
@@ -200,9 +216,9 @@ public class ScenarioControlPed : MonoBehaviour {
 							for (int i_tel = 0; i_tel < teleports.Count; i_tel ++)
 							{
 								XmlNode tel = teleports[i_tel];
-                                if ("teleport" != tel.Name)
-                                    continue;
-                                XmlElement telElement = (XmlElement)tel;
+								if ("teleport" != tel.Name)
+									continue;
+								XmlElement telElement = (XmlElement)tel;
 								string [] name = {"x", "y", "z", "i", "j", "k"};
 								float [] val  = new float[name.Length];
 								for (int i_attr = 0; i_attr < name.Length; i_attr ++)
@@ -242,6 +258,8 @@ public class ScenarioControlPed : MonoBehaviour {
 			m_ctrl = null;
 		}
 	}
+
+	int m_iTeleport = 0;
 	// Update is called once per frame
 	void Update () {
 		if (null != m_ctrl)
@@ -566,6 +584,15 @@ public class ScenarioControlPed : MonoBehaviour {
 				}
 
 				m_ctrl.PostUpdateDynamicModels();
+
+				if (DEF_TESTTELEPORT
+					&& Input.GetKeyDown(KeyCode.T)
+					&& (Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.LeftAlt)))
+				{
+					Vector3 pos, tan, lat;
+					m_confAvatar.testTeleport(++m_iTeleport, out pos, out tan, out lat);
+					Teleport(pos, tan, lat);
+				}
 			}
 			catch (Exception e)
 			{
