@@ -38,7 +38,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	VRIKCalibrator.CalibrationData m_data = new VRIKCalibrator.CalibrationData();
 
 	delegate bool Action(uint cond);
-	enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking };
+	enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking, teleporting };
 	class Transition
 	{
 		private State[] m_vec = new State[2];
@@ -98,6 +98,7 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 	static uint L_PAD_T = 0x1000;
 	static uint L_GRIP = 0x2000;
 	static uint ALL = 0xffffffff;
+	static uint NONE = 0x00000000;
 	Transition[] m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_transport, ALL)
 									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
@@ -112,8 +113,10 @@ public class SteamVR_ControllerManager2 : MonoBehaviour
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
 									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.tracking, R_GRIP, actTeleportP)
-									, new Transition(State.tracking, State.tracking, L_GRIP, actTeleportM)
+									, new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)
+									, new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)
+									, new Transition(State.teleporting, State.tracking, NONE)
+									, new Transition(State.teleporting, State.tracking, NONE)
 								};
 	static SteamVR_ControllerManager2 g_inst;
 

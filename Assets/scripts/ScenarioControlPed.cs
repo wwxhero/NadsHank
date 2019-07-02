@@ -73,6 +73,9 @@ public class ScenarioControlPed : MonoBehaviour {
 		public void testTeleport(int idx, out Vector3 pos, out Vector3 tan, out Vector3 lat)
 		{
 			int i = idx % lstLat_test.Count;
+			if (i < 0)
+				i += lstLat_test.Count;
+			Debug.Assert(!(i<0));
 			pos = (Vector3)lstPos_test[i];
 			tan = (Vector3)lstTan_test[i];
 			lat = (Vector3)lstLat_test[i];
