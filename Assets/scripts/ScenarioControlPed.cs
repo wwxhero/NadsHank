@@ -444,6 +444,23 @@ public class ScenarioControlPed : MonoBehaviour {
 									peg_pairs.Add(peg);
 									break;
 								}
+							case EVT.telPed:
+								{
+									int id;
+									double xPos, yPos, zPos;
+									double xTan, yTan, zTan;
+									double xLat, yLat, zLat;
+									m_ctrl.GettelPedTuple(out id
+														, out xPos, out yPos, out zPos
+														, out xTan, out yTan, out zTan
+														, out xLat, out yLat, out zLat);
+									Debug.Assert(0 == id); //currently, only one pedestrain supported
+									Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
+									Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
+									Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
+									Teleport(p, t, l);
+									break;
+								}
 
 						}
 						m_ctrl.QPopEvent();
