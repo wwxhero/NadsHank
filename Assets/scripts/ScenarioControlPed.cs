@@ -237,6 +237,87 @@ public class ScenarioControlPed : MonoBehaviour {
 							}
 						}
 					}
+					else if("map" == n_child.Name)
+					{
+						XmlNodeList points = n_child.ChildNodes;
+						Debug.Assert(null == points
+									|| 3 == points.Count);
+						if (null != points)
+						{
+							Vector3[] p_u = new Vector3[4];
+							Vector3[] p_s = new Vector3[4];
+							string [] name = {"x_u", "y_u", "z_u"
+											, "x_s", "y_s", "z_s"};
+							float [] val = new float[name.Length];
+							for (int i_point = 0; i_point < 3; i_point ++)
+							{
+								XmlNode point_node = points[i_point];
+								XmlElement point_ele = (XmlElement)point_node;
+								for (int i_attr = 0; i_attr < name.Length; i_attr ++)
+								{
+									XmlElement v_text = point_ele[name[i_attr]];
+									val[i_attr] = float.Parse(v_text.InnerXml);
+								}
+								p_u[i_point] = new Vector3(val[0], val[1], val[2]);
+								p_s[i_point] = new Vector3(val[3], val[4], val[5]);
+							}
+							Vector3 up_u = new Vector3(0, 1, 0);
+							Vector3 up_s = new Vector3(0, 0, 1);
+							p_s[3] = p_s[0] + up_s;
+							float s2u = Vector3.Magnitude(p_u[1] - p_u[0])/Vector3.Magnitude(p_s[1] - p_s[0]);
+							p_u[3] = p_u[0] + s2u*up_u;
+
+							Vector4[] v4_u = new Vector4[4];
+							Vector4[] v4_s = new Vector4[4];
+							v4_u[0] = new Vector4(p_u[0].x, p_u[0].y, p_u[0].z, 1);
+							v4_s[0] = new Vector4(p_s[0].x, p_s[0].y, p_s[0].z, 1);
+							for (int i_v4 = 1; i_v4 < 4; i_v4 ++)
+							{
+								v4_u[i_v4] = new Vector4( p_u[i_v4].x - p_u[0].x
+														, p_u[i_v4].y - p_u[0].y
+														, p_u[i_v4].z - p_u[0].z
+														, 0);
+								v4_s[i_v4] = new Vector4( p_s[i_v4].x - p_s[0].x
+														, p_s[i_v4].y - p_s[0].y
+														, p_s[i_v4].z - p_s[0].z
+														, 0);
+							}
+
+							Matrix4x4 m_u = new Matrix4x4(v4_u[0], v4_u[1], v4_u[2], v4_u[3]);
+							Matrix4x4 m_s = new Matrix4x4(v4_s[0], v4_s[1], v4_s[2], v4_s[3]);
+
+							if (DEF_LOGMATRIXFAC)
+							{
+								Matrix4x4 c_sim2unity_prime = m_u * m_s.inverse;
+								Matrix4x4 c_unity2sim_prime = m_s * m_u.inverse;
+								float error_u = 0;
+								float error_s = 0;
+								for (int i = 0; i < 4; i++)
+								{
+									for (int j = 0; j < 4; j++)
+									{
+										float e = c_sim2unity_prime[i, j] - c_sim2unity[i, j];
+										float e2 = Mathf.Abs(e);
+										if (error_u < e2)
+											error_u = e2;
+										e = c_unity2sim_prime[i, j] - c_unity2sim[i, j];
+										e2 = Mathf.Abs(e);
+										if (error_s < e2)
+											error_s = e2;
+									}
+								}
+								string strLog = string.Format("Error sim2unity:{0}\nError unity2sim:{1}", error_u, error_s);
+								Debug.LogWarning(strLog);
+								c_sim2unity = c_sim2unity_prime;
+								c_unity2sim = c_unity2sim_prime;
+							}
+							else
+							{
+								c_sim2unity = m_u * m_s.inverse;
+								c_unity2sim = m_s * m_u.inverse;
+							}
+						}
+					}
 				}
 			}
 			catch (System.IO.FileNotFoundException)
@@ -395,8 +476,8 @@ public class ScenarioControlPed : MonoBehaviour {
 											m_confAvatar.Apply(ik);
 										}
 
-										if (DEF_LOGMATRIXFAC)
-											ped.AddComponent<JointDumper>();
+										//if (DEF_LOGMATRIXFAC)
+										//	ped.AddComponent<JointDumper>();
 									}
 
 
