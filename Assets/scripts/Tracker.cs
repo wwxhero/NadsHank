@@ -56,7 +56,13 @@ public class Tracker
 			&& (0 == t.r_d || 1 == t.r_d);
 	}
 	delegate bool Predicate(Tracker t);
-	public static bool IdentifyTrackers(GameObject[] a_trackers, Transform a_hmd)
+	//function: sort the trackers in order of 0:right foot, 1:left foot, 2:pelvis, 3:right hand, 4:left hand
+	//parameters:
+	//	a_trackers: the trackers are to be identified (sorted)
+	//	a_hmd: head mount display
+	//return value:
+	//	true:success
+	public static bool IdentifyTrackers_5(GameObject[] a_trackers, Transform a_hmd)
 	{
 		Debug.Assert(a_trackers.Length == 5); //supports 5 trackers only
 		if (5 != a_trackers.Length)
@@ -131,6 +137,26 @@ public class Tracker
 			a_trackers[2] = trackers[hit_trackers[2]].tracker;
 			a_trackers[3] = trackers[hit_trackers[3]].tracker;
 			a_trackers[4] = trackers[hit_trackers[4]].tracker;
+			return true;
+		}
+		else
+			return false;
+	}
+	//function: sort the trackers in order of 0:right hand, 1:left hand
+	public static bool IdentifyTrackers_2(GameObject[] a_trackers, Transform a_hmd)
+	{
+		float proj_r_0 = Vector3.Dot(a_trackers[0].transform.position - a_hmd.position, a_hmd.right);
+		float proj_r_1 = Vector3.Dot(a_trackers[1].transform.position - a_hmd.position, a_hmd.right);
+		bool is_0_onright = (proj_r_0 > 0);
+		bool is_1_onright = (proj_r_1 > 0);
+		if (is_0_onright != is_1_onright)
+		{
+			if (!is_0_onright)
+			{
+				GameObject temp = a_trackers[0];
+				a_trackers[0] = a_trackers[1];
+				a_trackers[1] = temp;
+			}
 			return true;
 		}
 		else

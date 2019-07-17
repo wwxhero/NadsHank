@@ -1,4 +1,4 @@
-﻿//====== Copyright (c) Valve Corporation, All rights reserved. ===============
+//====== Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Enables/disables objects based on connectivity and assigned roles.
 //
@@ -9,13 +9,13 @@ using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
 
-public class SteamVR_Manager_5 : SteamVR_Manager
+public class SteamVR_Manager_2 : SteamVR_Manager
 {
-	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand };
+	enum ObjType { tracker_rhand = 2, tracker_lhand };
 
-	SteamVR_Manager_5()
+	SteamVR_Manager_2()
 	{
-		tracker_start = (int)ObjType.tracker_rfoot;
+		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		g_inst = this;
 	}
@@ -23,20 +23,14 @@ public class SteamVR_Manager_5 : SteamVR_Manager
 	public override bool IdentifyTrackers()
 	{
 		Transform ori = m_hmd.transform;
-		GameObject [] trackers = new GameObject[5] {
-			  m_objects[(int)ObjType.tracker_rfoot]
-			, m_objects[(int)ObjType.tracker_lfoot]
-			, m_objects[(int)ObjType.tracker_pelvis]
-			, m_objects[(int)ObjType.tracker_rhand]
+		GameObject [] trackers = new GameObject[] {
+			  m_objects[(int)ObjType.tracker_rhand]
 			, m_objects[(int)ObjType.tracker_lhand]
 		};
-		if (Tracker.IdentifyTrackers_5(trackers, ori))
+		if (Tracker.IdentifyTrackers_2(trackers, ori))
 		{
-			m_objects[(int)ObjType.tracker_rfoot] = trackers[0];
-			m_objects[(int)ObjType.tracker_lfoot] = trackers[1];
-			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
-			m_objects[(int)ObjType.tracker_rhand] = trackers[3];
-			m_objects[(int)ObjType.tracker_lhand] = trackers[4];
+			m_objects[(int)ObjType.tracker_rhand] = trackers[0];
+			m_objects[(int)ObjType.tracker_lhand] = trackers[1];
 			return true;
 		}
 		else
@@ -47,22 +41,16 @@ public class SteamVR_Manager_5 : SteamVR_Manager
 	{
 		VRIK ik = m_avatar.GetComponent<VRIK>();
 		m_data = VRIKCalibrator2.Calibrate(ik, m_hmd.transform
-					, m_objects[(int)ObjType.tracker_pelvis].transform
 					, m_objects[(int)ObjType.tracker_lhand].transform
-					, m_objects[(int)ObjType.tracker_rhand].transform
-					, m_objects[(int)ObjType.tracker_lfoot].transform
-					, m_objects[(int)ObjType.tracker_rfoot].transform);
+					, m_objects[(int)ObjType.tracker_rhand].transform);
 	}
 
 	public override void UnCalibration()
 	{
 		VRIK ik = m_avatar.GetComponent<VRIK>();
 		VRIKCalibrator2.UnCalibrate(ik, m_hmd.transform
-					, m_objects[(int)ObjType.tracker_pelvis].transform
 					, m_objects[(int)ObjType.tracker_lhand].transform
-					, m_objects[(int)ObjType.tracker_rhand].transform
-					, m_objects[(int)ObjType.tracker_lfoot].transform
-					, m_objects[(int)ObjType.tracker_rfoot].transform);
+					, m_objects[(int)ObjType.tracker_rhand].transform);
 	}
 
 	public override void ConnectVirtualWorld()
@@ -93,7 +81,7 @@ public class SteamVR_Manager_5 : SteamVR_Manager
 
 		Matrix4x4 l = m_v.transpose * m_p;
 
-		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
+		Vector3 o_p = (m_objects[(int)ObjType.tracker_lhand].transform.localPosition + m_objects[(int)ObjType.tracker_rhand].transform.localPosition) * 0.5f;
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;

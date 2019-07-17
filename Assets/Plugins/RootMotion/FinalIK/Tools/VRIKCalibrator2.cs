@@ -143,6 +143,96 @@ namespace RootMotion.FinalIK
 
 			ik.solver.spine.minHeadHeight = 0f;
 			ik.solver.locomotion.weight = bodyTracker == null && leftFootTracker == null && rightFootTracker == null ? 1f : 0f;
+			return data;
+		}
+		public static void UnCalibrate(VRIK ik, Transform headTracker, Transform leftHandTracker, Transform rightHandTracker)
+		{
+			VRIKBackup bk = ik.GetComponent<VRIKBackup>();
+			Debug.Assert(null != bk);
+			bk.Restore(ik);
+			Transform [] trackers = {
+									  headTracker
+									, leftHandTracker
+									, rightHandTracker
+								};
+			int n_tracker = trackers.Length;
+			for (int i_tracker = 0; i_tracker < n_tracker; i_tracker ++)
+			{
+				Transform tracker = trackers[i_tracker];
+				foreach (Transform child in tracker)
+					if (child.name == c_targetName
+						|| child.name == c_goalName)
+					GameObject.Destroy(child.gameObject);
+			}
+		}
+		public static VRIKCalibrator.CalibrationData Calibrate(VRIK ik, Transform headTracker, Transform leftHandTracker, Transform rightHandTracker)
+		{
+			VRIKBackup bk = ik.GetComponent<VRIKBackup>();
+			Debug.Assert(null != bk);
+			bk.Save(ik);
+			if (!ik.solver.initiated)
+			{
+				Debug.LogError("Can not calibrate before VRIK has initiated.");
+				return null;
+			}
+			Transform [] trackers = {
+									  headTracker
+									, leftHandTracker
+									, rightHandTracker
+								};
+			Transform [] refs_target = {
+									  ik.references.head
+									, ik.references.leftHand
+									, ik.references.rightHand
+								};
+			int n_tracker = trackers.Length;
+			GameObject[] targets = new GameObject[n_tracker];
+			for (int i_tracker = 0; i_tracker < n_tracker; i_tracker ++)
+			{
+				GameObject target = new GameObject(c_targetName);
+				target.transform.rotation = refs_target[i_tracker].rotation;
+				target.transform.position = refs_target[i_tracker].position;
+				target.transform.parent = trackers[i_tracker];
+				targets[i_tracker] = target;
+			}
+			VRIKCalibrator.CalibrationData data = new VRIKCalibrator.CalibrationData();
+			data.scale = 1;
+			data.pelvisRotationWeight = 0;
+			data.pelvisPositionWeight = 0;
+			data.head = new VRIKCalibrator.CalibrationData.Target(targets[0].transform);
+			data.pelvis = new VRIKCalibrator.CalibrationData.Target(null);
+			data.leftHand = new VRIKCalibrator.CalibrationData.Target(targets[1].transform);
+			data.rightHand = new VRIKCalibrator.CalibrationData.Target(targets[2].transform);
+			data.leftFoot = new VRIKCalibrator.CalibrationData.Target(null);
+			data.rightFoot = new VRIKCalibrator.CalibrationData.Target(null);
+			data.leftLegGoal = new VRIKCalibrator.CalibrationData.Target(null);
+			data.rightLegGoal = new VRIKCalibrator.CalibrationData.Target(null);
+			ik.solver.spine.headTarget = targets[0].transform;
+			ik.solver.spine.pelvisTarget = null;
+			ik.solver.spine.pelvisPositionWeight = data.pelvisPositionWeight;
+			ik.solver.spine.pelvisRotationWeight = data.pelvisRotationWeight;
+			ik.solver.plantFeet = false;
+			ik.solver.spine.maxRootAngle = 180f;
+			ik.solver.leftArm.target = targets[1].transform;
+			ik.solver.leftArm.positionWeight = 1f;
+			ik.solver.leftArm.rotationWeight = 1f;
+			ik.solver.rightArm.target = targets[2].transform;
+			ik.solver.rightArm.positionWeight = 1f;
+			ik.solver.rightArm.rotationWeight = 1f;
+			ik.solver.leftLeg.target = null;
+			ik.solver.leftLeg.positionWeight = 0f;
+			ik.solver.leftLeg.rotationWeight = 0f;
+			ik.solver.leftLeg.bendGoal = null;
+			ik.solver.leftLeg.bendGoalWeight = 0f;
+			ik.solver.rightLeg.target = null;
+			ik.solver.rightLeg.positionWeight = 0f;
+			ik.solver.rightLeg.rotationWeight = 0f;
+			ik.solver.rightLeg.bendGoal = null;
+			ik.solver.rightLeg.bendGoalWeight = 0f;
+			var rootController = ik.references.root.GetComponent<VRIKRootController>();
+			if (rootController != null) GameObject.Destroy(rootController);
+			ik.solver.spine.minHeadHeight = 0f;
+			ik.solver.locomotion.weight = 1f;
 
 			return data;
 		}
