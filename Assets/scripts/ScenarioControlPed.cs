@@ -180,7 +180,7 @@ public class ScenarioControlPed : MonoBehaviour {
 			p_rig = t_u.MultiplyPoint3x4(p_rig);
 			Quaternion q_rig = rigCam.transform.rotation;
 			q_rig = q_rig * t_u.rotation;
-			SteamVR_ControllerManager2 rigCamMgr = rigCam.GetComponent<SteamVR_ControllerManager2>();
+			SteamVR_Manager rigCamMgr = rigCam.GetComponent<SteamVR_Manager>();
 			rigCamMgr.Transport(q_rig, p_rig);
 		}
 
@@ -470,7 +470,7 @@ public class ScenarioControlPed : MonoBehaviour {
 										{
 											GameObject steamVR = GameObject.Find("[CameraRig]");
 											Debug.Assert(null != steamVR);
-											SteamVR_ControllerManager2 mgr = steamVR.GetComponent<SteamVR_ControllerManager2>();
+											SteamVR_Manager mgr = steamVR.GetComponent<SteamVR_Manager>();
 											mgr.m_avatar = ped;
 											Debug.Assert(null != m_confAvatar);
 											m_confAvatar.Apply(ik);
