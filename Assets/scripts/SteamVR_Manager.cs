@@ -271,25 +271,31 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 
-	public virtual void Calibration()
+	public virtual bool Calibration()
 	{
 		Debug.Assert(false); //override this function in derived class
+		return false;
 	}
 	private static bool actCalibration(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
+		bool cali_done = true;
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actCalibration");
 		else
 		{
-			g_inst.Calibration();
-			GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
-			Camera cam = eyeCam.GetComponent<Camera>();
-			Debug.Assert(null != cam);
-			cam.nearClipPlane = 0.1f;
+			cali_done = g_inst.Calibration();
+			if (cali_done)
+			{
+				GameObject eyeCam = g_inst.m_hmd.transform.parent.gameObject;
+				Camera cam = eyeCam.GetComponent<Camera>();
+				Debug.Assert(null != cam);
+				cam.nearClipPlane = 0.1f;
+			}
+
 		}
-		return true;
+		return cali_done;
 	}
 	public virtual void UnCalibration()
 	{

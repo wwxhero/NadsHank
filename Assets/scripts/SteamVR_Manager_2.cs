@@ -37,12 +37,16 @@ public class SteamVR_Manager_2 : SteamVR_Manager
 			return false;
 	}
 
-	public override void Calibration()
+	public override bool Calibration()
 	{
+		//Calibration is done by 2 steps:
+		// 1st: to lock hands trackers
+		// 2nd: to calibrate with 1 head tracker and 2 locked hands trackers and then unlock to 2 trackers
 		VRIK ik = m_avatar.GetComponent<VRIK>();
 		m_data = VRIKCalibrator2.Calibrate(ik, m_hmd.transform
 					, m_objects[(int)ObjType.tracker_lhand].transform
 					, m_objects[(int)ObjType.tracker_rhand].transform);
+		return true;
 	}
 
 	public override void UnCalibration()

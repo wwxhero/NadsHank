@@ -23,9 +23,10 @@ public class ScenarioControlPed : MonoBehaviour {
 	Matrix4x4 c_unity2sim;
 
 	public bool DEF_LOGMATRIXFAC;
-	public bool DEF_LOGJOINTTRAN;
 	public bool DEF_LOGJOINTIDNAME;
 	public bool DEF_TESTTELEPORT;
+	public bool DEF_LOGPEDTRANSIM;
+
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
 
@@ -475,9 +476,6 @@ public class ScenarioControlPed : MonoBehaviour {
 											Debug.Assert(null != m_confAvatar);
 											m_confAvatar.Apply(ik);
 										}
-
-										//if (DEF_LOGMATRIXFAC)
-										//	ped.AddComponent<JointDumper>();
 									}
 
 
@@ -693,6 +691,25 @@ public class ScenarioControlPed : MonoBehaviour {
 					Vector3 pos, tan, lat;
 					m_confAvatar.testTeleport(++m_iTeleport, out pos, out tan, out lat);
 					Teleport(pos, tan, lat);
+				}
+
+				if (DEF_LOGPEDTRANSIM)
+				{
+					string strLog = "";
+					foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
+					{
+						Transform tran_u = kv.Value.transform;
+						Vector3 pos_s = c_unity2sim.MultiplyPoint3x4(tran_u.position);
+						Vector3 tan_s = c_unity2sim.MultiplyVector(tran_u.forward);
+						string strItem = string.Format(@"\n{0}:"
+													+"\n\tp=[{1} {2} {3}]"
+													+"\n\tt=[{4} {5} {6}]"
+														, kv.Value.name
+														, pos_s.x, pos_s.y, pos_s.z
+														, tan_s.x, tan_s.y, tan_s.z);
+						strLog += strItem;
+					}
+					Debug.Log(strLog);
 				}
 			}
 			catch (Exception e)

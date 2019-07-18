@@ -43,7 +43,7 @@ public class SteamVR_Manager_5 : SteamVR_Manager
 			return false;
 	}
 
-	public override void Calibration()
+	public override bool Calibration()
 	{
 		VRIK ik = m_avatar.GetComponent<VRIK>();
 		m_data = VRIKCalibrator2.Calibrate(ik, m_hmd.transform
@@ -52,6 +52,7 @@ public class SteamVR_Manager_5 : SteamVR_Manager
 					, m_objects[(int)ObjType.tracker_rhand].transform
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
+		return true;
 	}
 
 	public override void UnCalibration()
