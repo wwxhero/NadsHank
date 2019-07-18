@@ -17,7 +17,7 @@ public class ScenarioControlPed : MonoBehaviour {
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
-	GameObject m_mockTrackers;
+	GameObject m_trackers;
 
 	Matrix4x4 c_sim2unity;
 	Matrix4x4 c_unity2sim;
@@ -443,7 +443,7 @@ public class ScenarioControlPed : MonoBehaviour {
 
 										if (null != m_mockTrackersPrefab)
 										{
-											m_mockTrackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
+											m_trackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
 											RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
 											caliCtrl.ik = ik;
 											Transform[] trackers = { caliCtrl.headTracker
@@ -460,12 +460,12 @@ public class ScenarioControlPed : MonoBehaviour {
 																, "Pelvis/LLegUpper/LLegCalf/LLegAnkle/Tracker Mock (Left Foot)"
 																, "Pelvis/RLegUpper/RLegCalf/RLegAnkle/Tracker Mock (Right Foot)"
 															};
-											caliCtrl.headTracker = m_mockTrackers.transform.Find(targetNames[0]);
-											caliCtrl.bodyTracker = m_mockTrackers.transform.Find(targetNames[1]);
-											caliCtrl.leftHandTracker = m_mockTrackers.transform.Find(targetNames[2]);
-											caliCtrl.rightHandTracker = m_mockTrackers.transform.Find(targetNames[3]);
-											caliCtrl.leftFootTracker = m_mockTrackers.transform.Find(targetNames[4]);
-											caliCtrl.rightFootTracker = m_mockTrackers.transform.Find(targetNames[5]);
+											caliCtrl.headTracker = m_trackers.transform.Find(targetNames[0]);
+											caliCtrl.bodyTracker = m_trackers.transform.Find(targetNames[1]);
+											caliCtrl.leftHandTracker = m_trackers.transform.Find(targetNames[2]);
+											caliCtrl.rightHandTracker = m_trackers.transform.Find(targetNames[3]);
+											caliCtrl.leftFootTracker = m_trackers.transform.Find(targetNames[4]);
+											caliCtrl.rightFootTracker = m_trackers.transform.Find(targetNames[5]);
 										}
 										else
 										{
@@ -475,6 +475,7 @@ public class ScenarioControlPed : MonoBehaviour {
 											mgr.m_avatar = ped;
 											Debug.Assert(null != m_confAvatar);
 											m_confAvatar.Apply(ik);
+											m_trackers = steamVR;
 										}
 									}
 
@@ -561,14 +562,8 @@ public class ScenarioControlPed : MonoBehaviour {
 						child.transform.parent = parent.transform;
 						if (0 == i_child)
 						{
-							if (null != m_mockTrackers)
-							{
-								m_mockTrackers.transform.parent = parent.transform;
-							}
-							else
-							{
-								Debug.Assert(false, "adjust trackers in child space of pegging parent");
-							}
+							Debug.Assert(null != m_trackers);
+							m_trackers.transform.parent = parent.transform;
 						}
 					}
 				}
