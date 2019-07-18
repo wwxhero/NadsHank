@@ -5,6 +5,7 @@ using System;
 using ExternalObjectsControlComLib;
 using System.Xml;
 using JointsReduction;
+using System.Globalization;
 
 public class ScenarioControlPed : MonoBehaviour {
 
@@ -690,18 +691,17 @@ public class ScenarioControlPed : MonoBehaviour {
 
 				if (DEF_LOGPEDTRANSIM)
 				{
+					CultureInfo ci = new CultureInfo("en-us");
 					string strLog = "";
 					foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
 					{
 						Transform tran_u = kv.Value.transform;
 						Vector3 pos_s = c_unity2sim.MultiplyPoint3x4(tran_u.position);
 						Vector3 tan_s = c_unity2sim.MultiplyVector(tran_u.forward);
-						string strItem = string.Format(@"\n{0}:"
-													+"\n\tp=[{1} {2} {3}]"
-													+"\n\tt=[{4} {5} {6}]"
+						string strItem = string.Format("\n{0}:\n\tp=[{1} {2} {3}]\n\tt=[{4} {5} {6}]"
 														, kv.Value.name
-														, pos_s.x, pos_s.y, pos_s.z
-														, tan_s.x, tan_s.y, tan_s.z);
+														, pos_s.x.ToString("E07", ci), pos_s.y.ToString("E07", ci), pos_s.z.ToString("E07", ci)
+														, tan_s.x.ToString("E07", ci), tan_s.y.ToString("E07", ci), tan_s.z.ToString("E07", ci));
 						strLog += strItem;
 					}
 					Debug.Log(strLog);
