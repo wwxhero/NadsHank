@@ -102,8 +102,10 @@ public class SteamVR_Manager_2 : SteamVR_Manager
 		base.ShowMirror();
 		Debug.Assert(null == m_mirrowDrv && null != m_carHost);
 		m_mirrowDrv = Instantiate(m_prefMirrorDrv);
-		m_mirrowDrv.transform.position = m_carHost.transform.position - 2f * m_carHost.transform.up; //downward in model space corresponds to forward in world space
-		m_mirrowDrv.transform.rotation = m_carHost.transform.rotation;
+		Vector3 tan = -m_carHost.transform.up;
+		Vector3 up = m_carHost.transform.forward;
+		m_mirrowDrv.transform.position = m_carHost.transform.position + 2f * tan;
+		m_mirrowDrv.transform.rotation = Quaternion.LookRotation(tan, up);
 	}
 
 	public override void HideMirror()
