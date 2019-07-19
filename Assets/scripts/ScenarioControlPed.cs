@@ -565,6 +565,12 @@ public class ScenarioControlPed : MonoBehaviour {
 						{
 							Debug.Assert(null != m_trackers);
 							m_trackers.transform.parent = parent.transform;
+							if (null == m_mockTrackersPrefab)
+							{
+								SteamVR_Manager_2 mgr = m_trackers.GetComponent<SteamVR_Manager_2>();
+								Debug.Assert(null != mgr);
+								mgr.m_carHost = parent;
+							}
 						}
 					}
 				}

@@ -166,19 +166,30 @@ public class SteamVR_Manager : SteamVR_TDManager
 		return true;
 	}
 
+	public virtual void ShowMirror()
+	{
+		Debug.Assert(null == m_mirrow && null != m_avatar);
+		m_mirrow = Instantiate(m_prefMirror);
+		m_mirrow.transform.position = m_avatar.transform.position + 2f * m_avatar.transform.forward;
+		m_mirrow.transform.rotation = m_avatar.transform.rotation;
+	}
+
+
 	private static bool actShowMirror(uint cond)
 	{
 		//fixme: a mirror is supposed to show at a right position
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actShowMirror");
 		else
-		{
-			Debug.Assert(null == g_inst.m_mirrow && null != g_inst.m_avatar);
-			g_inst.m_mirrow = Instantiate(g_inst.m_prefMirror);
-			g_inst.m_mirrow.transform.position = g_inst.m_avatar.transform.position + 2f * g_inst.m_avatar.transform.forward;
-			g_inst.m_mirrow.transform.rotation = g_inst.m_avatar.transform.rotation;
-		}
+			g_inst.ShowMirror();
 		return true;
+	}
+
+	public virtual void HideMirror()
+	{
+		Debug.Assert(null != m_mirrow && null != m_avatar);
+		GameObject.Destroy(m_mirrow);
+		m_mirrow = null;
 	}
 
 	private static bool actUnShowMirror(uint cond)
@@ -188,11 +199,14 @@ public class SteamVR_Manager : SteamVR_TDManager
 			Debug.LogWarning("actUnShowMirror");
 		else
 		{
-			Debug.Assert(null != g_inst.m_mirrow && null != g_inst.m_avatar);
-			GameObject.Destroy(g_inst.m_mirrow);
-			g_inst.m_mirrow = null;
+			g_inst.HideMirror();
 		}
 		return true;
+	}
+
+	public virtual GameObject GetPrimeMirror()
+	{
+		return m_mirrow;
 	}
 
 	private static bool actAdjustMirror(uint cond)
@@ -205,7 +219,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 		else
 		{
-			Debug.Assert(null != g_inst.m_mirrow);
+			GameObject mirror = g_inst.GetPrimeMirror();
+			Debug.Assert(null != mirror);
 			bool l_pad_t = (cond == L_PAD_T);
 			bool r_pad_t = (cond == R_PAD_T);
 			bool acted = (l_pad_t
@@ -217,8 +232,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 				dz = -0.01f;
 			if (acted)
 			{
-				Vector3 tran = dz * g_inst.m_mirrow.transform.forward;
-				g_inst.m_mirrow.transform.Translate(tran);
+				Vector3 tran = dz * mirror.transform.forward;
+				mirror.transform.Translate(tran);
 			}
 			return acted;
 		}

@@ -11,6 +11,9 @@ using System.Collections.Generic;
 
 public class SteamVR_Manager_2 : SteamVR_Manager
 {
+	[HideInInspector]
+	public GameObject m_carHost;
+	private GameObject m_mirrowDrv;
 	enum ObjType { tracker_rhand = 2, tracker_lhand };
 
 	SteamVR_Manager_2()
@@ -91,6 +94,27 @@ public class SteamVR_Manager_2 : SteamVR_Manager
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
 
 		Transport(l.rotation, t);
+	}
+
+	public override void ShowMirror()
+	{
+		base.ShowMirror();
+		Debug.Assert(null == m_mirrowDrv && null != m_carHost);
+		m_mirrowDrv = Instantiate(m_prefMirror);
+		m_mirrowDrv.transform.position = m_carHost.transform.position + 2f * m_carHost.transform.forward;
+		m_mirrowDrv.transform.rotation = m_carHost.transform.rotation;
+	}
+
+	public override void HideMirror()
+	{
+		base.HideMirror();
+		GameObject.Destroy(m_mirrowDrv);
+		m_mirrowDrv = null;
+	}
+
+	public override GameObject GetPrimeMirror()
+	{
+		return m_mirrowDrv;
 	}
 }
 
