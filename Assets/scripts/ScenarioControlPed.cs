@@ -720,7 +720,7 @@ public class ScenarioControlPed : MonoBehaviour {
 		}
 	}
 
-	void FrameToQuaternionVehi(Vector3 t, Vector3 l, out Quaternion q)
+	static void FrameToQuaternionVehi(Vector3 t, Vector3 l, out Quaternion q)
 	{
 		Vector3 z_prime = Vector3.Cross(l, -t);
 		Vector3 y_prime = -t;
@@ -728,7 +728,7 @@ public class ScenarioControlPed : MonoBehaviour {
 		q.SetLookRotation(z_prime, y_prime);
 	}
 
-	void FrameToQuaternionPed(Vector3 t, Vector3 l, out Quaternion q)
+	static void FrameToQuaternionPed(Vector3 t, Vector3 l, out Quaternion q)
 	{
 		Vector3 y_prime = Vector3.Cross(t, l);
 		Vector3 z_prime = t;

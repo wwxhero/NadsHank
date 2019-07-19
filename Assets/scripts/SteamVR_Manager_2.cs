@@ -13,6 +13,7 @@ public class SteamVR_Manager_2 : SteamVR_Manager
 {
 	[HideInInspector]
 	public GameObject m_carHost;
+	public GameObject m_prefMirrorDrv;
 	private GameObject m_mirrowDrv;
 	enum ObjType { tracker_rhand = 2, tracker_lhand };
 
@@ -100,7 +101,7 @@ public class SteamVR_Manager_2 : SteamVR_Manager
 	{
 		base.ShowMirror();
 		Debug.Assert(null == m_mirrowDrv && null != m_carHost);
-		m_mirrowDrv = Instantiate(m_prefMirror);
+		m_mirrowDrv = Instantiate(m_prefMirrorDrv);
 		m_mirrowDrv.transform.position = m_carHost.transform.position - 2f * m_carHost.transform.up; //downward in model space corresponds to forward in world space
 		m_mirrowDrv.transform.rotation = m_carHost.transform.rotation;
 	}
