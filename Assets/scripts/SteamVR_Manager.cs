@@ -17,9 +17,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected int tracker_start, tracker_end;
 
-	delegate bool Action(uint cond);
-	enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking, teleporting };
-	class Transition
+	protected delegate bool Action(uint cond);
+	protected enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking, teleporting };
+	protected class Transition
 	{
 		private State[] m_vec = new State[2];
 		private Action[] m_acts;
@@ -65,39 +65,21 @@ public class SteamVR_Manager : SteamVR_TDManager
 	};
 
 	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, n_code };
-	static uint R_TRIGGER = 0x0001;
-	static uint R_STEAM = 0x0002;
-	static uint R_MENU = 0x0004;
-	static uint R_PAD_P = 0x0008;
-	static uint R_PAD_T = 0x0010;
-	static uint R_GRIP = 0x0020;
-	static uint L_TRIGGER = 0x0100;
-	static uint L_STEAM = 0x0200;
-	static uint L_MENU = 0x0400;
-	static uint L_PAD_P = 0x0800;
-	static uint L_PAD_T = 0x1000;
-	static uint L_GRIP = 0x2000;
-	static uint ALL = 0xffffffff;
-	static uint NONE = 0x00000000;
-	Transition[] m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_transport, ALL)
-									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
-									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
-									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
-									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
-									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
-									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
-									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
-									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
-									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
-									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
-									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)
-									, new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)
-									, new Transition(State.teleporting, State.tracking, NONE)
-									, new Transition(State.teleporting, State.tracking, NONE)
-								};
+	protected static uint R_TRIGGER = 0x0001;
+	protected static uint R_STEAM = 0x0002;
+	protected static uint R_MENU = 0x0004;
+	protected static uint R_PAD_P = 0x0008;
+	protected static uint R_PAD_T = 0x0010;
+	protected static uint R_GRIP = 0x0020;
+	protected static uint L_TRIGGER = 0x0100;
+	protected static uint L_STEAM = 0x0200;
+	protected static uint L_MENU = 0x0400;
+	protected static uint L_PAD_P = 0x0800;
+	protected static uint L_PAD_T = 0x1000;
+	protected static uint L_GRIP = 0x2000;
+	protected static uint ALL = 0xffffffff;
+	protected static uint NONE = 0x00000000;
+	protected Transition[] m_transition;
 	protected static SteamVR_Manager g_inst;
 
 
@@ -107,13 +89,13 @@ public class SteamVR_Manager : SteamVR_TDManager
 		return false;
 	}
 
-	private static bool actIdentifyTrackers(uint cond)
+	protected static bool actIdentifyTrackers(uint cond)
 	{
 		return g_inst.IdentifyTrackers();
 	}
 
 	static int s_idx = 0;
-	private static bool actTeleportP(uint cond)
+	protected static bool actTeleportP(uint cond)
 	{
 		if (g_inst.DEF_TESTTELEPORT)
 		{
@@ -124,7 +106,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 			return true;
 	}
 
-	private static bool actTeleportM(uint cond)
+	protected static bool actTeleportM(uint cond)
 	{
 		if (g_inst.DEF_TESTTELEPORT)
 		{
@@ -139,7 +121,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		Debug.Assert(false); //be override by derived class
 	}
-	private static bool actConnectVirtualWorld(uint cond)
+	protected static bool actConnectVirtualWorld(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
@@ -153,7 +135,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		return true;
 	}
 
-	private static bool actUnConnectVirtualWorld(uint cond)
+	protected static bool actUnConnectVirtualWorld(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actUnConnectVirtualWorld");
@@ -175,7 +157,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 
-	private static bool actShowMirror(uint cond)
+	protected static bool actShowMirror(uint cond)
 	{
 		//fixme: a mirror is supposed to show at a right position
 		if (g_inst.DEF_MOCKSTEAM)
@@ -192,7 +174,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		m_mirrow = null;
 	}
 
-	private static bool actUnShowMirror(uint cond)
+	protected static bool actUnShowMirror(uint cond)
 	{
 		//fixme: a mirror is supposed to show at a right position
 		if (g_inst.DEF_MOCKSTEAM)
@@ -209,7 +191,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		return m_mirrow;
 	}
 
-	private static bool actAdjustMirror(uint cond)
+	protected static bool actAdjustMirror(uint cond)
 	{
 		//fixme: adjust the mirror with the ctrl code
 		if (g_inst.DEF_MOCKSTEAM)
@@ -239,7 +221,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
-	private static bool actHideTracker(uint cond)
+	protected static bool actHideTracker(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
@@ -262,7 +244,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
-	private static bool actUnHideTracker(uint cond)
+	protected static bool actUnHideTracker(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
@@ -291,7 +273,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		Debug.Assert(false); //override this function in derived class
 		return false;
 	}
-	private static bool actCalibration(uint cond)
+	protected static bool actCalibration(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
@@ -317,7 +299,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		Debug.Assert(false); //override this funciton in derived class
 	}
 
-	private static bool actUnCalibration(uint cond)
+	protected static bool actUnCalibration(uint cond)
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);

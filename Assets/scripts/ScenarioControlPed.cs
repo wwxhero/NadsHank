@@ -567,7 +567,7 @@ public class ScenarioControlPed : MonoBehaviour {
 							m_trackers.transform.parent = parent.transform;
 							if (null == m_mockTrackersPrefab)
 							{
-								SteamVR_Manager_2 mgr = m_trackers.GetComponent<SteamVR_Manager_2>();
+								SteamVR_ManagerDrv mgr = m_trackers.GetComponent<SteamVR_ManagerDrv>();
 								Debug.Assert(null != mgr);
 								mgr.m_carHost = parent;
 							}

@@ -9,14 +9,33 @@ using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
 
-public class SteamVR_Manager_5 : SteamVR_Manager
+public class SteamVR_ManagerPed : SteamVR_Manager
 {
 	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand };
 
-	SteamVR_Manager_5()
+	SteamVR_ManagerPed()
 	{
 		tracker_start = (int)ObjType.tracker_rfoot;
 		tracker_end = (int)ObjType.tracker_lhand + 1;
+		m_transition = new Transition[] {
+									  new Transition(State.initial, State.pre_transport, ALL)
+									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
+									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
+									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
+									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
+									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
+									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
+									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
+									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
+									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
+									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)
+									, new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)
+									, new Transition(State.teleporting, State.tracking, NONE)
+									, new Transition(State.teleporting, State.tracking, NONE)
+								};
 		g_inst = this;
 	}
 
