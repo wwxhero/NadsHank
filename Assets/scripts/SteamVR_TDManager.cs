@@ -20,7 +20,7 @@ public class SteamVR_TDManager : MonoBehaviour
 	protected uint m_ctrlLIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
 	protected uint m_ctrlRIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
 
-	
+
 
 	// Helper function to avoid adding duplicates to object array.
 	void SetUniqueObject(GameObject o, int index)
@@ -216,7 +216,19 @@ public class SteamVR_TDManager : MonoBehaviour
 		}
 
 		if (changed)
+		{
 			Refresh();
+			int i_obj = 2;
+			for (; i_obj < m_objects.Length; i_obj ++)
+			{
+				if (index == m_indicesDev[i_obj])
+				{
+					//fixme: connected->unlock && !connected->lock m_objects[i_obj]
+					//m_objects[i_obj].lock(!connected);
+					break;
+				}
+			}
+		}
 	}
 
 	private uint GetControllerIndex(ETrackedControllerRole role)
