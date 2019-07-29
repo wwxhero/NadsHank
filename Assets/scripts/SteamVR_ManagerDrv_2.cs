@@ -9,7 +9,7 @@ using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
 
-public class SteamVR_ManagerDrv : SteamVR_Manager
+public class SteamVR_ManagerDrv_2 : SteamVR_Manager
 {
 	[HideInInspector]
 	public GameObject m_carHost;
@@ -17,7 +17,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	private GameObject m_mirrowDrv;
 	enum ObjType { tracker_rhand = 2, tracker_lhand };
 
-	SteamVR_ManagerDrv()
+	SteamVR_ManagerDrv_2()
 	{
 		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lhand + 1;

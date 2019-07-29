@@ -215,7 +215,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 			if (acted)
 			{
 				Vector3 tran = dz * mirror.transform.forward;
-				mirror.transform.Translate(tran);
+				mirror.transform.Translate(tran, Space.World);
 			}
 			return acted;
 		}
