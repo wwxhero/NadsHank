@@ -33,6 +33,7 @@ namespace RootMotion.FinalIK
 						|| child.name == c_goalName)
 					GameObject.Destroy(child.gameObject);
 			}
+			ik.LockSolver(true);
 		}
 
 		public static VRIKCalibrator.CalibrationData Calibrate(VRIK ik, Transform headTracker, Transform bodyTracker, Transform leftHandTracker, Transform rightHandTracker, Transform leftFootTracker, Transform rightFootTracker)
@@ -143,6 +144,7 @@ namespace RootMotion.FinalIK
 
 			ik.solver.spine.minHeadHeight = 0f;
 			ik.solver.locomotion.weight = bodyTracker == null && leftFootTracker == null && rightFootTracker == null ? 1f : 0f;
+			ik.LockSolver(false);
 			return data;
 		}
 		public static void UnCalibrate(VRIK ik, Transform headTracker, Transform leftHandTracker, Transform rightHandTracker)
