@@ -216,11 +216,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			{
 				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
 				t.Lock(true);
-				n_lock ++;
+				n_locked ++;
 			}
 		}
 
-		if (n_lock < trackers.Length)
+		if (n_locked < trackers.Length)
 		{
 			actPosTrackerUnLock(cond);
 			return false;
@@ -239,12 +239,12 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			, g_inst.m_objects[(int)ObjType.tracker_lhand]
 		};
 
-		for (int i = 0; i < trackers.Length && n_locked == i; i ++)
+		for (int i = 0; i < trackers.Length; i ++)
 		{
 			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
 			t.Lock(false);
 		}
-
+        return true;
 	}
 
 	protected static bool actPegLock(uint cond)
