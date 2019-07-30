@@ -33,7 +33,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 	}
 
-	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand };
+	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_head };
 	const int c_totalTrackers = 6;
 	TransformDefault [] m_trackerDft = new TransformDefault[c_totalTrackers];
 	[HideInInspector]
@@ -42,7 +42,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	SteamVR_ManagerDrv()
 	{
 		tracker_start = (int)ObjType.tracker_rfoot;
-		tracker_end = (int)ObjType.tracker_lhand + 1;
+		tracker_end = (int)ObjType.tracker_head + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_transport, ALL)
 									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
@@ -50,8 +50,10 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
 									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
-									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
-									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
+									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)
+									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)
+									, new Transition(State.pre_calibra2, State.post_calibra, R_TRIGGER, new Action[] {actCalibration, actPosTrackerUnLock})
+									, new Transition(State.pre_calibra2, State.post_calibra, L_TRIGGER, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
 									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker, actPegLock })
 									, new Transition(State.pegging, State.tracking, R_TRIGGER, new Action[]{ actPegUnLock4Tracking })
@@ -88,9 +90,15 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool Calibration()
 	{
-		//fixme: hmd should be replaced with a tracker
+		bool trackers_ready = true;
+		for (int i_tracker = tracker_start; i_tracker < tracker_end && trackers_ready; i_tracker ++)
+			trackers_ready = m_objects[i_tracker].activeSelf;
+
+		if (!trackers_ready)
+			return false;
+
 		Transform [] trackers_p = new Transform[c_totalTrackers] {
-			m_hmd.transform
+			m_objects[(int)ObjType.tracker_head].transform
 			, m_objects[(int)ObjType.tracker_rfoot].transform
 			, m_objects[(int)ObjType.tracker_lfoot].transform
 			, m_objects[(int)ObjType.tracker_pelvis].transform
@@ -132,19 +140,21 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 
 		VRIK ik = m_avatar.GetComponent<VRIK>();
-		m_data = VRIKCalibrator2.Calibrate(ik, m_hmd.transform
+		m_data = VRIKCalibrator2.Calibrate(ik
+					, m_objects[(int)ObjType.tracker_head].transform
 					, m_objects[(int)ObjType.tracker_pelvis].transform
 					, m_objects[(int)ObjType.tracker_lhand].transform
 					, m_objects[(int)ObjType.tracker_rhand].transform
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
-        return true;
+		return true;
 	}
 
 	public override void UnCalibration()
 	{
 		VRIK ik = m_avatar.GetComponent<VRIK>();
-		VRIKCalibrator2.UnCalibrate(ik, m_hmd.transform
+		VRIKCalibrator2.UnCalibrate(ik
+					, m_objects[(int)ObjType.tracker_head].transform
 					, m_objects[(int)ObjType.tracker_pelvis].transform
 					, m_objects[(int)ObjType.tracker_lhand].transform
 					, m_objects[(int)ObjType.tracker_rhand].transform
@@ -188,10 +198,59 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Transport(l.rotation, t);
 	}
 
+	private static bool actPosTrackerLock(uint cond)
+	{
+		//fixme: lock all the trackers but head
+		GameObject [] trackers = new GameObject[] {
+			  g_inst.m_objects[(int)ObjType.tracker_rfoot]
+			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+			, g_inst.m_objects[(int)ObjType.tracker_rhand]
+			, g_inst.m_objects[(int)ObjType.tracker_lhand]
+		};
+
+		int n_locked = 0;
+		for (int i = 0; i < trackers.Length && n_locked == i; i ++)
+		{
+			if (trackers[i].activeSelf)
+			{
+				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+				t.Lock(true);
+				n_lock ++;
+			}
+		}
+
+		if (n_lock < trackers.Length)
+		{
+			actPosTrackerUnLock(cond);
+			return false;
+		}
+		else
+			return true;
+	}
+
+	private static bool actPosTrackerUnLock(uint cond)
+	{
+		GameObject [] trackers = new GameObject[] {
+			  g_inst.m_objects[(int)ObjType.tracker_rfoot]
+			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+			, g_inst.m_objects[(int)ObjType.tracker_rhand]
+			, g_inst.m_objects[(int)ObjType.tracker_lhand]
+		};
+
+		for (int i = 0; i < trackers.Length && n_locked == i; i ++)
+		{
+			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+			t.Lock(false);
+		}
+
+	}
+
 	protected static bool actPegLock(uint cond)
 	{
 		GameObject [] trackers = new GameObject[] {
-			g_inst.m_hmd
+			  g_inst.m_objects[(int)ObjType.tracker_head]
 			, g_inst.m_objects[(int)ObjType.tracker_rfoot]
 			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
 			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
@@ -215,7 +274,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	{
 		//fixme: unlock trackers (except feet trackers) to recieve tracking transform update
 		GameObject [] trackers = new GameObject[] {
-			g_inst.m_hmd
+			  g_inst.m_objects[(int)ObjType.tracker_head]
 			, g_inst.m_objects[(int)ObjType.tracker_rfoot]
 			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
 			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
@@ -235,7 +294,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		//fixme: unlock trackers (except feet trackers) to recieve tracking transform update
 		//fixme: align virtual car with physical car
 		GameObject [] trackers = new GameObject[] {
-			g_inst.m_hmd
+			  g_inst.m_objects[(int)ObjType.tracker_head]
 			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
 			, g_inst.m_objects[(int)ObjType.tracker_rhand]
 			, g_inst.m_objects[(int)ObjType.tracker_lhand]
