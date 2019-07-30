@@ -20,28 +20,16 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 		public TransformDefault(Transform tran, Transform vTrackerInitial, Transform vTrackersDefault)
 		{
-			m_position = tran.position;
-			m_rotation = tran.rotation;
-			m_transform = tran;
 			m_T = vTrackersDefault.localToWorldMatrix * vTrackerInitial.worldToLocalMatrix;
+			m_position = m_T.MultiplyPoint3x4(tran.position);
+			m_rotation =  m_T.rotation * tran.rotation;
+			m_transform = tran;
 		}
 
-		string Pedantic(Quaternion q1, Quaternion q2)
-		{
-			float w = q1.w*q2.w-q1.x*q2.x-q1.y*q2.y-q1.z*q2.z;
-			float x = q1.w*q2.x+q1.x*q2.w+q1.y*q2.z-q1.z*q2.y;
-			float y = q1.w*q2.y-q1.x*q2.z+q1.y*q2.w+q1.z*q2.x;
-			float z = q1.w*q2.z+q1.x*q2.y-q1.y*q2.x+q1.z*q2.w;
-			return string.Format("result:[{0, 6:0.0000} {1, 6:0.0000} {2, 6:0.0000} {3, 6:0.0000}]", w, x, y, z);
-		}
 		public void Reset()
 		{
-			m_transform.position = m_T.MultiplyPoint3x4(m_position);
-			m_transform.rotation =  m_T.rotation * m_rotation;
-			string strQ = string.Format("result:[{0, 6:0.0000} {1, 6:0.0000} {2, 6:0.0000} {3, 6:0.0000}]\n", m_transform.rotation.w, m_transform.rotation.x, m_transform.rotation.y, m_transform.rotation.z);
-			strQ += string.Format("pedantic: {0}\n", Pedantic(m_T.rotation, m_rotation));
-			strQ += string.Format("unity doc: {0}", Pedantic(m_rotation, m_T.rotation));
-			Debug.Log(strQ);
+			m_transform.position = m_position;
+			m_transform.rotation =  m_rotation;
 		}
 	}
 
@@ -150,7 +138,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 					, m_objects[(int)ObjType.tracker_rhand].transform
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
-		return true;
+        return true;
 	}
 
 	public override void UnCalibration()
@@ -214,7 +202,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		{
 			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
 			t.Lock(true);
-			((SteamVR_ManagerDrv)g_inst).m_trackerDft[i].Reset();
+		}
+
+		foreach (TransformDefault dft in ((SteamVR_ManagerDrv)g_inst).m_trackerDft)
+		{
+			dft.Reset();
 		}
 		return true;
 	}
