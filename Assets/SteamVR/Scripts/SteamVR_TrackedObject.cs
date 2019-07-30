@@ -35,16 +35,23 @@ public class SteamVR_TrackedObject : MonoBehaviour
 	[Tooltip("If not set, relative to parent")]
 	public Transform origin;
 
-    public bool isValid { get; private set; }
-
+	public bool isValid { get; private set; }
+	private bool m_lock = false;
+	public bool Lock(bool l)
+	{
+		bool lock_prev = m_lock;
+		m_lock = l;
+		return lock_prev;
+	}
 	private void OnNewPoses(TrackedDevicePose_t[] poses)
 	{
-		if (index == EIndex.None)
+		if (index == EIndex.None
+			|| m_lock)
 			return;
 
 		var i = (int)index;
 
-        isValid = false;
+		isValid = false;
 		if (poses.Length <= i)
 			return;
 
@@ -54,7 +61,7 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		if (!poses[i].bPoseIsValid)
 			return;
 
-        isValid = true;
+		isValid = true;
 
 		var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
 
