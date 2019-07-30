@@ -34,6 +34,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	}
 
 	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_head };
+	string [] c_trackerNames = {"tracker_rfoot", "tracker_lfoot", "tracker_pelvis", "tracker_rhand", "tracker_lhand"};
 	const int c_totalTrackers = 6;
 	TransformDefault [] m_trackerDft = new TransformDefault[c_totalTrackers];
 	[HideInInspector]
@@ -82,6 +83,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
 			m_objects[(int)ObjType.tracker_rhand] = trackers[3];
 			m_objects[(int)ObjType.tracker_lhand] = trackers[4];
+			for (int i = 0; i < trackers.Length; i ++)
+				trackers[i].name = c_trackerNames[i];
 			return true;
 		}
 		else
