@@ -32,16 +32,39 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 	}
 
-	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_head };
-	string [] c_trackerNames = {"tracker_rfoot", "tracker_lfoot", "tracker_pelvis", "tracker_rhand", "tracker_lhand"};
+	enum ObjType { tracker_rhand = 2, tracker_lhand, tracker_pelvis, tracker_head, tracker_rfoot, tracker_lfoot };
+	string [] c_trackerNames = {
+				"tracker_rhand"
+				, "tracker_lhand"
+				, "tracker_pelvis"
+				, "tracker_head"
+				, "tracker_rfoot"
+				, "tracker_lfoot"
+			};
+	string [] c_vtrackerAvatarNames = {
+				"rhand_vtracker"
+				, "lhand_vtracker"
+				, "pelvis_vtracker"
+				, "head_vtracker"
+				, "rfoot_vtracker"
+				, "lfoot_vtracker"
+			};
+	string [] c_vtrackerCarNames = {
+				"rhand_vtracker_default"
+				, "lhand_vtracker_default"
+				, "pelvis_vtracker_default"
+				, "head_vtracker_default"
+				, "rfoot_vtracker_default"
+				, "lfoot_vtracker_default"
+			};
 	const int c_totalTrackers = 6;
 	[HideInInspector]
 	public GameObject m_carHost;
 
 	SteamVR_ManagerDrv()
 	{
-		tracker_start = (int)ObjType.tracker_rfoot;
-		tracker_end = (int)ObjType.tracker_head + 1;
+		tracker_start = (int)ObjType.tracker_rhand;
+		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_transport, ALL)
 									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
@@ -66,26 +89,26 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool IdentifyTrackers()
 	{
-		//set up 2 fake trackers: lfoot, rfoot
 		//3 real trackers: lhand, rhand, pelvis
 		//1 hmd
 		Transform ori = m_hmd.transform;
-		GameObject [] trackers = new GameObject[5] {
-			  m_objects[(int)ObjType.tracker_rfoot]
-			, m_objects[(int)ObjType.tracker_lfoot]
-			, m_objects[(int)ObjType.tracker_pelvis]
+		GameObject [] trackers = new GameObject[3] {
+			  m_objects[(int)ObjType.tracker_pelvis]
 			, m_objects[(int)ObjType.tracker_rhand]
 			, m_objects[(int)ObjType.tracker_lhand]
 		};
-		if (Tracker.IdentifyTrackers_5(trackers, ori))
+		bool trackers_ready = true;
+		for (int i = 0; i < trackers.Length && trackers_ready; i ++)
+			trackers_ready = trackers[i].activeSelf;
+
+		if (trackers_ready && Tracker.IdentifyTrackers_3(trackers, ori))
 		{
-			m_objects[(int)ObjType.tracker_rfoot] = trackers[0];
-			m_objects[(int)ObjType.tracker_lfoot] = trackers[1];
+			m_objects[(int)ObjType.tracker_rhand] = trackers[0];
+			m_objects[(int)ObjType.tracker_lhand] = trackers[1];
 			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
-			m_objects[(int)ObjType.tracker_rhand] = trackers[3];
-			m_objects[(int)ObjType.tracker_lhand] = trackers[4];
-			for (int i = 0; i < trackers.Length; i ++)
-				trackers[i].name = c_trackerNames[i];
+			trackers[0].name = c_trackerNames[(int)ObjType.tracker_rhand];
+			trackers[1].name = c_trackerNames[(int)ObjType.tracker_lhand];
+			trackers[2].name = c_trackerNames[(int)ObjType.tracker_pelvis];
 			return true;
 		}
 		else
@@ -94,11 +117,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool Calibration()
 	{
-		bool trackers_ready = true;
-		for (int i_tracker = tracker_start; i_tracker < tracker_end && trackers_ready; i_tracker ++)
-			trackers_ready = m_objects[i_tracker].activeSelf;
-
-		if (!trackers_ready)
+		//fixme: recode the hardcoded names with predefined constant variables
+		if (!m_objects[(int)ObjType.tracker_head].activeSelf)
 			return false;
 
 		SteamVR_TrackedObject [] trackers_obj = new SteamVR_TrackedObject[c_totalTrackers] {
@@ -205,12 +225,23 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 		Matrix4x4 l = m_v.transpose * m_p;
 
-		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
+		Vector3 o_p = (m_objects[(int)ObjType.tracker_lhand].transform.localPosition + m_objects[(int)ObjType.tracker_rhand].transform.localPosition) * 0.5f;
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
 
 		Transport(l.rotation, t);
+
+		Transform [] vtrackers = new Transform[] {
+			m_avatar.transform.Find(c_vtrackerAvatarNames[(int)ObjType.tracker_lfoot])
+			, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)ObjType.tracker_rfoot])
+		};
+		SteamVR_TrackedObject [] ftrackers = new SteamVR_TrackedObject[] {
+			m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
+			, m_objects[(int)ObjType.tracker_rfoot].GetComponent<SteamVR_TrackedObject>()
+		};
+		for (int i_ftrack = 0; i_ftrack < ftrackers.Length; i_ftrack ++)
+			ftrackers[i_ftrack].Lock(vtrackers[i_ftrack].position, vtrackers[i_ftrack].rotation);
 	}
 
 	private static bool actPosTrackerLock(uint cond)
@@ -230,7 +261,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			if (trackers[i].activeSelf)
 			{
 				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-				t.Lock(true);
+				Transform dft = trackers[i].transform;
+				t.Lock(dft.position, dft.rotation);
 				n_locked ++;
 			}
 		}
@@ -259,7 +291,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
 			t.Lock(false);
 		}
-        return true;
+		return true;
 	}
 
 	protected static bool actPegLock(uint cond)

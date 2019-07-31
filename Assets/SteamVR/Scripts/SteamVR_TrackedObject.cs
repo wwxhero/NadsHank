@@ -51,6 +51,12 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		m_posDft = p;
 		m_rotDft = r;
 	}
+	public void Lock(Vector3 p, Quaternion r)
+	{
+		m_posDft = p;
+		m_rotDft = r;
+		m_lock = true;
+	}
 
 	private void OnNewPoses(TrackedDevicePose_t[] poses)
 	{
@@ -87,6 +93,8 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		isValid = true;
 
 		var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
+
+
 
 		if (origin != null)
 		{

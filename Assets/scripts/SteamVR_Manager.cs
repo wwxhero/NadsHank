@@ -11,7 +11,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	public GameObject m_senarioCtrl;
 	public GameObject m_prefMirror;
 	protected GameObject m_mirrow;
-	protected bool m_trackersIdentified = false;
+	bool m_trackersIdentified = false;
 	[HideInInspector]
 	public GameObject m_avatar;
 	protected VRIKCalibrator.CalibrationData m_data = new VRIKCalibrator.CalibrationData();
@@ -92,7 +92,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actIdentifyTrackers(uint cond)
 	{
-		return g_inst.IdentifyTrackers();
+		return g_inst.m_trackersIdentified = g_inst.IdentifyTrackers();
 	}
 
 	static int s_idx = 0;
