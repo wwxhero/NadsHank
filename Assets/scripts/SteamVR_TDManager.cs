@@ -13,8 +13,8 @@ public class SteamVR_TDManager : MonoBehaviour
 	[Tooltip("Populate with objects you want to assign to additional controllers")]
 	public GameObject[] m_objects;
 
-	protected uint[] m_indicesDev; // assigned
-	protected bool[] m_connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // controllers only
+	protected uint[] m_indicesDev; // f: i_obj |-> i_dev
+	protected bool[] m_connected = new bool[OpenVR.k_unMaxTrackedDeviceCount]; // f: i_dev |-> (true|false)
 
 	// cached roles - may or may not be connected
 	protected uint m_ctrlLIndex = OpenVR.k_unTrackedDeviceIndexInvalid;
@@ -223,8 +223,8 @@ public class SteamVR_TDManager : MonoBehaviour
 			{
 				if (index == m_indicesDev[i_obj])
 				{
-					//fixme: connected->unlock && !connected->lock m_objects[i_obj]
-					//m_objects[i_obj].lock(!connected);
+					SteamVR_TrackedObject tracker = m_objects[i_obj].GetComponent<SteamVR_TrackedObject>();
+					tracker.Lock(!connected);
 					break;
 				}
 			}

@@ -13,30 +13,28 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 {
 	class TransformDefault
 	{
-		Transform m_transform;
-		Vector3 m_position;
-		Quaternion m_rotation;
+		Vector3 m_position = new Vector3(0, 0, 0);
+		Quaternion m_rotation = new Quaternion(0, 0, 0, 1);
 		Matrix4x4 m_T;
-
-		public TransformDefault(Transform tran, Transform vTrackerInitial, Transform vTrackersDefault)
+		public Vector3 position
+		{
+			get { return m_position; }
+		}
+		public Quaternion rotation
+		{
+			get { return m_rotation; }
+		}
+		public void Update(Transform tran, Transform vTrackerInitial, Transform vTrackersDefault)
 		{
 			m_T = vTrackersDefault.localToWorldMatrix * vTrackerInitial.worldToLocalMatrix;
 			m_position = m_T.MultiplyPoint3x4(tran.position);
 			m_rotation =  m_T.rotation * tran.rotation;
-			m_transform = tran;
-		}
-
-		public void Reset()
-		{
-			m_transform.position = m_position;
-			m_transform.rotation =  m_rotation;
 		}
 	}
 
 	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand, tracker_head };
 	string [] c_trackerNames = {"tracker_rfoot", "tracker_lfoot", "tracker_pelvis", "tracker_rhand", "tracker_lhand"};
 	const int c_totalTrackers = 6;
-	TransformDefault [] m_trackerDft = new TransformDefault[c_totalTrackers];
 	[HideInInspector]
 	public GameObject m_carHost;
 
@@ -68,6 +66,9 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool IdentifyTrackers()
 	{
+		//set up 2 fake trackers: lfoot, rfoot
+		//3 real trackers: lhand, rhand, pelvis
+		//1 hmd
 		Transform ori = m_hmd.transform;
 		GameObject [] trackers = new GameObject[5] {
 			  m_objects[(int)ObjType.tracker_rfoot]
@@ -99,6 +100,15 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 		if (!trackers_ready)
 			return false;
+
+		SteamVR_TrackedObject [] trackers_obj = new SteamVR_TrackedObject[c_totalTrackers] {
+			  m_objects[(int)ObjType.tracker_head].GetComponent<SteamVR_TrackedObject>()
+			, m_objects[(int)ObjType.tracker_rfoot].GetComponent<SteamVR_TrackedObject>()
+			, m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
+			, m_objects[(int)ObjType.tracker_pelvis].GetComponent<SteamVR_TrackedObject>()
+			, m_objects[(int)ObjType.tracker_rhand].GetComponent<SteamVR_TrackedObject>()
+			, m_objects[(int)ObjType.tracker_lhand].GetComponent<SteamVR_TrackedObject>()
+		};
 
 		Transform [] trackers_p = new Transform[c_totalTrackers] {
 			m_objects[(int)ObjType.tracker_head].transform
@@ -137,9 +147,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			Debug.Assert(null != vtrackers_s[i]);
 		}
 
+		TransformDefault dft =  new TransformDefault();
 		for (int i = 0; i < c_totalTrackers; i ++)
 		{
-			m_trackerDft[i] = new TransformDefault(trackers_p[i], vtrackers_s[i], vtrackers_t[i]);
+			dft.Update(trackers_p[i], vtrackers_s[i], vtrackers_t[i]);
+			trackers_obj[i].SetDft(dft.position, dft.rotation);
 		}
 
 		VRIK ik = m_avatar.GetComponent<VRIK>();
@@ -266,16 +278,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			t.Lock(true);
 		}
 
-		foreach (TransformDefault dft in ((SteamVR_ManagerDrv)g_inst).m_trackerDft)
-		{
-			dft.Reset();
-		}
 		return true;
 	}
 
 	protected static bool actPegUnLock(uint cond)
 	{
-		//fixme: unlock trackers (except feet trackers) to recieve tracking transform update
 		GameObject [] trackers = new GameObject[] {
 			  g_inst.m_objects[(int)ObjType.tracker_head]
 			, g_inst.m_objects[(int)ObjType.tracker_rfoot]
@@ -294,7 +301,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	protected static bool actPegUnLock4Tracking(uint cond)
 	{
-		//fixme: unlock trackers (except feet trackers) to recieve tracking transform update
 		//fixme: align virtual car with physical car
 		GameObject [] trackers = new GameObject[] {
 			  g_inst.m_objects[(int)ObjType.tracker_head]
