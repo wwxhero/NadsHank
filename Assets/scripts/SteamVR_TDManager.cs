@@ -147,7 +147,7 @@ public class SteamVR_TDManager : MonoBehaviour
 		Destroy(hidden.gameObject);
 	}
 
-	private void SetTrackedDeviceIndex(int objectIndex, uint trackedDeviceIndex)
+	protected void SetTrackedDeviceIndex(int objectIndex, uint trackedDeviceIndex)
 	{
 		//object index 0 and 1 are reserved for controllers
 		Debug.Assert(objectIndex > 1
@@ -200,6 +200,7 @@ public class SteamVR_TDManager : MonoBehaviour
 		bool changed = m_connected[index];
 		m_connected[index] = false;
 
+		//connected == m_connected[index] -> changed = false
 		if (connected)
 		{
 			var system = OpenVR.System;
@@ -231,7 +232,7 @@ public class SteamVR_TDManager : MonoBehaviour
 		}
 	}
 
-	private uint GetControllerIndex(ETrackedControllerRole role)
+	protected uint GetControllerIndex(ETrackedControllerRole role)
 	{
 		uint i_dev = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
 		if (OpenVR.k_unTrackedDeviceIndexInvalid == i_dev)
@@ -255,7 +256,7 @@ public class SteamVR_TDManager : MonoBehaviour
 			return i_dev;
 	}
 
-	public void Refresh()
+	public virtual void Refresh()
 	{
 		int objectIndex = 0;
 
