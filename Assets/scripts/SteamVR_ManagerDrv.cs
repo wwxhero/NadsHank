@@ -33,6 +33,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	}
 
 	enum ObjType { tracker_rhand = 2, tracker_lhand, tracker_pelvis, tracker_head, tracker_rfoot, tracker_lfoot };
+	enum TrackerType { tracker_rhand = 0, tracker_lhand, tracker_pelvis, tracker_head, tracker_rfoot, tracker_lfoot };
 	string [] c_trackerNames = {
 				"tracker_rhand"
 				, "tracker_lhand"
@@ -106,9 +107,9 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			m_objects[(int)ObjType.tracker_rhand] = trackers[0];
 			m_objects[(int)ObjType.tracker_lhand] = trackers[1];
 			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
-			trackers[0].name = c_trackerNames[(int)ObjType.tracker_rhand];
-			trackers[1].name = c_trackerNames[(int)ObjType.tracker_lhand];
-			trackers[2].name = c_trackerNames[(int)ObjType.tracker_pelvis];
+			trackers[0].name = c_trackerNames[(int)TrackerType.tracker_rhand];
+			trackers[1].name = c_trackerNames[(int)TrackerType.tracker_lhand];
+			trackers[2].name = c_trackerNames[(int)TrackerType.tracker_pelvis];
 			return true;
 		}
 		else
@@ -233,8 +234,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Transport(l.rotation, t);
 
 		Transform [] vtrackers = new Transform[] {
-			m_avatar.transform.Find(c_vtrackerAvatarNames[(int)ObjType.tracker_lfoot])
-			, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)ObjType.tracker_rfoot])
+			m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_lfoot])
+			, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_rfoot])
 		};
 		SteamVR_TrackedObject [] ftrackers = new SteamVR_TrackedObject[] {
 			m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
