@@ -75,8 +75,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)
 									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)
-									, new Transition(State.pre_calibra2, State.post_calibra, R_TRIGGER, new Action[] {actCalibration, actPosTrackerUnLock})
-									, new Transition(State.pre_calibra2, State.post_calibra, L_TRIGGER, new Action[] {actCalibration, actPosTrackerUnLock})
+									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
+									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
 									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker, actPegLock })
 									, new Transition(State.pegging, State.tracking, R_TRIGGER, new Action[]{ actPegUnLock4Tracking })
@@ -90,6 +90,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool IdentifyTrackers()
 	{
+		return true;
 		//3 real trackers: lhand, rhand, pelvis
 		//1 hmd
 		Transform ori = m_hmd.transform;
@@ -256,25 +257,14 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			, g_inst.m_objects[(int)ObjType.tracker_lhand]
 		};
 
-		int n_locked = 0;
-		for (int i = 0; i < trackers.Length && n_locked == i; i ++)
+		for (int i = 0; i < trackers.Length; i ++)
 		{
-			if (trackers[i].activeSelf)
-			{
-				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-				Transform dft = trackers[i].transform;
-				t.Lock(dft.position, dft.rotation);
-				n_locked ++;
-			}
+			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+			Transform dft = trackers[i].transform;
+			t.Lock(dft.position, dft.rotation);
 		}
 
-		if (n_locked < trackers.Length)
-		{
-			actPosTrackerUnLock(cond);
-			return false;
-		}
-		else
-			return true;
+		return true;
 	}
 
 	private static bool actPosTrackerUnLock(uint cond)
