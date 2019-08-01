@@ -243,7 +243,12 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			, m_objects[(int)ObjType.tracker_rfoot].GetComponent<SteamVR_TrackedObject>()
 		};
 		for (int i_ftrack = 0; i_ftrack < ftrackers.Length; i_ftrack ++)
+		{
 			ftrackers[i_ftrack].Lock(vtrackers[i_ftrack].position, vtrackers[i_ftrack].rotation);
+			var obj = ftrackers[i_ftrack].gameObject;
+			Debug.Assert(!obj.activeSelf);
+			obj.SetActive(true);
+		}
 	}
 
 	private static bool actPosTrackerLock(uint cond)
