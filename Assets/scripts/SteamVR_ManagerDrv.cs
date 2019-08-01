@@ -331,16 +331,28 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		return true;
 	}
 
-	protected static bool actConnectVirtualWorldEx(uint cond)
+	protected static bool actConnectVirtualWorldEx2(uint cond)
 	{
 		SteamVR_ManagerDrv pThis = (SteamVR_ManagerDrv)g_inst;
 		Matrix4x4 t2c = pThis.m_carHost.transform.worldToLocalMatrix*pThis.transform.localToWorldMatrix;
 		Vector3 hands = t2c * (pThis.m_objects[(int)ObjType.tracker_rhand].transform.localPosition
 								+ pThis.m_objects[(int)ObjType.tracker_lhand].transform.localPosition) * 0.5f;
-		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lfoot]).localPosition
-								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rfoot]).localPosition) * 0.5f;
+		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).localPosition
+								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).localPosition) * 0.5f;
 		Vector3 translate = hands_prime - hands;
 		pThis.transform.localPosition += translate;
+		return true;
+	}
+
+	protected static bool actConnectVirtualWorldEx(uint cond)
+	{
+		SteamVR_ManagerDrv pThis = (SteamVR_ManagerDrv)g_inst;
+		Vector3 hands = (pThis.m_objects[(int)ObjType.tracker_rhand].transform.position
+						+ pThis.m_objects[(int)ObjType.tracker_lhand].transform.position) * 0.5f;
+		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).position
+								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).position) * 0.5f;
+		Vector3 translate = hands_prime - hands;
+		pThis.transform.position = pThis.transform.position + translate;
 		return true;
 	}
 }
