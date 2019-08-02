@@ -79,8 +79,10 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
 									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker, actPegLock })
-									, new Transition(State.pegging, State.tracking, R_TRIGGER, new Action[]{ actPegUnLock4Tracking })
-									, new Transition(State.pegging, State.tracking, L_TRIGGER, new Action[]{ actPegUnLock4Tracking })
+									, new Transition(State.pegging, State.tracking, R_TRIGGER, actPegUnLock4Tracking)
+									, new Transition(State.pegging, State.tracking, L_TRIGGER, actPegUnLock4Tracking)
+									, new Transition(State.tracking, State.tracking, R_GRIP, actAdjustVWCnn)
+									, new Transition(State.tracking, State.tracking, L_GRIP, actAdjustVWCnn)
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
 									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
@@ -341,6 +343,19 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
 			t.Lock(false);
 		}
+
+		return true;
+	}
+
+	protected static bool actAdjustVWCnn(uint cond)
+	{
+		SteamVR_ManagerDrv pThis = (SteamVR_ManagerDrv)g_inst;
+		Vector3 hands = (pThis.m_objects[(int)ObjType.tracker_rhand].transform.position
+						+ pThis.m_objects[(int)ObjType.tracker_lhand].transform.position) * 0.5f;
+		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).position
+								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).position) * 0.5f;
+		Vector3 translate = hands_prime - hands;
+		pThis.transform.position = pThis.transform.position + translate;
 		return true;
 	}
 }
