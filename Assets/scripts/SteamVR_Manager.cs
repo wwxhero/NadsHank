@@ -160,7 +160,6 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actShowMirror(uint cond)
 	{
-		//fixme: a mirror is supposed to show at a right position
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actShowMirror");
 		else
@@ -177,7 +176,6 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actUnShowMirror(uint cond)
 	{
-		//fixme: a mirror is supposed to show at a right position
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("actUnShowMirror");
 		else
@@ -194,7 +192,6 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actAdjustMirror(uint cond)
 	{
-		//fixme: adjust the mirror with the ctrl code
 		if (g_inst.DEF_MOCKSTEAM)
 		{
 			Debug.LogWarning("actAdjustMirror");

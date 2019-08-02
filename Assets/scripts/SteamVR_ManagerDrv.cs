@@ -92,27 +92,29 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool IdentifyTrackers()
 	{
-		return true;
 		//3 real trackers: lhand, rhand, pelvis
 		//1 hmd
 		Transform ori = m_hmd.transform;
-		GameObject [] trackers = new GameObject[3] {
+		GameObject [] trackers = new GameObject[] {
 			  m_objects[(int)ObjType.tracker_pelvis]
 			, m_objects[(int)ObjType.tracker_rhand]
 			, m_objects[(int)ObjType.tracker_lhand]
+			, m_objects[(int)ObjType.tracker_head]
 		};
 		bool trackers_ready = true;
 		for (int i = 0; i < trackers.Length && trackers_ready; i ++)
 			trackers_ready = trackers[i].activeSelf;
 
-		if (trackers_ready && Tracker.IdentifyTrackers_3(trackers, ori))
+		if (trackers_ready && Tracker.IdentifyTrackers_4(trackers, ori))
 		{
 			m_objects[(int)ObjType.tracker_rhand] = trackers[0];
 			m_objects[(int)ObjType.tracker_lhand] = trackers[1];
 			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
+			m_objects[(int)ObjType.tracker_head] = trackers[3];
 			trackers[0].name = c_trackerNames[(int)TrackerType.tracker_rhand];
 			trackers[1].name = c_trackerNames[(int)TrackerType.tracker_lhand];
 			trackers[2].name = c_trackerNames[(int)TrackerType.tracker_pelvis];
+			trackers[3].name = c_trackerNames[(int)TrackerType.tracker_head];
 			return true;
 		}
 		else
@@ -215,11 +217,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Matrix4x4 v2p = transform.worldToLocalMatrix;
 		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
 		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
-		Vector3 r_p = Vector3.Cross(u_p, t_p);
+		Vector3 r_p = Vector3.Cross(u_p, t_p).normalized;
 
 		Vector3 u_prime_p = u_v;
-		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p);
-		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p);
+		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p).normalized;
+		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p).normalized;
 
 		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_prime_p.x, t_prime_p.y, t_prime_p.z, 0f)
 									, new Vector4(u_prime_p.x, u_prime_p.y, u_prime_p.z, 0f)
@@ -255,7 +257,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	private static bool actPosTrackerLock(uint cond)
 	{
-		//fixme: lock all the trackers but head
 		GameObject [] trackers = new GameObject[] {
 			  g_inst.m_objects[(int)ObjType.tracker_rfoot]
 			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
@@ -331,7 +332,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	protected static bool actPegUnLock4Tracking(uint cond)
 	{
-		//fixme: align virtual car with physical car
 		GameObject [] trackers = new GameObject[] {
 			  g_inst.m_objects[(int)ObjType.tracker_head]
 			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
@@ -355,6 +355,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).position
 								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).position) * 0.5f;
 		Vector3 translate = hands_prime - hands;
+        translate.y = 0; //only just in plane (x, z)
 		pThis.transform.position = pThis.transform.position + translate;
 		return true;
 	}
