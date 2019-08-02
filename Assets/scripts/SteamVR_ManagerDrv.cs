@@ -78,21 +78,21 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
-									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker, actPegLock })
+									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock })
 									, new Transition(State.pegging, State.tracking, R_TRIGGER, actPegUnLock4Tracking)
 									, new Transition(State.pegging, State.tracking, L_TRIGGER, actPegUnLock4Tracking)
 									, new Transition(State.tracking, State.tracking, R_GRIP, actAdjustVWCnn)
 									, new Transition(State.tracking, State.tracking, L_GRIP, actAdjustVWCnn)
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})
 								};
 		g_inst = this;
 	}
 
 	public override bool IdentifyTrackers()
 	{
-		//3 real trackers: lhand, rhand, pelvis
+		//4 real trackers: lhand, rhand, pelvis, head
 		//1 hmd
 		Transform ori = m_hmd.transform;
 		GameObject [] trackers = new GameObject[] {

@@ -12,6 +12,15 @@ using System.Collections.Generic;
 public class SteamVR_ManagerPed : SteamVR_Manager
 {
 	enum ObjType { tracker_rfoot = 2, tracker_lfoot, tracker_pelvis, tracker_rhand, tracker_lhand };
+	string [] c_objNames = {
+					"controller_right"
+					, "controller_left"
+					, "tracker_rfoot"
+					, "tracker_lfoot"
+					, "tracker_pelvis"
+					, "tracker_rhand"
+					, "tracker_lhand"
+				};
 
 	SteamVR_ManagerPed()
 	{
@@ -51,11 +60,12 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 		};
 		if (Tracker.IdentifyTrackers_5(trackers, ori))
 		{
-			m_objects[(int)ObjType.tracker_rfoot] = trackers[0];
-			m_objects[(int)ObjType.tracker_lfoot] = trackers[1];
-			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
-			m_objects[(int)ObjType.tracker_rhand] = trackers[3];
-			m_objects[(int)ObjType.tracker_lhand] = trackers[4];
+			for (int i_tracker = 0; i_tracker < trackers.Length; i_tracker ++)
+			{
+				int i_obj = i_tracker + tracker_start;
+				m_objects[i_obj] = trackers[i_tracker];
+				m_objects[i_obj].name = c_objNames[i_obj];
+			}
 			return true;
 		}
 		else
@@ -99,11 +109,11 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 		Matrix4x4 v2p = transform.worldToLocalMatrix;
 		Vector3 t_p = v2p.MultiplyVector(m_hmd.transform.forward);
 		Vector3 u_p = v2p.MultiplyVector(m_hmd.transform.up);
-		Vector3 r_p = Vector3.Cross(u_p, t_p);
+		Vector3 r_p = Vector3.Cross(u_p, t_p).normalized;
 
 		Vector3 u_prime_p = u_v;
-		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p);
-		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p);
+		Vector3 r_prime_p = Vector3.Cross(u_prime_p, t_p).normalized;
+		Vector3 t_prime_p = Vector3.Cross(r_prime_p, u_prime_p).normalized;
 
 		Matrix4x4 m_p = new Matrix4x4(new Vector4(t_prime_p.x, t_prime_p.y, t_prime_p.z, 0f)
 									, new Vector4(u_prime_p.x, u_prime_p.y, u_prime_p.z, 0f)

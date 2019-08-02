@@ -112,7 +112,7 @@ public class Tracker
 		};
 		return IdentifyTrackers(a_trackers, a_hmd, predicates_3);
 	}
-	//function: sort the trackers in order of 0:right hand, 1:left hand, 2:pelvis
+	//function: sort the trackers in order of 0:right hand, 1:left hand, 2:pelvis, 3:head
 	public static bool IdentifyTrackers_4(GameObject[] a_trackers, Transform a_hmd)
 	{
 		Tracker.Predicate[] predicates_4 = new Tracker.Predicate[] {
