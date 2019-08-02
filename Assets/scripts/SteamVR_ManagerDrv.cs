@@ -123,61 +123,15 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	public override bool Calibration()
 	{
-		//fixme: recode the hardcoded names with predefined constant variables
-		if (!m_objects[(int)ObjType.tracker_head].activeSelf)
-			return false;
-
-		SteamVR_TrackedObject [] trackers_obj = new SteamVR_TrackedObject[c_totalTrackers] {
-			  m_objects[(int)ObjType.tracker_head].GetComponent<SteamVR_TrackedObject>()
-			, m_objects[(int)ObjType.tracker_rfoot].GetComponent<SteamVR_TrackedObject>()
-			, m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
-			, m_objects[(int)ObjType.tracker_pelvis].GetComponent<SteamVR_TrackedObject>()
-			, m_objects[(int)ObjType.tracker_rhand].GetComponent<SteamVR_TrackedObject>()
-			, m_objects[(int)ObjType.tracker_lhand].GetComponent<SteamVR_TrackedObject>()
-		};
-
-		Transform [] trackers_p = new Transform[c_totalTrackers] {
-			m_objects[(int)ObjType.tracker_head].transform
-			, m_objects[(int)ObjType.tracker_rfoot].transform
-			, m_objects[(int)ObjType.tracker_lfoot].transform
-			, m_objects[(int)ObjType.tracker_pelvis].transform
-			, m_objects[(int)ObjType.tracker_rhand].transform
-			, m_objects[(int)ObjType.tracker_lhand].transform
-		};
-		string [] names_t = new string[c_totalTrackers] {
-			"head_vtracker_default"
-			, "rfoot_vtracker_default"
-			, "lfoot_vtracker_default"
-			, "pelvis_vtracker_default"
-			, "rhand_vtracker_default"
-			, "lhand_vtracker_default"
-		};
-		Transform [] vtrackers_t = new Transform[c_totalTrackers];
-		for (int i = 0; i < c_totalTrackers; i ++)
-		{
-			vtrackers_t[i] = m_carHost.transform.Find(names_t[i]);
-			Debug.Assert(null != vtrackers_t[i]);
-		}
-		string [] names_s = new string[c_totalTrackers] {
-			"head_vtracker"
-			, "rfoot_vtracker"
-			, "lfoot_vtracker"
-			, "pelvis_vtracker"
-			, "rhand_vtracker"
-			, "lhand_vtracker"
-		};
-		Transform [] vtrackers_s = new Transform[c_totalTrackers];
-		for (int i = 0; i < c_totalTrackers; i ++)
-		{
-			vtrackers_s[i] = m_avatar.transform.Find(names_s[i]);
-			Debug.Assert(null != vtrackers_s[i]);
-		}
-
 		TransformDefault dft =  new TransformDefault();
-		for (int i = 0; i < c_totalTrackers; i ++)
+		for (int i_tracker = 0; i_tracker < c_totalTrackers; i_tracker ++)
 		{
-			dft.Update(trackers_p[i], vtrackers_s[i], vtrackers_t[i]);
-			trackers_obj[i].SetDft(dft.position, dft.rotation);
+			int i_obj = i_tracker + tracker_start;
+			Transform tracker = m_objects[i_obj].transform;
+			Transform vtracker = m_avatar.transform.Find(c_vtrackerAvatarNames[i_tracker]);
+			Transform vtracker_prime = m_carHost.transform.Find(c_vtrackerCarNames[i_tracker]);
+			dft.Update(tracker, vtracker, vtracker_prime);
+			m_objects[i_obj].GetComponent<SteamVR_TrackedObject>().SetDft(dft.position, dft.rotation);
 		}
 
 		VRIK ik = m_avatar.GetComponent<VRIK>();
