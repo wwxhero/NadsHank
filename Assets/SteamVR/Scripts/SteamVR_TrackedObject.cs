@@ -58,6 +58,13 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		m_lock = true;
 	}
 
+	public bool Locked()
+	{
+		bool actLock = (transform.position == m_posDft
+					&& transform.rotation == m_rotDft);
+		return m_lock || actLock;
+	}
+
 	private void OnNewPoses(TrackedDevicePose_t[] poses)
 	{
 		if (m_lock)

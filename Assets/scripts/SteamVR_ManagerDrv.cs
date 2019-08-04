@@ -79,8 +79,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
 									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock })
-									, new Transition(State.pegging, State.tracking, R_TRIGGER, actPegUnLock4Tracking)
-									, new Transition(State.pegging, State.tracking, L_TRIGGER, actPegUnLock4Tracking)
+									, new Transition(State.pegging, State.tracking, R_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn })
+									, new Transition(State.pegging, State.tracking, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn })
 									, new Transition(State.tracking, State.tracking, R_GRIP, actAdjustVWCnn)
 									, new Transition(State.tracking, State.tracking, L_GRIP, actAdjustVWCnn)
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
@@ -292,13 +292,16 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			, g_inst.m_objects[(int)ObjType.tracker_rhand]
 			, g_inst.m_objects[(int)ObjType.tracker_lhand]
 		};
+		bool all_trackers_unlocked = true;
 		for (int i = 0; i < trackers.Length; i ++)
 		{
 			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-			t.Lock(false);
+			t.Lock(false);		//trackers are unlocked with latency
+			all_trackers_unlocked = all_trackers_unlocked && !t.Locked();
 		}
+		g_inst.m_avatar.GetComponent<VRIK>().LockSolver(!all_trackers_unlocked);
 
-		return true;
+		return all_trackers_unlocked;
 	}
 
 	protected static bool actAdjustVWCnn(uint cond)

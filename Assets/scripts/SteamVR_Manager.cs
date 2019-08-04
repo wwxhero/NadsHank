@@ -323,18 +323,18 @@ public class SteamVR_Manager : SteamVR_TDManager
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
 		uint code_ctrl = 0x0;
 		bool[] ctrl_switch = new bool[2 * (int)CtrlCode.n_code] {
-									  Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.RightShift)
-									, Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.RightShift)
-									, Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.RightShift)
-									, Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.RightShift)
-									, Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.RightShift)
-									, Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.RightShift)
-									, Input.GetKeyDown(KeyCode.T) && Input.GetKey(KeyCode.LeftShift)
-									, Input.GetKeyDown(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)
-									, Input.GetKeyDown(KeyCode.M) && Input.GetKey(KeyCode.LeftShift)
-									, Input.GetKeyDown(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)
-									, Input.GetKeyDown(KeyCode.O) && Input.GetKey(KeyCode.LeftShift)
-									, Input.GetKeyDown(KeyCode.G) && Input.GetKey(KeyCode.LeftShift)
+									  Input.GetKey(KeyCode.T) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKey(KeyCode.M) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKey(KeyCode.P) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKey(KeyCode.O) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKey(KeyCode.G) && Input.GetKey(KeyCode.RightShift)
+									, Input.GetKey(KeyCode.T) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKey(KeyCode.M) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKey(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKey(KeyCode.O) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKey(KeyCode.G) && Input.GetKey(KeyCode.LeftShift)
 								};
 		uint[] switch_codes = new uint[2 * (int)CtrlCode.n_code] {
 									  R_TRIGGER
