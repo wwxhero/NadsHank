@@ -75,6 +75,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)
 									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)
+									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)
 									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
