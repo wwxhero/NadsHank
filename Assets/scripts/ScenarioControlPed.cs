@@ -263,17 +263,14 @@ public class ScenarioControlPed : MonoBehaviour {
 								p_u[i_point] = new Vector3(val[0], val[1], val[2]);
 								p_s[i_point] = new Vector3(val[3], val[4], val[5]);
 							}
-							Vector3 up_u = new Vector3(0, 1, 0);
-							Vector3 up_s = new Vector3(0, 0, 1);
-							p_s[3] = p_s[0] + up_s;
-							float s2u = Vector3.Magnitude(p_u[1] - p_u[0])/Vector3.Magnitude(p_s[1] - p_s[0]);
-							p_u[3] = p_u[0] + s2u*up_u;
+
+
 
 							Vector4[] v4_u = new Vector4[4];
 							Vector4[] v4_s = new Vector4[4];
 							v4_u[0] = new Vector4(p_u[0].x, p_u[0].y, p_u[0].z, 1);
 							v4_s[0] = new Vector4(p_s[0].x, p_s[0].y, p_s[0].z, 1);
-							for (int i_v4 = 1; i_v4 < 4; i_v4 ++)
+							for (int i_v4 = 1; i_v4 < 3; i_v4 ++)
 							{
 								v4_u[i_v4] = new Vector4( p_u[i_v4].x - p_u[0].x
 														, p_u[i_v4].y - p_u[0].y
@@ -284,6 +281,10 @@ public class ScenarioControlPed : MonoBehaviour {
 														, p_s[i_v4].z - p_s[0].z
 														, 0);
 							}
+							Vector4 up_u = new Vector4(0, 1, 0, 0);
+							Vector4 up_s = new Vector4(0, 0, 1, 0);
+							v4_u[3] = up_u * (Vector4.Magnitude(v4_u[1]) + Vector4.Magnitude(v4_u[2])) * 0.5f;
+							v4_s[3] = up_s * (Vector4.Magnitude(v4_s[1]) + Vector4.Magnitude(v4_s[2])) * 0.5f;
 
 							Matrix4x4 m_u = new Matrix4x4(v4_u[0], v4_u[1], v4_u[2], v4_u[3]);
 							Matrix4x4 m_s = new Matrix4x4(v4_s[0], v4_s[1], v4_s[2], v4_s[3]);
@@ -315,7 +316,10 @@ public class ScenarioControlPed : MonoBehaviour {
 							}
 							else
 							{
-								c_sim2unity = m_u * m_s.inverse;
+                                string strInfo = string.Format("matrix_s:\n{0}", m_s.ToString());
+                                strInfo += string.Format("matrix_u:\n{0}", m_u.ToString());
+                                Debug.Log(strInfo);
+                                c_sim2unity = m_u * m_s.inverse;
 								c_unity2sim = m_s * m_u.inverse;
 							}
 						}
