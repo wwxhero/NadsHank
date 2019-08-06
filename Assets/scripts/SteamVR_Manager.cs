@@ -219,6 +219,33 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
+	protected static bool actAdjustAvatar(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("actAdjustAvatar");
+			return false;
+		}
+		else
+		{
+			bool minus = (cond == L_MENU);
+			bool plus = (cond == R_MENU);
+			bool acted = (minus
+						|| plus);
+			float dh = 0;
+			if (minus)
+				dh = -0.005f;
+			else if (plus)
+				dh = 0.005f;
+			if (acted)
+			{
+                Debug.Assert(g_inst.m_senarioCtrl);
+                g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+			}
+			return acted;
+		}
+	}
+
 	protected static bool actHideTracker(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)

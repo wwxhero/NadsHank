@@ -33,10 +33,10 @@ public class ScenarioControlPed : MonoBehaviour {
 
 	class ConfAvatar
 	{
-		public uint height;
-		public uint width;
-		private const uint height0 = 178;
-		private const uint width0 = 140;
+		private float height;
+		private float width;
+		private const float height0 = 178f;
+		private const float width0 = 140f;
 		private Vector3 posTel, tanTel, latTel;
 		private ArrayList lstPos_test = new ArrayList();
 		private ArrayList lstTan_test = new ArrayList();
@@ -47,10 +47,19 @@ public class ScenarioControlPed : MonoBehaviour {
 			width = a_width;
 		}
 
+		public void Adjust(float dh, RootMotion.FinalIK.VRIK ped)
+		{
+			float h_prime = height + dh;
+			float s_h = h_prime / height;
+			width = s_h*width;
+			height = h_prime;
+			ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
+		}
+
 		public void Apply(RootMotion.FinalIK.VRIK ped)
 		{
-			float s_h = (float)height / (float)height0;
-			float s_w = (float)width / ((float)width0 * s_h);
+			float s_h = height / height0;
+			float s_w = width / (width0 * s_h);
 			ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
 			ped.references.leftShoulder.localScale = new Vector3(1f, s_w, 1f);
 			ped.references.rightShoulder.localScale = new Vector3(1f, s_w, 1f);
@@ -791,6 +800,14 @@ public class ScenarioControlPed : MonoBehaviour {
 	{
 		Vector3 vec_offset_d = new Vector3((float)v_d_x, (float)v_d_y, (float)v_d_z);
 		vec_offset_u = m.MultiplyVector(vec_offset_d);
+	}
+
+	public void adjustAvatar(float dh)
+	{
+		GameObject ped = m_id2Ped[0];
+		Debug.Assert(null != ped);
+		RootMotion.FinalIK.VRIK ik = ped.GetComponent<RootMotion.FinalIK.VRIK>();
+		m_confAvatar.Adjust(dh, ik);
 	}
 
 }

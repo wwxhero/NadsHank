@@ -72,7 +72,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
 									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
 									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
-									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
+									, new Transition(State.pre_calibra, State.pre_calibra, ALL, new Action[] {actAdjustMirror, actAdjustAvatar})
 									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)
 									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)
 									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)
