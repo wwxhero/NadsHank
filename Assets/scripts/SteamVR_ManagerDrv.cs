@@ -67,11 +67,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_transport, ALL)
-									, new Transition(State.pre_transport, State.post_transport, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
-									, new Transition(State.pre_transport, State.post_transport, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
-									, new Transition(State.post_transport, State.pre_transport, L_GRIP, actUnConnectVirtualWorld)
-									, new Transition(State.post_transport, State.pre_calibra, R_GRIP, actShowMirror)
+									  new Transition(State.initial, State.pre_cnn, ALL)
+									, new Transition(State.pre_cnn, State.post_cnn, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
+									, new Transition(State.pre_cnn, State.post_cnn, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
+									, new Transition(State.post_cnn, State.pre_cnn, L_GRIP, actUnConnectVirtualWorld)
+									, new Transition(State.post_cnn, State.pre_calibra, R_GRIP, actShowMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustAvatar)
 									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)
@@ -86,8 +86,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.tracking, State.tracking, R_GRIP, actAdjustVWCnn)
 									, new Transition(State.tracking, State.tracking, L_GRIP, actAdjustVWCnn)
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
-									, new Transition(State.post_calibra, State.pre_transport, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
-									, new Transition(State.tracking, State.pre_transport, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.post_calibra, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
+									, new Transition(State.tracking, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})
 								};
 		g_inst = this;
 	}

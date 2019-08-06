@@ -19,7 +19,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected int tracker_start, tracker_end;
 
 	protected delegate bool Action(uint cond);
-	protected enum State { initial, pre_transport, post_transport, pre_calibra, post_calibra, tracking, teleporting, pegging, pre_calibra2 };
+	protected enum State { initial, pre_cnn, post_cnn, pre_calibra, post_calibra, tracking, teleporting, pegging, pre_calibra2 };
 	protected class Transition
 	{
 		private State[] m_vec = new State[2];
