@@ -131,6 +131,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			Transform tracker = m_objects[i_obj].transform;
 			Transform vtracker = m_avatar.transform.Find(c_vtrackerAvatarNames[i_tracker]);
 			Transform vtracker_prime = m_carHost.transform.Find(c_vtrackerCarNames[i_tracker]);
+			Debug.Assert(null != tracker && null != vtracker && null != vtracker_prime);
 			dft.Update(tracker, vtracker, vtracker_prime);
 			m_objects[i_obj].GetComponent<SteamVR_TrackedObject>().SetDft(dft.position, dft.rotation);
 		}
