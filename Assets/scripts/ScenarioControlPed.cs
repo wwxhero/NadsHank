@@ -50,8 +50,7 @@ public class ScenarioControlPed : MonoBehaviour {
 		public void Adjust(float dh, RootMotion.FinalIK.VRIK ped)
 		{
 			float h_prime = height + dh;
-			float s_h = h_prime / height;
-			width = s_h*width;
+			float s_h = h_prime / height0;
 			height = h_prime;
 			ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
 		}

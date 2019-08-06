@@ -234,9 +234,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 						|| plus);
 			float dh = 0;
 			if (minus)
-				dh = -0.005f;
+				dh = -0.1f;
 			else if (plus)
-				dh = 0.005f;
+				dh = 0.1f;
 			if (acted)
 			{
                 Debug.Assert(g_inst.m_senarioCtrl);
