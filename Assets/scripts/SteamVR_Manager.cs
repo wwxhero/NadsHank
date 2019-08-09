@@ -240,7 +240,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 			if (acted)
 			{
                 Debug.Assert(g_inst.m_senarioCtrl);
-                g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+                float s = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+                g_inst.transform.localScale = new Vector3(s, s, s);
 			}
 			return acted;
 		}
