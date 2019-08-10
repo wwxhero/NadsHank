@@ -274,14 +274,25 @@ public class SteamVR_Manager : SteamVR_TDManager
 		transform.localPosition = new Vector3(f_p[0, 3], f_p[1, 3], f_p[2, 3]);
 	}
 
-	private void adjustAvatar2(float dh)
+	private	void adjustAvatar2(float dh)
 	{
 		float s = m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
-		Matrix4x4 l2p = transform.parent.worldToLocalMatrix * transform.localToWorldMatrix;
-		Vector3 p_l = transform.worldToLocalMatrix * m_avatar.transform.position;
-		Vector3 t_l = p_l * (1-s);
-		transform.localScale = new Vector3(s, s, s);
-		transform.localPosition = l2p.MultiplyPoint3x4(t_l);
+		Vector3 p = new Vector3(m_hmd.transform.localPosition.x
+								, 0
+								, m_hmd.transform.localPosition.z);
+		Vector3 t = p*(1-s);
+
+		//through optimisation
+		Matrix4x4 l2w = transform.localToWorldMatrix;
+		Matrix4x4 w2p = (null == transform.parent) ? Matrix4x4.identity : transform.parent.worldToLocalMatrix;
+		Matrix4x4 l2p = w2p*l2w;
+
+		Vector3 s_prime = transform.localScale * s;
+		Quaternion r_prime = transform.localRotation;
+		Vector3 p_prime = l2p.MultiplyPoint3x4(t);
+		transform.localPosition = p_prime;
+		transform.localRotation = r_prime;
+		transform.localScale = s_prime;
 	}
 
 	protected static bool actHideTracker(uint cond)

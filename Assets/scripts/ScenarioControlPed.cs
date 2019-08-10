@@ -47,14 +47,12 @@ public class ScenarioControlPed : MonoBehaviour {
 			width = a_width;
 		}
 
-		public float Adjust(float dh, RootMotion.FinalIK.VRIK ped)
+		public float ScaleInv(float dh)
 		{
 			float h_prime = height + dh;
-			//float s_h = h_prime / height0;
-			float s_h = height0 / h_prime;
+			float s_h_inv = height / h_prime;
 			height = h_prime;
-			//ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
-			return s_h;
+			return s_h_inv;
 		}
 
 		public void Apply(RootMotion.FinalIK.VRIK ped)
@@ -805,10 +803,8 @@ public class ScenarioControlPed : MonoBehaviour {
 
 	public float adjustAvatar(float dh)
 	{
-		GameObject ped = m_id2Ped[0];
 		Debug.Assert(null != ped);
-		RootMotion.FinalIK.VRIK ik = ped.GetComponent<RootMotion.FinalIK.VRIK>();
-		return m_confAvatar.Adjust(dh, ik);
+		return m_confAvatar.ScaleInv(dh);
 	}
 
 }
