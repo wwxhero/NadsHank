@@ -239,11 +239,58 @@ public class SteamVR_Manager : SteamVR_TDManager
 				dh = 0.1f;
 			if (acted)
 			{
-                Debug.Assert(g_inst.m_senarioCtrl);
-                g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+				Debug.Assert(g_inst.m_senarioCtrl);
+				g_inst.adjustAvatar2(dh);
 			}
 			return acted;
 		}
+	}
+
+	private void adjustAvatar(float dh)
+	{
+		float s = m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+		Matrix4x4 l2p = transform.parent.worldToLocalMatrix * transform.localToWorldMatrix;
+		Vector3 p_l = transform.worldToLocalMatrix * m_avatar.transform.position;
+		Matrix4x4 t_l = new Matrix4x4(
+							  new Vector4(1f, 0f, 0f, 0f)
+							, new Vector4(0f, 1f, 0f, 0f)
+							, new Vector4(0f, 0f, 1f, 0f)
+							, new Vector4(-p_l.x, -p_l.y, -p_l.z, 1f)
+						);
+		Matrix4x4 t_l_inv = new Matrix4x4(
+							  new Vector4(1f, 0f, 0f, 0f)
+							, new Vector4(0f, 1f, 0f, 0f)
+							, new Vector4(0f, 0f, 1f, 0f)
+							, new Vector4(p_l.x, p_l.y, p_l.z, 1f)
+						);
+		Matrix4x4 s_l = new Matrix4x4(
+							  new Vector4(s, 0f, 0f, 0f)
+							, new Vector4(0f, s, 0f, 0f)
+							, new Vector4(0f, 0f, s, 0f)
+							, new Vector4(0f, 0f, 0f,1f)
+						);
+		Matrix4x4 f_p = l2p * t_l_inv * s_l * t_l; //fixme: optimise t_l_inv * s_l * t_l
+		transform.localScale = new Vector3(s, s, s);
+		transform.localPosition = new Vector3(f_p[0, 3], f_p[1, 3], f_p[2, 3]);
+	}
+
+	private	void adjustAvatar2(float dh)
+	{
+		float s = m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+		Vector3 p = transform.worldToLocalMatrix.MultiplyPoint3x4(m_hmd.transform.position); p.y = 0;
+		Vector3 t = p*(1-s);
+
+		//through optimisation
+		Matrix4x4 l2w = transform.localToWorldMatrix;
+		Matrix4x4 w2p = (null == transform.parent) ? Matrix4x4.identity : transform.parent.worldToLocalMatrix;
+		Matrix4x4 l2p = w2p*l2w;
+
+		Vector3 s_prime = transform.localScale * s;
+		Quaternion r_prime = transform.localRotation;
+		Vector3 p_prime = l2p.MultiplyPoint3x4(t);
+		transform.localPosition = p_prime;
+		transform.localRotation = r_prime;
+		transform.localScale = s_prime;
 	}
 
 	protected static bool actHideTracker(uint cond)
