@@ -803,7 +803,6 @@ public class ScenarioControlPed : MonoBehaviour {
 
 	public float adjustAvatar(float dh)
 	{
-		Debug.Assert(null != ped);
 		return m_confAvatar.ScaleInv(dh);
 	}
 

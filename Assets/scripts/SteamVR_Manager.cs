@@ -277,9 +277,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	private	void adjustAvatar2(float dh)
 	{
 		float s = m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
-		Vector3 p = new Vector3(m_hmd.transform.localPosition.x
-								, 0
-								, m_hmd.transform.localPosition.z);
+		Vector3 p = transform.worldToLocalMatrix.MultiplyPoint3x4(m_hmd.transform.position); p.y = 0;
 		Vector3 t = p*(1-s);
 
 		//through optimisation
