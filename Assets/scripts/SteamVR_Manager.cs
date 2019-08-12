@@ -19,7 +19,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected int tracker_start, tracker_end;
 
 	protected delegate bool Action(uint cond);
-	protected enum State { initial, pre_cnn, post_cnn, pre_calibra, post_calibra, tracking, teleporting, pegging, pre_calibra2 };
+	protected enum State {
+						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra, tracking				//the common states shared for driver and pedestrain
+						, teleporting																	//the specific state for pedestrain
+						, pegging, pre_calibra2, pre_adjF, post_adjF, pre_adjR, post_adjR, pre_adjU, post_adjU, pre_adjO, post_adjO	//the specific state for driver
+					};
 	protected class Transition
 	{
 		private State[] m_vec = new State[2];
@@ -65,21 +69,28 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	};
 
-	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, n_code };
-	protected static uint R_TRIGGER = 0x0001;
-	protected static uint R_STEAM = 0x0002;
-	protected static uint R_MENU = 0x0004;
-	protected static uint R_PAD_P = 0x0008;
-	protected static uint R_PAD_T = 0x0010;
-	protected static uint R_GRIP = 0x0020;
-	protected static uint L_TRIGGER = 0x0100;
-	protected static uint L_STEAM = 0x0200;
-	protected static uint L_MENU = 0x0400;
-	protected static uint L_PAD_P = 0x0800;
-	protected static uint L_PAD_T = 0x1000;
-	protected static uint L_GRIP = 0x2000;
-	protected static uint ALL = 0xffffffff;
-	protected static uint NONE = 0x00000000;
+	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, forward, right, up, ori, plus, minus, n_code };
+	protected static uint R_TRIGGER = 	0x0001;
+	protected static uint R_STEAM = 	0x0002;
+	protected static uint R_MENU = 		0x0004;
+	protected static uint R_PAD_P = 	0x0008;
+	protected static uint R_PAD_T = 	0x0010;
+	protected static uint R_GRIP = 		0x0020;
+	protected static uint L_TRIGGER = 	0x0100;
+	protected static uint L_STEAM = 	0x0200;
+	protected static uint L_MENU = 		0x0400;
+	protected static uint L_PAD_P = 	0x0800;
+	protected static uint L_PAD_T = 	0x1000;
+	protected static uint L_GRIP = 		0x2000;
+
+	protected static uint FORWARD =	   0x10000;
+	protected static uint RIGHT =	   0x20000;
+	protected static uint UP =		   0x40000;
+	protected static uint ORI =		   0x80000;
+	protected static uint PLUS =	  0x100000;
+	protected static uint MINUS =	  0x200000;
+	protected static uint ALL =		0xffffffff;
+	protected static uint NONE = 	0x00000000;
 	protected Transition[] m_transition;
 	protected static SteamVR_Manager g_inst;
 
@@ -240,43 +251,15 @@ public class SteamVR_Manager : SteamVR_TDManager
 			if (acted)
 			{
 				Debug.Assert(g_inst.m_senarioCtrl);
-				g_inst.adjustAvatar2(dh);
+				float s = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+				g_inst.adjustAvatar_s(s);
 			}
 			return acted;
 		}
 	}
 
-	private void adjustAvatar(float dh)
+	private	void adjustAvatar_s(float s)
 	{
-		float s = m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
-		Matrix4x4 l2p = transform.parent.worldToLocalMatrix * transform.localToWorldMatrix;
-		Vector3 p_l = transform.worldToLocalMatrix * m_avatar.transform.position;
-		Matrix4x4 t_l = new Matrix4x4(
-							  new Vector4(1f, 0f, 0f, 0f)
-							, new Vector4(0f, 1f, 0f, 0f)
-							, new Vector4(0f, 0f, 1f, 0f)
-							, new Vector4(-p_l.x, -p_l.y, -p_l.z, 1f)
-						);
-		Matrix4x4 t_l_inv = new Matrix4x4(
-							  new Vector4(1f, 0f, 0f, 0f)
-							, new Vector4(0f, 1f, 0f, 0f)
-							, new Vector4(0f, 0f, 1f, 0f)
-							, new Vector4(p_l.x, p_l.y, p_l.z, 1f)
-						);
-		Matrix4x4 s_l = new Matrix4x4(
-							  new Vector4(s, 0f, 0f, 0f)
-							, new Vector4(0f, s, 0f, 0f)
-							, new Vector4(0f, 0f, s, 0f)
-							, new Vector4(0f, 0f, 0f,1f)
-						);
-		Matrix4x4 f_p = l2p * t_l_inv * s_l * t_l; //fixme: optimise t_l_inv * s_l * t_l
-		transform.localScale = new Vector3(s, s, s);
-		transform.localPosition = new Vector3(f_p[0, 3], f_p[1, 3], f_p[2, 3]);
-	}
-
-	private	void adjustAvatar2(float dh)
-	{
-		float s = m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
 		Vector3 p = transform.worldToLocalMatrix.MultiplyPoint3x4(m_hmd.transform.position); p.y = 0;
 		Vector3 t = p*(1-s);
 
@@ -295,6 +278,19 @@ public class SteamVR_Manager : SteamVR_TDManager
 		float s_inv = 1/s;
 		foreach (GameObject tracker in m_objects)
 			tracker.transform.localScale *= s_inv;
+	}
+
+	protected void adjustAvatar_t(Vector3 t)
+	{
+		Vector3 t_w = m_avatar.transform.localToWorldMatrix.MultiplyVector(t);
+		transform.Translate(t_w, Space.World);
+	}
+
+	protected void adjustAvatar_r(float d)
+	{
+		Vector3 p = m_avatar.transform.position;
+		Vector3 axis = m_avatar.transform.up;
+		transform.RotateAround(p, axis, d);
 	}
 
 	protected static bool actHideTracker(uint cond)
@@ -400,7 +396,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
 						&& m_ctrlLIndex != OpenVR.k_unTrackedDeviceIndexInvalid);
 		uint code_ctrl = 0x0;
-		bool[] ctrl_switch = new bool[2 * (int)CtrlCode.n_code] {
+		bool[] ctrl_switch = new bool[] {
 									  Input.GetKey(KeyCode.T) && Input.GetKey(KeyCode.RightShift)
 									, Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.RightShift)
 									, Input.GetKey(KeyCode.M) && Input.GetKey(KeyCode.RightShift)
@@ -413,8 +409,14 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, Input.GetKey(KeyCode.P) && Input.GetKey(KeyCode.LeftShift)
 									, Input.GetKey(KeyCode.O) && Input.GetKey(KeyCode.LeftShift)
 									, Input.GetKey(KeyCode.G) && Input.GetKey(KeyCode.LeftShift)
+									, Input.GetKey(KeyCode.F) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+									, Input.GetKey(KeyCode.R) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+									, Input.GetKey(KeyCode.U) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+									, Input.GetKey(KeyCode.O) && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+									, Input.GetKey(KeyCode.RightArrow)
+									, Input.GetKey(KeyCode.LeftArrow)
 								};
-		uint[] switch_codes = new uint[2 * (int)CtrlCode.n_code] {
+		uint[] switch_codes = new uint[] {
 									  R_TRIGGER
 									, R_STEAM
 									, R_MENU
@@ -427,6 +429,12 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, L_PAD_P
 									, L_PAD_T
 									, L_GRIP
+									, FORWARD
+									, RIGHT
+									, UP
+									, ORI
+									, PLUS
+									, MINUS
 								};
 
 		if (ctrls_ready)
