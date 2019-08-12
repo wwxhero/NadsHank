@@ -291,6 +291,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 		transform.localPosition = p_prime;
 		transform.localRotation = r_prime;
 		transform.localScale = s_prime;
+
+		float s_inv = 1/s;
+		foreach (GameObject tracker in m_objects)
+			tracker.transform.localScale *= s_inv;
 	}
 
 	protected static bool actHideTracker(uint cond)
