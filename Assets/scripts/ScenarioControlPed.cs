@@ -249,6 +249,22 @@ public class ScenarioControlPed : MonoBehaviour {
 					}
 					else if("map" == n_child.Name)
 					{
+						XmlElement e_map = (XmlElement)n_child;
+						XmlAttribute e_t_attr = e_map.GetAttributeNode("elevation_t");
+						float e_t = float.Parse(e_t_attr.Value);
+						Matrix4x4 t_u = new Matrix4x4(
+											new Vector4(1,		0,		0,		0)
+										,	new Vector4(0,		1,		0,		0)
+										,	new Vector4(0,		0,		1,		0)
+										,	new Vector4(0,		e_t,	0,		1)
+										);
+						Matrix4x4 t_u_inv = new Matrix4x4(
+											new Vector4(1,		0,		0,		0)
+										,	new Vector4(0,		1,		0,		0)
+										,	new Vector4(0,		0,		1,		0)
+										,	new Vector4(0,		-e_t,	0,		1)
+										);
+						transform.Translate(new Vector3(0, e_t, 0), Space.World);
 						XmlNodeList points = n_child.ChildNodes;
 						Debug.Assert(null == points
 									|| 3 == points.Count);
@@ -299,8 +315,8 @@ public class ScenarioControlPed : MonoBehaviour {
 
 							if (DEF_LOGMATRIXFAC)
 							{
-								Matrix4x4 c_sim2unity_prime = m_u * m_s.inverse;
-								Matrix4x4 c_unity2sim_prime = m_s * m_u.inverse;
+								Matrix4x4 c_sim2unity_prime = t_u * m_u * m_s.inverse;
+								Matrix4x4 c_unity2sim_prime = m_s * m_u.inverse * t_u_inv;
 								float error_u = 0;
 								float error_s = 0;
 								for (int i = 0; i < 4; i++)
@@ -327,8 +343,8 @@ public class ScenarioControlPed : MonoBehaviour {
                                 string strInfo = string.Format("matrix_s:\n{0}", m_s.ToString());
                                 strInfo += string.Format("matrix_u:\n{0}", m_u.ToString());
                                 Debug.Log(strInfo);
-                                c_sim2unity = m_u * m_s.inverse;
-								c_unity2sim = m_s * m_u.inverse;
+                                c_sim2unity = t_u * m_u * m_s.inverse;
+								c_unity2sim = m_s * m_u.inverse * t_u_inv;
 							}
 						}
 					}
