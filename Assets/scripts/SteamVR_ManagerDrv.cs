@@ -85,9 +85,39 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pegging, State.tracking, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn })
 									, new Transition(State.tracking, State.tracking, R_GRIP, actAdjustVWCnn)
 									, new Transition(State.tracking, State.tracking, L_GRIP, actAdjustVWCnn)
+									//sub state transitions for adjust avatar in forward/backward direction
+									, new Transition(State.tracking, State.pre_adjF, FORWARD, actAvatarViewTd)
+									, new Transition(State.pre_adjF, State.post_adjF, FORWARD|PLUS, actAvatarAdjF_p)
+									, new Transition(State.pre_adjF, State.post_adjF, FORWARD|MINUS, actAvatarAdjF_m)
+									, new Transition(State.post_adjF, State.pre_adjF, FORWARD)
+									, new Transition(State.post_adjF, State.tracking, NONE, actAvatarViewSd)
+									, new Transition(State.pre_adjF, State.tracking, NONE, actAvatarViewSd)
+									//sub state transitions for adjust avatar in right/left direction
+									, new Transition(State.tracking, State.pre_adjR, RIGHT, actAvatarViewTd)
+									, new Transition(State.pre_adjR, State.post_adjR, RIGHT|PLUS, actAvatarAdjR_p)
+									, new Transition(State.pre_adjR, State.post_adjR, RIGHT|MINUS, actAvatarAdjR_m)
+									, new Transition(State.post_adjR, State.pre_adjR, RIGHT)
+									, new Transition(State.post_adjR, State.tracking, NONE, actAvatarViewSd)
+									, new Transition(State.pre_adjR, State.tracking, NONE, actAvatarViewSd)
+									//sub state transitions for adjust avatar in up/down direction
+									, new Transition(State.tracking, State.pre_adjU, UP)
+									, new Transition(State.pre_adjU, State.post_adjU, UP|PLUS, actAvatarAdjU_p)
+									, new Transition(State.pre_adjU, State.post_adjU, UP|MINUS, actAvatarAdjU_m)
+									, new Transition(State.post_adjU, State.pre_adjU, UP)
+									, new Transition(State.post_adjU, State.tracking, NONE)
+									, new Transition(State.pre_adjU, State.tracking, NONE)
+									//sub state transitions for adjust avatar orientation
+									, new Transition(State.tracking, State.pre_adjO, ORI, actAvatarViewTd)
+									, new Transition(State.pre_adjO, State.post_adjO, ORI|PLUS, actAvatarAdjO_p)
+									, new Transition(State.pre_adjO, State.post_adjO, ORI|MINUS, actAvatarAdjO_m)
+									, new Transition(State.post_adjO, State.pre_adjO, ORI)
+									, new Transition(State.post_adjO, State.tracking, NONE, actAvatarViewSd)
+									, new Transition(State.pre_adjO, State.tracking, NONE, actAvatarViewSd)
+
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
 									, new Transition(State.tracking, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})
+
 								};
 		g_inst = this;
 	}
@@ -315,8 +345,76 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).position
 								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).position) * 0.5f;
 		Vector3 translate = hands_prime - hands;
-        translate.y = 0; //only just in plane (x, z)
+		translate.y = 0; //only just in plane (x, z)
 		pThis.transform.position = pThis.transform.position + translate;
+		return true;
+	}
+
+	protected static bool actAvatarViewTd(uint cond)
+	{
+		//fixme: to switch avatar inspect camera to top-down view
+		return true;
+	}
+
+	protected static bool actAvatarViewSd(uint cond)
+	{
+		//fixme: to switch avatar inspect camera to side view
+		return true;
+	}
+
+	const float c_deltaT = 0.005f;
+	const float c_deltaR = 0.5f; //in degree
+	protected static bool actAvatarAdjF_m(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, 0, -c_deltaT);
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+		return true;
+	}
+
+	protected static bool actAvatarAdjF_p(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, 0, c_deltaT);
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+		return true;
+	}
+
+	protected static bool actAvatarAdjR_m(uint cond)
+	{
+		Vector3 deltaT = new Vector3(-c_deltaT, 0, 0);
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+		return true;
+	}
+
+	protected static bool actAvatarAdjR_p(uint cond)
+	{
+		Vector3 deltaT = new Vector3(c_deltaT, 0, 0);
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+		return true;
+	}
+
+	protected static bool actAvatarAdjU_m(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, -c_deltaT, 0);
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+		return true;
+	}
+
+	protected static bool actAvatarAdjU_p(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, c_deltaT, 0);
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+		return true;
+	}
+
+	protected static bool actAvatarAdjO_m(uint cond)
+	{
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(-c_deltaR);
+		return true;
+	}
+
+	protected static bool actAvatarAdjO_p(uint cond)
+	{
+		((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(c_deltaR);
 		return true;
 	}
 }
