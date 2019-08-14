@@ -347,6 +347,11 @@ public class ScenarioControlPed : MonoBehaviour {
 								c_unity2sim = m_s * m_u.inverse * t_u_inv;
 							}
 						}
+						else
+						{
+							c_sim2unity = t_u * c_sim2unity;
+							c_unity2sim = c_unity2sim * t_u_inv;
+						}
 					}
 				}
 			}

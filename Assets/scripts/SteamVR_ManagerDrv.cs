@@ -221,6 +221,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Vector3 o_p = (m_objects[(int)ObjType.tracker_lhand].transform.localPosition + m_objects[(int)ObjType.tracker_rhand].transform.localPosition) * 0.5f;
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
+		o_v.y = 0.0f;
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
 
 		Transport(l.rotation, t);
