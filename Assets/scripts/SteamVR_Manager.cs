@@ -111,7 +111,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_TESTTELEPORT)
 		{
-			ScenarioControlPed scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>();
+			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
 			return scenario.testTeleport(++s_idx);
 		}
 		else
@@ -122,7 +122,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_TESTTELEPORT)
 		{
-			ScenarioControlPed scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>();
+			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
 			return scenario.testTeleport(--s_idx);
 		}
 		else
@@ -251,7 +251,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 			if (acted)
 			{
 				Debug.Assert(g_inst.m_senarioCtrl);
-				float s = g_inst.m_senarioCtrl.GetComponent<ScenarioControlPed>().adjustAvatar(dh);
+				float s = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().adjustAvatar(dh);
 				g_inst.adjustAvatar_s(s);
 			}
 			return acted;

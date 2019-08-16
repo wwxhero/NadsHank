@@ -7,7 +7,7 @@ using System.Xml;
 using JointsReduction;
 using System.Globalization;
 
-public class ScenarioControlPed : MonoBehaviour {
+public class ScenarioControl : MonoBehaviour {
 
 	private string m_scenePath;
 	public GameObject[] m_vehiPrefabs;
@@ -30,7 +30,7 @@ public class ScenarioControlPed : MonoBehaviour {
 
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-
+	enum LAYER {scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic};
 	class ConfAvatar
 	{
 		private float height;
@@ -104,7 +104,7 @@ public class ScenarioControlPed : MonoBehaviour {
 	ConfAvatar m_confAvatar;
 
 	// Use this for initialization
-	ScenarioControlPed()
+	ScenarioControl()
 	{
 		Matrix4x4 m_2 = Matrix4x4.zero;
 		m_2[0, 0] = 1;
@@ -354,6 +354,8 @@ public class ScenarioControlPed : MonoBehaviour {
 						}
 					}
 				}
+
+				gameObject.layer = (int)LAYER.scene_static;
 			}
 			catch (System.IO.FileNotFoundException)
 			{
@@ -421,6 +423,7 @@ public class ScenarioControlPed : MonoBehaviour {
 									int idx = solId % m_vehiPrefabs.Length;
 									GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
 									o.name = name;
+									o.layer = (int)LAYER.peer_dynamic;
 									m_id2Dyno.Add(id, o);
 									break;
 								}
@@ -470,12 +473,14 @@ public class ScenarioControlPed : MonoBehaviour {
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
+										ped.layer = (int)LAYER.ego_dynamic;
 										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
 										ik.AutoDetectReferences();
 
-										if (null != m_mockTrackersPrefab)
+										bool mockTracking = (null != m_mockTrackersPrefab);
+										if (mockTracking)
 										{
 											m_trackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
 											RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
@@ -512,6 +517,8 @@ public class ScenarioControlPed : MonoBehaviour {
 											m_trackers = steamVR;
 										}
 									}
+									else
+										ped.layer = (int)LAYER.peer_dynamic;
 
 
 									//bind joints with (id, name)
@@ -598,12 +605,14 @@ public class ScenarioControlPed : MonoBehaviour {
 						{
 							Debug.Assert(null != m_trackers);
 							m_trackers.transform.parent = parent.transform;
-							if (null == m_mockTrackersPrefab)
+							bool steamTracking = (null == m_mockTrackersPrefab);
+							if (steamTracking)
 							{
 								SteamVR_ManagerDrv mgr = m_trackers.GetComponent<SteamVR_ManagerDrv>();
 								Debug.Assert(null != mgr);
 								mgr.m_carHost = parent;
 							}
+							parent.layer = (int)LAYER.host_dynamic;
 						}
 					}
 				}
