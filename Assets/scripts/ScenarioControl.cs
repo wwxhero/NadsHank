@@ -41,13 +41,14 @@ public class ScenarioControl : MonoBehaviour {
 		}
 		public float Width
 		{
-			get { return width; }
+			get { return width + (2*hand0) * width/width0; }
 		}
 		private float height;
 		private float width;
 		private float perceptualHeight;
 		private const float height0 = 1.78f;
 		private const float width0 = 1.40f;
+		private const float hand0 = 0.25f;
 		private Vector3 posTel, tanTel, latTel;
 		private ArrayList lstPos_test = new ArrayList();
 		private ArrayList lstTan_test = new ArrayList();
@@ -134,8 +135,7 @@ public class ScenarioControl : MonoBehaviour {
 			m_bHost = false;
 			m_target = target;
 			m_bbox.center = new Vector3(0, conf.Height * 0.5f, 0);
-			const float c_handLength = 0.25f;
-			m_bbox.s_x = conf.Width * 0.5f + c_handLength;
+			m_bbox.s_x = conf.Width * 0.5f;
 			m_bbox.s_y = conf.Height * 0.5f;
 			m_bbox.s_z = 0f; //fixme: the avatar is as thin as a paper
 		}
