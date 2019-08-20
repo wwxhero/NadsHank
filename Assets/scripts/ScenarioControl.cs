@@ -13,12 +13,14 @@ public class ScenarioControl : MonoBehaviour {
 	public GameObject[] m_vehiPrefabs;
 	public GameObject m_pedPrefab;
 	public GameObject m_drvPrefab;
+	public GameObject m_camInspectorPrefab;
 	public GameObject m_mockTrackersPrefab;
 	public bool m_bDriver;
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
 	GameObject m_trackers;
+	Camera m_egoInspector;
 
 	Matrix4x4 c_sim2unity;
 	Matrix4x4 c_unity2sim;
@@ -31,27 +33,37 @@ public class ScenarioControl : MonoBehaviour {
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
 	enum LAYER {scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic};
-	class ConfAvatar
+	public class ConfAvatar
 	{
+		public float Height
+		{
+			get { return height; }
+		}
+		public float Width
+		{
+			get { return width; }
+		}
 		private float height;
 		private float width;
-		private const float height0 = 178f;
-		private const float width0 = 140f;
+		private float perceptualHeight;
+		private const float height0 = 1.78f;
+		private const float width0 = 1.40f;
 		private Vector3 posTel, tanTel, latTel;
 		private ArrayList lstPos_test = new ArrayList();
 		private ArrayList lstTan_test = new ArrayList();
 		private ArrayList lstLat_test = new ArrayList();
 		public ConfAvatar(uint a_height, uint a_width)
 		{
-			height = a_height;
-			width = a_width;
+			height = ((float)a_height) * 0.01f;
+			width = ((float)a_width) * 0.01f;
+			perceptualHeight = height;
 		}
 
 		public float ScaleInv(float dh)
 		{
-			float h_prime = height + dh;
-			float s_h_inv = height / h_prime;
-			height = h_prime;
+			float h_prime = perceptualHeight + dh;
+			float s_h_inv = perceptualHeight / h_prime;
+			perceptualHeight = h_prime;
 			return s_h_inv;
 		}
 
@@ -101,7 +113,70 @@ public class ScenarioControl : MonoBehaviour {
 
 	};
 
+	public class ConfVehical
+	{
+
+	};
+
+	public class InspectorHelper
+	{
+		struct BBOX
+		{
+			public Vector3 center;
+			public float s_x, s_y, s_z;
+		};
+		BBOX m_bbox;
+		bool m_bHost;
+		Transform m_target;
+		public InspectorHelper(Transform target, ConfAvatar conf)
+		{
+			//fixme: intialize inspector helper for the avatar target
+			m_bHost = false;
+			m_target = target;
+			m_bbox.center = new Vector3(0, conf.Height * 0.5f, 0);
+			const float c_handLength = 0.25f;
+			m_bbox.s_x = conf.Width * 0.5f + c_handLength;
+			m_bbox.s_y = conf.Height * 0.5f;
+			m_bbox.s_z = 0f; //fixme: the avatar is as thin as a paper
+		}
+
+		public InspectorHelper(Transform target, ConfVehical conf)
+		{
+			//fixme: intialize inspector helper for the vechical target
+		}
+		public enum Direction {forward = 0, up, right};
+
+		public void Apply(Camera cam, Direction dir)
+		{
+			//fixme: put camera in the specific direction of the target
+			float[] camSize = {
+				  Mathf.Max(m_bbox.s_x, m_bbox.s_y)
+				, Mathf.Max(m_bbox.s_x, m_bbox.s_z)
+				, Mathf.Max(m_bbox.s_y, m_bbox.s_z)
+			};
+			int host_mask = 1 << (int)LAYER.host_dynamic;
+			int ego_mask = 1 << (int)LAYER.ego_dynamic;
+			cam.cullingMask = m_bHost ? host_mask|ego_mask : ego_mask;
+			cam.orthographic = true;
+			cam.orthographicSize = camSize[(int)dir];
+
+			cam.transform.parent = m_target;
+			const float c_distance = 10;
+			Vector3 [] t_l = {
+				  new Vector3(0, 0, 1)
+				, new Vector3(0, 1, 0)
+				, new Vector3(1, 0, 0)
+			};
+			Quaternion r_l = Quaternion.LookRotation(-t_l[(int)dir]);
+			Vector3 p_l = t_l[(int)dir] * c_distance + m_bbox.center;
+			cam.transform.localPosition = p_l;
+			cam.transform.localRotation = r_l;
+
+		}
+	};
+
 	ConfAvatar m_confAvatar;
+	ConfVehical m_confVehicle;
 
 	// Use this for initialization
 	ScenarioControl()
@@ -340,10 +415,10 @@ public class ScenarioControl : MonoBehaviour {
 							}
 							else
 							{
-                                string strInfo = string.Format("matrix_s:\n{0}", m_s.ToString());
-                                strInfo += string.Format("matrix_u:\n{0}", m_u.ToString());
-                                Debug.Log(strInfo);
-                                c_sim2unity = t_u * m_u * m_s.inverse;
+								string strInfo = string.Format("matrix_s:\n{0}", m_s.ToString());
+								strInfo += string.Format("matrix_u:\n{0}", m_u.ToString());
+								Debug.Log(strInfo);
+								c_sim2unity = t_u * m_u * m_s.inverse;
 								c_unity2sim = m_s * m_u.inverse * t_u_inv;
 							}
 						}
@@ -355,7 +430,7 @@ public class ScenarioControl : MonoBehaviour {
 					}
 				}
 
-				gameObject.layer = (int)LAYER.scene_static;
+				setLayer(gameObject, LAYER.scene_static);
 			}
 			catch (System.IO.FileNotFoundException)
 			{
@@ -423,7 +498,7 @@ public class ScenarioControl : MonoBehaviour {
 									int idx = solId % m_vehiPrefabs.Length;
 									GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
 									o.name = name;
-									o.layer = (int)LAYER.peer_dynamic;
+									setLayer(o, LAYER.peer_dynamic);
 									m_id2Dyno.Add(id, o);
 									break;
 								}
@@ -473,7 +548,6 @@ public class ScenarioControl : MonoBehaviour {
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
-										ped.layer = (int)LAYER.ego_dynamic;
 										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
@@ -516,9 +590,15 @@ public class ScenarioControl : MonoBehaviour {
 											m_confAvatar.Apply(ik);
 											m_trackers = steamVR;
 										}
+										setLayer(ped, LAYER.ego_dynamic);
+										setLayer(m_trackers, LAYER.ego_dynamic);
+										//no matter driver or pedestrain, by default, inspector is on avatar
+										InspectorHelper inspector = new InspectorHelper(ped.transform, m_confAvatar);
+										m_egoInspector = Instantiate(m_camInspectorPrefab).GetComponent<Camera>();
+										inspector.Apply(m_egoInspector, InspectorHelper.Direction.forward);
 									}
 									else
-										ped.layer = (int)LAYER.peer_dynamic;
+										setLayer(ped, LAYER.peer_dynamic);
 
 
 									//bind joints with (id, name)
@@ -612,7 +692,7 @@ public class ScenarioControl : MonoBehaviour {
 								Debug.Assert(null != mgr);
 								mgr.m_carHost = parent;
 							}
-							parent.layer = (int)LAYER.host_dynamic;
+							setLayer(parent, LAYER.host_dynamic);
 						}
 					}
 				}
@@ -834,6 +914,29 @@ public class ScenarioControl : MonoBehaviour {
 	public float adjustAvatar(float dh)
 	{
 		return m_confAvatar.ScaleInv(dh);
+	}
+
+	void setLayer(GameObject o, LAYER l)
+	{
+		Queue<Transform> bfs = new Queue<Transform>();
+		bfs.Enqueue(o.transform);
+		while (bfs.Count > 0)
+		{
+			Transform t = bfs.Dequeue();
+			t.gameObject.layer = (int)l;
+			foreach (Transform t_c in t)
+				bfs.Enqueue(t_c);
+		}
+	}
+
+	public void adjustInspector(InspectorHelper.Direction dir, bool host)
+	{
+		InspectorHelper inspector = null;
+		if (host)
+			inspector = new InspectorHelper(m_id2Ped[0].transform.parent, m_confVehicle);
+		else
+			inspector = new InspectorHelper(m_id2Ped[0].transform, m_confAvatar);
+		inspector.Apply(m_egoInspector, dir);
 	}
 
 }

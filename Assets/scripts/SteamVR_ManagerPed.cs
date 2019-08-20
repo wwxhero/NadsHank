@@ -28,15 +28,27 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_cnn, ALL)
+									, new Transition(State.pre_cnn, State.pre_cnn, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.pre_cnn, State.pre_cnn, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.pre_cnn, State.pre_cnn, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.pre_cnn, State.post_cnn, R_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
 									, new Transition(State.pre_cnn, State.post_cnn, L_TRIGGER, new Action[] {actIdentifyTrackers, actConnectVirtualWorld})
 									, new Transition(State.post_cnn, State.pre_cnn, L_GRIP, actUnConnectVirtualWorld)
 									, new Transition(State.post_cnn, State.pre_calibra, R_GRIP, actShowMirror)
+									, new Transition(State.post_cnn, State.post_cnn, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.post_cnn, State.post_cnn, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.post_cnn, State.post_cnn, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustAvatar)
+									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.pre_calibra, State.pre_calibra, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
 									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
+									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.post_calibra, State.post_calibra, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
@@ -45,6 +57,9 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 									, new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)
 									, new Transition(State.teleporting, State.tracking, NONE)
 									, new Transition(State.teleporting, State.tracking, NONE)
+									, new Transition(State.tracking, State.tracking, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.tracking, State.tracking, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.tracking, State.tracking, UP, actAdjustAvatarInspec_u)
 								};
 		g_inst = this;
 	}

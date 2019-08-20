@@ -245,9 +245,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 						|| plus);
 			float dh = 0;
 			if (minus)
-				dh = -0.1f;
+				dh = -0.001f;
 			else if (plus)
-				dh = 0.1f;
+				dh = 0.001f;
 			if (acted)
 			{
 				Debug.Assert(g_inst.m_senarioCtrl);
@@ -509,5 +509,26 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (!m_trackersIdentified)
 			base.Refresh();
+	}
+
+	protected static bool actAdjustAvatarInspec_r(uint cond)
+	{
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, false);
+		return true;
+	}
+
+	protected static bool actAdjustAvatarInspec_u(uint cond)
+	{
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, false);
+		return true;
+	}
+
+	protected static bool actAdjustAvatarInspec_f(uint cond)
+	{
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
+		return true;
 	}
 }
