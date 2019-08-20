@@ -21,7 +21,6 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 					, "tracker_rhand"
 					, "tracker_lhand"
 				};
-
 	SteamVR_ManagerPed()
 	{
 		tracker_start = (int)ObjType.tracker_rfoot;
@@ -55,7 +54,6 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 									, new Transition(State.tracking, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
 									, new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)
 									, new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)
-									, new Transition(State.teleporting, State.tracking, NONE)
 									, new Transition(State.teleporting, State.tracking, NONE)
 									, new Transition(State.tracking, State.tracking, FORWARD, actAdjustAvatarInspec_f)
 									, new Transition(State.tracking, State.tracking, RIGHT, actAdjustAvatarInspec_r)
@@ -146,6 +144,24 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 		Vector3 t = -l.MultiplyVector(o_p) + o_v;
 
 		Transport(l.rotation, t);
+	}
+
+	protected override void UpdateInstructionDisplay(State s)
+	{
+        Debug.Assert(null != m_refDispHeader);
+        m_refDispHeader.text = StateStrings.s_shortDescPed[(int)s];
+        string body = StateStrings.s_longDescPed[(int)s] + "\n";
+        for (int i_tran = 0; i_tran < m_transition.Length; i_tran ++)
+        {
+        	string desc_tran = TransitionStrings.s_transitionDescPed[i_tran];
+        	if (m_transition[i_tran].From == s
+        		&& null != desc_tran)
+        	{
+        		body += "\n";
+        		body += desc_tran;
+        	}
+        }
+        m_refDispBody.text = body;
 	}
 }
 

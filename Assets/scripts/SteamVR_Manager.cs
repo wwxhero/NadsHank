@@ -2,6 +2,7 @@ using UnityEngine;
 using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class SteamVR_Manager : SteamVR_TDManager
 {
@@ -10,6 +11,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 	public bool DEF_TESTTELEPORT = true;
 	public GameObject m_senarioCtrl;
 	public GameObject m_prefMirror;
+	public Text m_refDispHeader;
+	public Text m_refDispBody;
 	protected GameObject m_mirrow;
 	bool m_trackersIdentified = false;
 	[HideInInspector]
@@ -24,8 +27,14 @@ public class SteamVR_Manager : SteamVR_TDManager
 						, teleporting																	//the specific state for pedestrain
 						, pegging, pre_calibra2, pre_adjF, post_adjF, pre_adjR, post_adjR, pre_adjU, post_adjU, pre_adjO, post_adjO	//the specific state for driver
 					};
+
+
 	protected class Transition
 	{
+		public State From
+		{
+			get { return m_vec[0]; }
+		}
 		private State[] m_vec = new State[2];
 		private Action[] m_acts;
 		private uint m_cond = 0;
@@ -466,8 +475,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 		int n_transi = m_transition.Length;
 		for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
 			state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
-
 		State s_np = m_state;
+		if (s_np != s_n)
+			UpdateInstructionDisplay(m_state);
 		if (DEF_DBG)
 		{
 			string switches = null;
@@ -485,7 +495,14 @@ public class SteamVR_Manager : SteamVR_TDManager
 				, "L_PAD_P"
 				, "L_PAD_T"
 				, "L_GRIP"
+				, "FRONT"
+				, "RIGHT"
+				, "UP"
+				, "ROTATION"
+				, "RIGHT_ARROW"
+				, "LEFT_ARROW"
 			};
+			Debug.Assert(switch_names.Length == ctrl_switch.Length);
 			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
 			{
 				switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
@@ -497,7 +514,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 			Debug.Log(strInfo);
 		}
 	}
-
+	protected virtual void UpdateInstructionDisplay(State s)
+	{
+		Debug.Assert(false); //this function need to be override by a derived class
+	}
 	public void Transport(Quaternion r, Vector3 t)
 	{
 		//fixme: a smooth transit should happen for transport
