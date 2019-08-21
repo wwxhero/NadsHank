@@ -74,45 +74,54 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.post_cnn, State.pre_calibra, R_GRIP, actShowMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustAvatar)
+									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.pre_calibra, State.pre_calibra, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)
 									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)
 									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)
+									, new Transition(State.pre_calibra2, State.pre_calibra2, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
+									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actAdjustAvatarInspec_f)
+									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actAdjustAvatarInspec_r)
+									, new Transition(State.post_calibra, State.post_calibra, UP, actAdjustAvatarInspec_u)
 									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock })
 									, new Transition(State.pegging, State.tracking, R_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn })
 									, new Transition(State.pegging, State.tracking, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn })
 									, new Transition(State.tracking, State.tracking, R_GRIP, actAdjustVWCnn)
 									, new Transition(State.tracking, State.tracking, L_GRIP, actAdjustVWCnn)
 									//sub state transitions for adjust avatar in forward/backward direction
-									, new Transition(State.tracking, State.pre_adjF, FORWARD, actAvatarViewTd)
+									, new Transition(State.tracking, State.pre_adjF, FORWARD, actAdjustCarInspec_u)
 									, new Transition(State.pre_adjF, State.post_adjF, FORWARD|PLUS, actAvatarAdjF_p)
 									, new Transition(State.pre_adjF, State.post_adjF, FORWARD|MINUS, actAvatarAdjF_m)
 									, new Transition(State.post_adjF, State.pre_adjF, FORWARD)
-									, new Transition(State.post_adjF, State.tracking, NONE, actAvatarViewSd)
-									, new Transition(State.pre_adjF, State.tracking, NONE, actAvatarViewSd)
+									, new Transition(State.post_adjF, State.tracking, NONE, actAdjustCarInspec_f)
+									, new Transition(State.pre_adjF, State.tracking, NONE, actAdjustCarInspec_f)
 									//sub state transitions for adjust avatar in right/left direction
-									, new Transition(State.tracking, State.pre_adjR, RIGHT, actAvatarViewTd)
+									, new Transition(State.tracking, State.pre_adjR, RIGHT, actAdjustCarInspec_r)
 									, new Transition(State.pre_adjR, State.post_adjR, RIGHT|PLUS, actAvatarAdjR_p)
 									, new Transition(State.pre_adjR, State.post_adjR, RIGHT|MINUS, actAvatarAdjR_m)
 									, new Transition(State.post_adjR, State.pre_adjR, RIGHT)
-									, new Transition(State.post_adjR, State.tracking, NONE, actAvatarViewSd)
-									, new Transition(State.pre_adjR, State.tracking, NONE, actAvatarViewSd)
+									, new Transition(State.post_adjR, State.tracking, NONE, actAdjustCarInspec_f)
+									, new Transition(State.pre_adjR, State.tracking, NONE, actAdjustCarInspec_f)
 									//sub state transitions for adjust avatar in up/down direction
-									, new Transition(State.tracking, State.pre_adjU, UP)
+									, new Transition(State.tracking, State.pre_adjU, UP, actAdjustCarInspec_f)
 									, new Transition(State.pre_adjU, State.post_adjU, UP|PLUS, actAvatarAdjU_p)
 									, new Transition(State.pre_adjU, State.post_adjU, UP|MINUS, actAvatarAdjU_m)
 									, new Transition(State.post_adjU, State.pre_adjU, UP)
-									, new Transition(State.post_adjU, State.tracking, NONE)
-									, new Transition(State.pre_adjU, State.tracking, NONE)
+									, new Transition(State.post_adjU, State.tracking, NONE, actAdjustCarInspec_f)
+									, new Transition(State.pre_adjU, State.tracking, NONE, actAdjustCarInspec_f)
 									//sub state transitions for adjust avatar orientation
-									, new Transition(State.tracking, State.pre_adjO, ORI, actAvatarViewTd)
+									, new Transition(State.tracking, State.pre_adjO, ORI, actAdjustCarInspec_f)
 									, new Transition(State.pre_adjO, State.post_adjO, ORI|PLUS, actAvatarAdjO_p)
 									, new Transition(State.pre_adjO, State.post_adjO, ORI|MINUS, actAvatarAdjO_m)
 									, new Transition(State.post_adjO, State.pre_adjO, ORI)
-									, new Transition(State.post_adjO, State.tracking, NONE, actAvatarViewSd)
-									, new Transition(State.pre_adjO, State.tracking, NONE, actAvatarViewSd)
+									, new Transition(State.post_adjO, State.tracking, NONE, actAdjustCarInspec_r)
+									, new Transition(State.pre_adjO, State.tracking, NONE, actAdjustCarInspec_r)
 
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
 									, new Transition(State.post_calibra, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
@@ -351,15 +360,24 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		return true;
 	}
 
-	protected static bool actAvatarViewTd(uint cond)
+	protected static bool actAdjustCarInspec_r(uint cond)
 	{
-		//fixme: to switch avatar inspect camera to top-down view
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, true);
 		return true;
 	}
 
-	protected static bool actAvatarViewSd(uint cond)
+	protected static bool actAdjustCarInspec_u(uint cond)
 	{
-		//fixme: to switch avatar inspect camera to side view
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, true);
+		return true;
+	}
+
+	protected static bool actAdjustCarInspec_f(uint cond)
+	{
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, true);
 		return true;
 	}
 
