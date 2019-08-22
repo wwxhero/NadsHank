@@ -46,7 +46,7 @@ public class ScenarioControl : MonoBehaviour {
 		private float height;
 		private float width;
 		private float perceptualHeight;
-		private const float height0 = 1.78f;
+		private const float height0 = 1.77f;
 		private const float width0 = 1.40f;
 		private const float hand0 = 0.25f;
 		private Vector3 posTel, tanTel, latTel;
@@ -75,6 +75,19 @@ public class ScenarioControl : MonoBehaviour {
 			ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
 			ped.references.leftShoulder.localScale = new Vector3(1f, s_w, 1f);
 			ped.references.rightShoulder.localScale = new Vector3(1f, s_w, 1f);
+		}
+
+		public void Apply(GameObject mockPhysic, RootMotion.FinalIK.VRIK ped)
+		{
+			float s_h = height / height0;
+			float s_w = width / (width0 * s_h);
+			MockPhysics mp = mockPhysic.GetComponent<MockPhysics>();
+			ped.references.root.localScale = new Vector3(s_h, s_h, s_h);
+			ped.references.leftShoulder.localScale = new Vector3(1f, s_w, 1f);
+			ped.references.rightShoulder.localScale = new Vector3(1f, s_w, 1f);
+			mp.transform.localScale = new Vector3(s_h, s_h, s_h);
+			mp.m_leftShoulder.localScale = new Vector3(1f, s_w, 1f);
+			mp.m_rightShoulder.localScale = new Vector3(1f, s_w, 1f);
 		}
 
 		public void setTeleport(Vector3 p_sim, Vector3 t_sim, Vector3 l_sim)
@@ -134,7 +147,8 @@ public class ScenarioControl : MonoBehaviour {
 			//fixme: intialize inspector helper for the avatar target
 			m_bHost = false;
 			m_target = target;
-			m_bbox.center = new Vector3(0, conf.Height * 0.5f, 0);
+            Vector3 s_l = target.localScale;
+			m_bbox.center = new Vector3(0, (conf.Height * 0.5f)/s_l.y, 0);
 			m_bbox.s_x = conf.Width * 0.5f;
 			m_bbox.s_y = conf.Height * 0.5f;
 			m_bbox.s_z = 0f; //fixme: the avatar is as thin as a paper
@@ -161,7 +175,7 @@ public class ScenarioControl : MonoBehaviour {
 			cam.orthographicSize = camSize[(int)dir];
 
 			cam.transform.parent = m_target;
-			const float c_distance = 10;
+			float c_distance = camSize[(int)dir] * 2;
 			Vector3 [] t_l = {
 				  new Vector3(0, 0, 1)
 				, new Vector3(0, 1, 0)
@@ -557,38 +571,27 @@ public class ScenarioControl : MonoBehaviour {
 										if (mockTracking)
 										{
 											m_trackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
-											RootMotion.Demos.VRIKCalibrationController caliCtrl = GetComponent<RootMotion.Demos.VRIKCalibrationController>();
+											RootMotion.Demos.VRIKCalibrationController caliCtrl = ped.AddComponent<RootMotion.Demos.VRIKCalibrationController>();
 											caliCtrl.ik = ik;
-											Transform[] trackers = { caliCtrl.headTracker
-																, caliCtrl.bodyTracker
-																, caliCtrl.leftHandTracker
-																, caliCtrl.rightHandTracker
-																, caliCtrl.leftFootTracker
-																, caliCtrl.rightFootTracker
-															};
-											string[] targetNames = { "Pelvis/Spine1/Spine2/Spine3/Neck1/NeckHead/Tracker Mock (CenterEyeAnchor)"
-																, "Pelvis/Tracker Mock (Body)"
-																, "Pelvis/Spine1/Spine2/Spine3/LArmCollarbone/LArmUpper1/LArmUpper2/LArmForearm1/LArmForearm2/LArmHand/Tracker Mock (Left Hand)"
-																, "Pelvis/Spine1/Spine2/Spine3/RArmCollarbone/RArmUpper1/RArmUpper2/RArmForearm1/RArmForearm2/RArmHand/Tracker Mock (Right Hand)"
-																, "Pelvis/LLegUpper/LLegCalf/LLegAnkle/Tracker Mock (Left Foot)"
-																, "Pelvis/RLegUpper/RLegCalf/RLegAnkle/Tracker Mock (Right Foot)"
-															};
-											caliCtrl.headTracker = m_trackers.transform.Find(targetNames[0]);
-											caliCtrl.bodyTracker = m_trackers.transform.Find(targetNames[1]);
-											caliCtrl.leftHandTracker = m_trackers.transform.Find(targetNames[2]);
-											caliCtrl.rightHandTracker = m_trackers.transform.Find(targetNames[3]);
-											caliCtrl.leftFootTracker = m_trackers.transform.Find(targetNames[4]);
-											caliCtrl.rightFootTracker = m_trackers.transform.Find(targetNames[5]);
+											MockPhysics trackers_mp = m_trackers.GetComponent<MockPhysics>();
+                                            Debug.Assert((int)MockPhysics.Mount.total == trackers_mp.m_trackersMt.Length);
+											caliCtrl.headTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.head];
+											caliCtrl.bodyTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.body];
+											caliCtrl.leftHandTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.lh];
+											caliCtrl.rightHandTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.rh];
+											caliCtrl.leftFootTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.lf];
+											caliCtrl.rightFootTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.rf];
+											m_confAvatar.Apply(m_trackers, ik);
 										}
 										else
 										{
 											GameObject steamVR = GameObject.Find("[CameraRig]");
 											Debug.Assert(null != steamVR);
 											SteamVR_Manager mgr = steamVR.GetComponent<SteamVR_Manager>();
-											mgr.m_avatar = ped;
+											mgr.Avatar = ped;
+											m_trackers = steamVR;
 											Debug.Assert(null != m_confAvatar);
 											m_confAvatar.Apply(ik);
-											m_trackers = steamVR;
 										}
 										setLayer(ped, LAYER.ego_dynamic);
 										setLayer(m_trackers, LAYER.ego_dynamic);

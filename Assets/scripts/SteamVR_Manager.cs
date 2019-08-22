@@ -16,7 +16,15 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected GameObject m_mirrow;
 	bool m_trackersIdentified = false;
 	[HideInInspector]
-	public GameObject m_avatar;
+	public GameObject Avatar
+	{
+        get { return m_avatar; }
+		set {
+		    m_avatar = value;
+		    gameObject.SetActive(true);
+		}
+	}
+	protected GameObject m_avatar;
 	protected VRIKCalibrator.CalibrationData m_data = new VRIKCalibrator.CalibrationData();
 
 	protected int tracker_start, tracker_end;
@@ -104,8 +112,13 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected static SteamVR_Manager g_inst;
 
 
+	public SteamVR_Manager()
+	{
+		g_inst = this;
+	}
 
-	public virtual bool IdentifyTrackers()
+
+    public virtual bool IdentifyTrackers()
 	{
 		return false;
 	}
