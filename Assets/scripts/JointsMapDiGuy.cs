@@ -27,6 +27,7 @@ namespace JointsReduction
 		private Matrix4x4 m_d2s, m_s2d;
 		private Matrix4x4 m_n2r = Matrix4x4.identity;
 		private ArtPart r_part = null;
+        private Vector3 c_s, c_sInv;
 		public Matrix4x4 localToParent { get; private set; }
 		public Matrix4x4 parentToLocal { get; private set; }
 		public Matrix4x4 localToRoot
@@ -49,13 +50,15 @@ namespace JointsReduction
 			m_s2d = d2s.inverse;
 			m_n2r = n2r_d;
 			m_node = n;
+            c_s = m_node.parent.src.localScale;
+            c_sInv = new Vector3(1.0f / c_s.x, 1.0f / c_s.y, 1.0f / c_s.z);
 		}
 
 		public void Mt_d()
 		{
 			Debug.Assert(null != r_part);
 			Matrix4x4 deltaM_s = m_node.DeltaM_local();
-			Vector3 tran_s = new Vector3(deltaM_s.m03, deltaM_s.m13, deltaM_s.m23);
+			Vector3 tran_s = new Vector3(deltaM_s.m03 * c_sInv.x, deltaM_s.m13 * c_sInv.y, deltaM_s.m23 * c_sInv.z); //fixme: assume diguy avatar does not scale or scale == 1
 			Vector3 tran_d = m_s2d.MultiplyVector(tran_s);
 			Matrix4x4 deltaM_d = m_s2d*deltaM_s*m_d2s;
 			deltaM_d.m03 = tran_d.x; deltaM_d.m13 = tran_d.y; deltaM_d.m23 = tran_d.z;
@@ -82,7 +85,7 @@ namespace JointsReduction
 			Vector3 tran_d = new Vector3(deltaM_d.m03, deltaM_d.m13, deltaM_d.m23);
 			Vector3 tran_s = m_d2s.MultiplyVector(tran_d);
 			Matrix4x4 deltaM_s = m_d2s * deltaM_d * m_s2d;
-			deltaM_s.m03 = tran_s.x; deltaM_s.m13 = tran_s.y; deltaM_s.m23 = tran_s.z;
+			deltaM_s.m03 = tran_s.x * c_s.x; deltaM_s.m13 = tran_s.y * c_s.y; deltaM_s.m23 = tran_s.z * c_s.z;
 			m_node.Mt_s(deltaM_s);
 
 			// string info = string.Format("{0}:{1}=>{2}, {3}=>[{4,6:#.00} {5,6:#.00} {6,6:#.00}]", r_part.name
