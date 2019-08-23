@@ -27,6 +27,10 @@ namespace JointsReduction
 		private Matrix4x4 m_d2s, m_s2d;
 		private Matrix4x4 m_n2r = Matrix4x4.identity;
 		private ArtPart r_part = null;
+		public void scale(Vector3 s)
+		{
+			localToParent = localToParent * Matrix4x4.Scale(s);
+		}
 		public Matrix4x4 localToParent { get; private set; }
 		public Matrix4x4 parentToLocal { get; private set; }
 		public Matrix4x4 localToRoot
@@ -275,7 +279,8 @@ namespace JointsReduction
 			MapNodeDFT dftNode = new MapNodeDFT(m_rootOut);
 			dft.Push(dftNode);
 			DiguyJoint joint_r = dictJoints[m_rootOut.name];
-			Matrix4x4 n2r_d = joint_r.localToParent;
+			joint_r.scale(m_rootOut.m0.lossyScale); //scale diguy matrix symatric with unity3d matrix
+			Matrix4x4 n2r_d = joint_r.localToParent; 
 			Matrix4x4 r2n_s = m_rootOut.src.worldToLocalMatrix * root_s.localToWorldMatrix;
 			Matrix4x4 d2s = r2n_s * n2r_d;
 			joint_r.Initialize(m_rootOut, d2s, n2r_d);
@@ -290,7 +295,8 @@ namespace JointsReduction
 					dft.Push(c_nodeDFT);
 					DiguyJoint joint_c = dictJoints[c_node.name];
 					joint_p.m_children.Add(joint_c);
-					n2r_d = joint_p.localToRoot * joint_c.localToParent;
+					joint_c.scale(c_node.m0.lossyScale); //scale diguy matrix symatric with unity3d matrix
+					n2r_d = joint_p.localToRoot * joint_c.localToParent; 
 					r2n_s = c_node.src.worldToLocalMatrix * root_s.localToWorldMatrix;
 					d2s = r2n_s*n2r_d;
 					joint_c.Initialize(c_node, d2s, n2r_d);
