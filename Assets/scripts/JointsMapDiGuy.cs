@@ -27,7 +27,7 @@ namespace JointsReduction
 		private Matrix4x4 m_d2s, m_s2d;
 		private Matrix4x4 m_n2r = Matrix4x4.identity;
 		private ArtPart r_part = null;
-        private Vector3 c_s, c_sInv;
+		private Vector3 c_s, c_sInv;
 		public Matrix4x4 localToParent { get; private set; }
 		public Matrix4x4 parentToLocal { get; private set; }
 		public Matrix4x4 localToRoot
@@ -50,8 +50,8 @@ namespace JointsReduction
 			m_s2d = d2s.inverse;
 			m_n2r = n2r_d;
 			m_node = n;
-            c_s = m_node.parent.src.localScale;
-            c_sInv = new Vector3(1.0f / c_s.x, 1.0f / c_s.y, 1.0f / c_s.z);
+			c_s = m_node.m0.lossyScale;
+			c_sInv = new Vector3(1.0f / c_s.x, 1.0f / c_s.y, 1.0f / c_s.z);
 		}
 
 		public void Mt_d()

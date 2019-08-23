@@ -14,7 +14,7 @@ namespace JointsReduction
 		public Transform src;
 		public MapNode parent;
 		public ArrayList children = new ArrayList();
-		private Matrix4x4 m0; //remark: m0 and m0Inv are respected to different basis
+		public Matrix4x4 m0; //remark: m0 and m0Inv are respected to different basis
 		private Matrix4x4 m0Inv;
 		private Matrix4x4 m0InvCmp;
 
