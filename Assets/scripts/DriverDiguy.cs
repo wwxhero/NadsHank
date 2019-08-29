@@ -8,6 +8,7 @@ public class DriverDiguy : MonoBehaviour {
 	public bool logging = false;
 	public ArtPart[] m_art = new ArtPart[DFN_NJDIGUY];
 	public string [] m_oriJs;
+	public float [] m_disloc;
 	//		= new string[DFN_NJDIGUY] {
 	//				  "Armature"
 	//				, "mixamorig:Hips"
@@ -36,7 +37,7 @@ public class DriverDiguy : MonoBehaviour {
 		for (int i_art = 0; i_art < DFN_NJDIGUY; i_art ++)
 		{
 			string name = names[i_art];
-			ArtPart art = new ArtPart(ids[i_art], name);
+			ArtPart art = new ArtPart(ids[i_art], name, m_disloc[i_art]);
 			m_art[i_art] = art;
 			name2art[name] = art;
 		}

@@ -12,11 +12,32 @@ namespace JointsReduction
 		public readonly int id;
 		public readonly string name;
 		public Quaternion q = new Quaternion();
-		public Vector3 t = new Vector3();
-		public ArtPart(int a_id, string a_name)
+		public Vector3 t
+		{
+			get {
+				return m_t;
+			}
+			set {
+                if (0 == m_disloc)
+                {
+                    m_t.x = 0f; m_t.y = 0f; m_t.z = 0f;
+                }
+                else if (m_disloc > 0)
+                {
+                    float abs = value.magnitude;
+                    m_t = m_disloc / abs * value;
+                }
+                else
+                    m_t = value;
+			}
+		}
+		private Vector3 m_t = new Vector3();
+		private float m_disloc;
+		public ArtPart(int a_id, string a_name, float disloc)
 		{
 			id = a_id;
 			name = a_name;
+			m_disloc = disloc;
 		}
 	};
 
@@ -280,7 +301,7 @@ namespace JointsReduction
 			dft.Push(dftNode);
 			DiguyJoint joint_r = dictJoints[m_rootOut.name];
 			joint_r.scale(m_rootOut.m0.lossyScale); //scale diguy matrix symatric with unity3d matrix
-			Matrix4x4 n2r_d = joint_r.localToParent; 
+			Matrix4x4 n2r_d = joint_r.localToParent;
 			Matrix4x4 r2n_s = m_rootOut.src.worldToLocalMatrix * root_s.localToWorldMatrix;
 			Matrix4x4 d2s = r2n_s * n2r_d;
 			joint_r.Initialize(m_rootOut, d2s, n2r_d);
@@ -296,7 +317,7 @@ namespace JointsReduction
 					DiguyJoint joint_c = dictJoints[c_node.name];
 					joint_p.m_children.Add(joint_c);
 					joint_c.scale(c_node.m0.lossyScale); //scale diguy matrix symatric with unity3d matrix
-					n2r_d = joint_p.localToRoot * joint_c.localToParent; 
+					n2r_d = joint_p.localToRoot * joint_c.localToParent;
 					r2n_s = c_node.src.worldToLocalMatrix * root_s.localToWorldMatrix;
 					d2s = r2n_s*n2r_d;
 					joint_c.Initialize(c_node, d2s, n2r_d);
