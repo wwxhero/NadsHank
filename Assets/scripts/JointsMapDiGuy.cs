@@ -162,7 +162,7 @@ namespace JointsReduction
 		private readonly float[] m_dislocs = new float[DFN_NJDIGUY] {
 			  0f		//"position"
 			, -1f		//"base"
-			, 0.02f		//"back"
+			, -1f		//"back"
 			, 0.02f		//"hip_l"
 			, 0.02f		//"hip_r"
 			, 0.02f		//"cervical"
