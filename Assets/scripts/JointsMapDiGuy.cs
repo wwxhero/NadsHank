@@ -12,32 +12,11 @@ namespace JointsReduction
 		public readonly int id;
 		public readonly string name;
 		public Quaternion q = new Quaternion();
-		public Vector3 t
-		{
-			get {
-				return m_t;
-			}
-			set {
-                if (0 == m_disloc)
-                {
-                    m_t.x = 0f; m_t.y = 0f; m_t.z = 0f;
-                }
-                else if (m_disloc > 0)
-                {
-                    float abs = value.magnitude;
-                    m_t = m_disloc / abs * value;
-                }
-                else
-                    m_t = value;
-			}
-		}
-		private Vector3 m_t = new Vector3();
-		private float m_disloc;
-		public ArtPart(int a_id, string a_name, float disloc)
+		public Vector3 t = new Vector3();
+		public ArtPart(int a_id, string a_name)
 		{
 			id = a_id;
 			name = a_name;
-			m_disloc = disloc;
 		}
 	};
 
@@ -48,7 +27,8 @@ namespace JointsReduction
 		private Matrix4x4 m_d2s, m_s2d;
 		private Matrix4x4 m_n2r = Matrix4x4.identity;
 		private ArtPart r_part = null;
-		public void scale(Vector3 s)
+		private float c_disloc;
+		public void Scale(Vector3 s)
 		{
 			localToParent = localToParent * Matrix4x4.Scale(s);
 		}
@@ -61,12 +41,13 @@ namespace JointsReduction
 				return m_n2r;
 			}
 		}
-		public DiguyJoint(Matrix4x4 local2Parent, ArtPart buf)
+		public DiguyJoint(Matrix4x4 local2Parent, ArtPart buf, float disloc)
 		{
 			localToParent = local2Parent;
 			//fixme: inverse for affine+rotation matrix is optmizable
 			parentToLocal = Matrix4x4.Inverse(local2Parent);
 			r_part = buf;
+			c_disloc = disloc;
 		}
 		public void Initialize(MapNode n, Matrix4x4 d2s, Matrix4x4 n2r_d)
 		{
@@ -76,12 +57,29 @@ namespace JointsReduction
 			m_node = n;
 		}
 
+		//fixme: this is a workaround solution for DIGUY: which does not support scaling
+		//	, replacing DIGUY with FBX SDK would allow customized avatar with any FBX file
+		private Vector3 ReviseTran_d(Vector3 t)
+		{
+			if (c_disloc > 0 && c_disloc < t.magnitude)
+			{
+				string strTran_d = string.Format("{0}:[{1,6:#.0000}, {2,6:#.0000}, {3,6:#.0000}]:{4}\n"
+										, r_part.name, t.x, t.y, t.z, c_disloc.ToString());
+				Debug.LogWarning(strTran_d);
+				return (c_disloc / t.magnitude) * t;
+			}
+			else if (0 == c_disloc)
+				return new Vector3(0, 0, 0);
+			else
+				return t;
+		}
 		public void Mt_d()
 		{
 			Debug.Assert(null != r_part);
 			Matrix4x4 deltaM_s = m_node.DeltaM_local();
 			Vector3 tran_s = new Vector3(deltaM_s.m03, deltaM_s.m13, deltaM_s.m23);
 			Vector3 tran_d = m_s2d.MultiplyVector(tran_s);
+			tran_d = ReviseTran_d(tran_d);
 			Matrix4x4 deltaM_d = m_s2d*deltaM_s*m_d2s;
 			deltaM_d.m03 = tran_d.x; deltaM_d.m13 = tran_d.y; deltaM_d.m23 = tran_d.z;
 			Matrix4x4 mt_d = localToParent * deltaM_d;
@@ -160,6 +158,24 @@ namespace JointsReduction
 			, "ankle_r"
 			, "wrist_l"
 			, "wrist_r"
+		};
+		private readonly float[] m_dislocs = new float[DFN_NJDIGUY] {
+			  0f		//"position"
+			, -1f		//"base"
+			, 0.02f		//"back"
+			, 0.02f		//"hip_l"
+			, 0.02f		//"hip_r"
+			, 0.02f		//"cervical"
+			, 0.04f		//"shoulder_l"
+			, 0.04f		//"shoulder_r"
+			, 0.01f		//"knee_l"
+			, 0.01f		//"knee_r"
+			, 0.01f		//"elbow_l"
+			, 0.01f		//"elbow_r"
+			, 0.01f		//"ankle_l"
+			, 0.01f		//"ankle_r"
+			, 0f		//"wrist_l"
+			, 0f		//"wrist_r"
 		};
 		private readonly float[,] m_m0d = new float[DFN_NJDIGUY, 16] {
 			//position: d2s_r * I
@@ -292,7 +308,7 @@ namespace JointsReduction
 				ArtPart art = null;
 				bool hit = name2idPart.TryGetValue(name, out art);
 				Debug.Assert("position" == name || hit);
-				DiguyJoint joint = new DiguyJoint(DiguyMatrix(i_joint), art);
+				DiguyJoint joint = new DiguyJoint(DiguyMatrix(i_joint), art, m_dislocs[i_joint]);
 				dictJoints[name] = joint;
 			}
 			//construct diguy joint tree
@@ -300,7 +316,7 @@ namespace JointsReduction
 			MapNodeDFT dftNode = new MapNodeDFT(m_rootOut);
 			dft.Push(dftNode);
 			DiguyJoint joint_r = dictJoints[m_rootOut.name];
-			joint_r.scale(m_rootOut.m0.lossyScale); //scale diguy matrix symatric with unity3d matrix
+			joint_r.Scale(m_rootOut.m0.lossyScale); //Scale diguy matrix symatric with unity3d matrix
 			Matrix4x4 n2r_d = joint_r.localToParent;
 			Matrix4x4 r2n_s = m_rootOut.src.worldToLocalMatrix * root_s.localToWorldMatrix;
 			Matrix4x4 d2s = r2n_s * n2r_d;
@@ -316,7 +332,7 @@ namespace JointsReduction
 					dft.Push(c_nodeDFT);
 					DiguyJoint joint_c = dictJoints[c_node.name];
 					joint_p.m_children.Add(joint_c);
-					joint_c.scale(c_node.m0.lossyScale); //scale diguy matrix symatric with unity3d matrix
+					joint_c.Scale(c_node.m0.lossyScale); //Scale diguy matrix symatric with unity3d matrix
 					n2r_d = joint_p.localToRoot * joint_c.localToParent;
 					r2n_s = c_node.src.worldToLocalMatrix * root_s.localToWorldMatrix;
 					d2s = r2n_s*n2r_d;
