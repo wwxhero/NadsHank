@@ -2,7 +2,7 @@ using UnityEngine;
 using Valve.VR;
 public class SteamVR_TDManagerMetricShow : SteamVR_TDManager
 {
-	void Update()
+	void OnGUI()
 	{
 		string strInfo = null;
 		for (int i_o = 0; i_o < m_objects.Length; i_o ++)
