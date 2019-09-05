@@ -254,187 +254,322 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	private static bool actPosTrackerLock(uint cond)
 	{
-		GameObject [] trackers = new GameObject[] {
-			  g_inst.m_objects[(int)ObjType.tracker_rfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
-			, g_inst.m_objects[(int)ObjType.tracker_rhand]
-			, g_inst.m_objects[(int)ObjType.tracker_lhand]
-		};
-
-		for (int i = 0; i < trackers.Length; i ++)
+		if (g_inst.DEF_MOCKSTEAM)
 		{
-			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-			Transform dft = trackers[i].transform;
-			t.Lock(dft.position, dft.rotation);
+			Debug.LogWarning("SteamVR_ManagerDrv::actPosTrackerLock");
+			return true;
 		}
+		else
+		{
+			GameObject [] trackers = new GameObject[] {
+				  g_inst.m_objects[(int)ObjType.tracker_rfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+				, g_inst.m_objects[(int)ObjType.tracker_rhand]
+				, g_inst.m_objects[(int)ObjType.tracker_lhand]
+			};
 
-		return true;
+			for (int i = 0; i < trackers.Length; i ++)
+			{
+				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+				Transform dft = trackers[i].transform;
+				t.Lock(dft.position, dft.rotation);
+			}
+
+			return true;
+		}
 	}
 
 	private static bool actPosTrackerUnLock(uint cond)
 	{
-		GameObject [] trackers = new GameObject[] {
-			  g_inst.m_objects[(int)ObjType.tracker_rfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
-			, g_inst.m_objects[(int)ObjType.tracker_rhand]
-			, g_inst.m_objects[(int)ObjType.tracker_lhand]
-		};
-
-		for (int i = 0; i < trackers.Length; i ++)
+		if (g_inst.DEF_MOCKSTEAM)
 		{
-			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-			t.Lock(false);
+			Debug.LogWarning("SteamVR_ManagerDrv::actPosTrackerUnLock");
+			return true;
 		}
-		return true;
+		else
+		{
+			GameObject [] trackers = new GameObject[] {
+				  g_inst.m_objects[(int)ObjType.tracker_rfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+				, g_inst.m_objects[(int)ObjType.tracker_rhand]
+				, g_inst.m_objects[(int)ObjType.tracker_lhand]
+			};
+
+			for (int i = 0; i < trackers.Length; i ++)
+			{
+				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+				t.Lock(false);
+			}
+			return true;
+		}
 	}
 
 	protected static bool actPegLock(uint cond)
 	{
-		GameObject [] trackers = new GameObject[] {
-			  g_inst.m_objects[(int)ObjType.tracker_head]
-			, g_inst.m_objects[(int)ObjType.tracker_rfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
-			, g_inst.m_objects[(int)ObjType.tracker_rhand]
-			, g_inst.m_objects[(int)ObjType.tracker_lhand]
-		};
-		for (int i = 0; i < trackers.Length; i ++)
+		if (g_inst.DEF_MOCKSTEAM)
 		{
-			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-			t.Lock(true);
+			Debug.LogWarning("SteamVR_ManagerDrv::actPegLock");
+			return true;
 		}
-
-		return true;
+		else
+		{
+			GameObject [] trackers = new GameObject[] {
+				  g_inst.m_objects[(int)ObjType.tracker_head]
+				, g_inst.m_objects[(int)ObjType.tracker_rfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+				, g_inst.m_objects[(int)ObjType.tracker_rhand]
+				, g_inst.m_objects[(int)ObjType.tracker_lhand]
+			};
+			for (int i = 0; i < trackers.Length; i ++)
+			{
+				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+				t.Lock(true);
+			}
+			return true;
+		}
 	}
 
 	protected static bool actPegUnLock(uint cond)
 	{
-		GameObject [] trackers = new GameObject[] {
-			  g_inst.m_objects[(int)ObjType.tracker_head]
-			, g_inst.m_objects[(int)ObjType.tracker_rfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
-			, g_inst.m_objects[(int)ObjType.tracker_rhand]
-			, g_inst.m_objects[(int)ObjType.tracker_lhand]
-		};
-		for (int i = 0; i < trackers.Length; i ++)
+		if (g_inst.DEF_MOCKSTEAM)
 		{
-			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-			t.Lock(false);
+			Debug.LogWarning("SteamVR_ManagerDrv::actPegUnLock");
+			return true;
 		}
-		return true;
+		else
+		{
+			GameObject [] trackers = new GameObject[] {
+				  g_inst.m_objects[(int)ObjType.tracker_head]
+				, g_inst.m_objects[(int)ObjType.tracker_rfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
+				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+				, g_inst.m_objects[(int)ObjType.tracker_rhand]
+				, g_inst.m_objects[(int)ObjType.tracker_lhand]
+			};
+			for (int i = 0; i < trackers.Length; i ++)
+			{
+				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+				t.Lock(false);
+			}
+			return true;
+		}
 	}
 
 	protected static bool actPegUnLock4Tracking(uint cond)
 	{
-		GameObject [] trackers = new GameObject[] {
-			  g_inst.m_objects[(int)ObjType.tracker_head]
-			, g_inst.m_objects[(int)ObjType.tracker_pelvis]
-			, g_inst.m_objects[(int)ObjType.tracker_rhand]
-			, g_inst.m_objects[(int)ObjType.tracker_lhand]
-		};
-		bool all_trackers_unlocked = true;
-		for (int i = 0; i < trackers.Length; i ++)
+		if (g_inst.DEF_MOCKSTEAM)
 		{
-			SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
-			t.Lock(false);		//trackers are unlocked with latency
-			all_trackers_unlocked = all_trackers_unlocked && !t.Locked();
+			Debug.LogWarning("SteamVR_ManagerDrv::actPegUnLock4Tracking");
+			return true;
 		}
-		g_inst.Avatar.GetComponent<VRIK>().LockSolver(!all_trackers_unlocked);
+		else
+		{
+			GameObject [] trackers = new GameObject[] {
+				  g_inst.m_objects[(int)ObjType.tracker_head]
+				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
+				, g_inst.m_objects[(int)ObjType.tracker_rhand]
+				, g_inst.m_objects[(int)ObjType.tracker_lhand]
+			};
+			bool all_trackers_unlocked = true;
+			for (int i = 0; i < trackers.Length; i ++)
+			{
+				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
+				t.Lock(false);		//trackers are unlocked with latency
+				all_trackers_unlocked = all_trackers_unlocked && !t.Locked();
+			}
+			g_inst.Avatar.GetComponent<VRIK>().LockSolver(!all_trackers_unlocked);
 
-		return all_trackers_unlocked;
+			return all_trackers_unlocked;
+		}
 	}
 
 	protected static bool actAdjustVWCnn(uint cond)
 	{
-		SteamVR_ManagerDrv pThis = (SteamVR_ManagerDrv)g_inst;
-		Vector3 hands = (pThis.m_objects[(int)ObjType.tracker_rhand].transform.position
-						+ pThis.m_objects[(int)ObjType.tracker_lhand].transform.position) * 0.5f;
-		Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).position
-								+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).position) * 0.5f;
-		Vector3 translate = hands_prime - hands;
-		translate.y = 0; //only just in plane (x, z)
-		pThis.transform.position = pThis.transform.position + translate;
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustVWCnn");
+			return true;
+		}
+		else
+		{
+			SteamVR_ManagerDrv pThis = (SteamVR_ManagerDrv)g_inst;
+			Vector3 hands = (pThis.m_objects[(int)ObjType.tracker_rhand].transform.position
+							+ pThis.m_objects[(int)ObjType.tracker_lhand].transform.position) * 0.5f;
+			Vector3 hands_prime = (pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_rhand]).position
+									+ pThis.m_carHost.transform.Find(pThis.c_vtrackerCarNames[(int)TrackerType.tracker_lhand]).position) * 0.5f;
+			Vector3 translate = hands_prime - hands;
+			translate.y = 0; //only just in plane (x, z)
+			pThis.transform.position = pThis.transform.position + translate;
+			return true;
+		}
 	}
 
 	protected static bool actAdjustCarInspec_r(uint cond)
 	{
-		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, true);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCarInspec_r");
+			return true;
+		}
+		else
+		{
+			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, true);
+			return true;
+		}
 	}
 
 	protected static bool actAdjustCarInspec_u(uint cond)
 	{
-		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, true);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCarInspec_u");
+			return true;
+		}
+		else
+		{
+			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, true);
+			return true;
+		}
 	}
 
 	protected static bool actAdjustCarInspec_f(uint cond)
 	{
-		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, true);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCarInspec_f");
+			return true;
+		}
+		else
+		{
+			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, true);
+			return true;
+		}
 	}
 
 	const float c_deltaT = 0.005f;
 	const float c_deltaR = 0.5f; //in degree
 	protected static bool actAvatarAdjF_m(uint cond)
 	{
-		Vector3 deltaT = new Vector3(0, 0, -c_deltaT);
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjF_m");
+			return true;
+		}
+		else
+		{
+			Vector3 deltaT = new Vector3(0, 0, -c_deltaT);
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjF_p(uint cond)
 	{
-		Vector3 deltaT = new Vector3(0, 0, c_deltaT);
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjF_p");
+			return true;
+		}
+		else
+		{
+			Vector3 deltaT = new Vector3(0, 0, c_deltaT);
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjR_m(uint cond)
 	{
-		Vector3 deltaT = new Vector3(-c_deltaT, 0, 0);
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjR_m");
+			return true;
+		}
+		else
+		{
+			Vector3 deltaT = new Vector3(-c_deltaT, 0, 0);
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjR_p(uint cond)
 	{
-		Vector3 deltaT = new Vector3(c_deltaT, 0, 0);
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjR_p");
+			return true;
+		}
+		else
+		{
+			Vector3 deltaT = new Vector3(c_deltaT, 0, 0);
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjU_m(uint cond)
 	{
-		Vector3 deltaT = new Vector3(0, -c_deltaT, 0);
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjU_m");
+			return true;
+		}
+		else
+		{
+			Vector3 deltaT = new Vector3(0, -c_deltaT, 0);
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjU_p(uint cond)
 	{
-		Vector3 deltaT = new Vector3(0, c_deltaT, 0);
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjU_p");
+			return true;
+		}
+		else
+		{
+			Vector3 deltaT = new Vector3(0, c_deltaT, 0);
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjO_m(uint cond)
 	{
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(-c_deltaR);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjO_m");
+			return true;
+		}
+		else
+		{
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(-c_deltaR);
+			return true;
+		}
 	}
 
 	protected static bool actAvatarAdjO_p(uint cond)
 	{
-		((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(c_deltaR);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAvatarAdjO_p");
+			return true;
+		}
+		else
+		{
+			((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(c_deltaR);
+			return true;
+		}
 	}
 }
 
