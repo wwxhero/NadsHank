@@ -5,7 +5,7 @@ public class TransitionStringsPedSimpl
 			, "Press 'F' to inspect avatar from front."														//2
 			, "Press 'R' to inspect avatar from right."														//3
 			, "Press 'U' to inspect avatar from top."														//4
-			, "Press 'SHIFT + M' to prepare encarnation."													//5
+			, "Press 'SHIFT + G' to prepare encarnation."													//5
 			, null																							//6
 			, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."	//7
 			, "Press 'F' to inspect avatar from front."														//8
