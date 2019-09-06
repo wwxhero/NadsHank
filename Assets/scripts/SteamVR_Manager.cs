@@ -125,13 +125,24 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actIdentifyTrackers(uint cond)
 	{
-		return g_inst.m_trackersIdentified = g_inst.IdentifyTrackers();
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actIdentifyTrackers");
+			return true;
+		}
+		else
+			return g_inst.m_trackersIdentified = g_inst.IdentifyTrackers();
 	}
 
 	static int s_idx = 0;
 	protected static bool actTeleportP(uint cond)
 	{
-		if (g_inst.DEF_TESTTELEPORT)
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actTeleportP");
+			return true;
+		}
+		else if (g_inst.DEF_TESTTELEPORT)
 		{
 			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
 			return scenario.testTeleport(++s_idx);
@@ -142,7 +153,12 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actTeleportM(uint cond)
 	{
-		if (g_inst.DEF_TESTTELEPORT)
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actTeleportM");
+			return true;
+		}
+		else if (g_inst.DEF_TESTTELEPORT)
 		{
 			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
 			return scenario.testTeleport(--s_idx);
@@ -160,7 +176,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
 		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("actConnectVirtualWorld");
+			Debug.LogWarning("SteamVR_Manager::actConnectVirtualWorld");
 		else
 		{
 			if (g_inst)
@@ -172,7 +188,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected static bool actUnConnectVirtualWorld(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("actUnConnectVirtualWorld");
+			Debug.LogWarning("SteamVR_Manager::actUnConnectVirtualWorld");
 		else
 		{
 			Quaternion q = new Quaternion(0, 0, 0, 1);
@@ -194,7 +210,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected static bool actShowMirror(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("actShowMirror");
+			Debug.LogWarning("SteamVR_Manager::actShowMirror");
 		else
 			g_inst.ShowMirror();
 		return true;
@@ -210,7 +226,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected static bool actUnShowMirror(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("actUnShowMirror");
+			Debug.LogWarning("SteamVR_Manager::actUnShowMirror");
 		else
 		{
 			g_inst.HideMirror();
@@ -227,7 +243,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("actAdjustMirror");
+			//Debug.LogWarning("SteamVR_Manager::actAdjustMirror");
 			return false;
 		}
 		else
@@ -256,8 +272,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("actAdjustAvatar");
-			return false;
+			Debug.LogWarning("SteamVR_Manager::actAdjustAvatar");
+			return true;
 		}
 		else
 		{
@@ -282,6 +298,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	private	void adjustAvatar_s(float s)
 	{
+
 		Vector3 p = transform.worldToLocalMatrix.MultiplyPoint3x4(m_hmd.transform.position); p.y = 0;
 		Vector3 t = p*(1-s);
 
@@ -319,7 +336,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("actHideTracker");
+			Debug.LogWarning("SteamVR_Manager::actHideTracker");
 			return true;
 		}
 		else
@@ -342,7 +359,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("actUnHideTracker");
+			Debug.LogWarning("SteamVR_Manager::actUnHideTracker");
 			return true;
 		}
 		else
@@ -373,7 +390,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 			&& null != g_inst.m_avatar);
 		bool cali_done = true;
 		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("actCalibration");
+			Debug.LogWarning("SteamVR_Manager::actCalibration");
 		else
 		{
 			cali_done = g_inst.Calibration();
@@ -398,7 +415,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
 		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("actUnCalibration");
+			Debug.LogWarning("SteamVR_Manager::actUnCalibration");
 		else
 		{
 			g_inst.UnCalibration();
@@ -546,22 +563,46 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actAdjustAvatarInspec_r(uint cond)
 	{
-		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, false);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_r");
+			return true;
+		}
+		else
+		{
+			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, false);
+			return true;
+		}
 	}
 
 	protected static bool actAdjustAvatarInspec_u(uint cond)
 	{
-		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, false);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_u");
+			return true;
+		}
+		else
+		{
+			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, false);
+			return true;
+		}
 	}
 
 	protected static bool actAdjustAvatarInspec_f(uint cond)
 	{
-		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
-		return true;
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_f");
+			return true;
+		}
+		else
+		{
+			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
+			return true;
+		}
 	}
 }
