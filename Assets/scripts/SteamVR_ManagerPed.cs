@@ -149,8 +149,8 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 	protected override void UpdateInstructionDisplay(State s)
 	{
 		Debug.Assert(null != m_refDispHeader);
-		m_refDispHeader.text = StateStrings.s_shortDescPed[(int)s];
-		string body = StateStrings.s_longDescPed[(int)s] + "\n";
+		m_refDispHeader.text = StateStringsPed.s_shortDesc[(int)s];
+		string body = StateStringsPed.s_longDesc[(int)s] + "\n";
 		for (int i_tran = 0; i_tran < m_transition.Length; i_tran ++)
 		{
 			string desc_tran = TransitionStringsPed.s_Desc[i_tran];

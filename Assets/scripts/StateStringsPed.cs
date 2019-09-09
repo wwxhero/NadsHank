@@ -1,10 +1,10 @@
-public class StateStrings
+public class StateStringsPed
 {
-	public static string[] s_shortDescPed = {
+	public static string[] s_shortDesc = {
 		  "Initial", "Setting road-crossing scenario", "Road-crossing is set", "Ready for encarnation", "Encarnated", "Tracking"
 		, "Teleporting"
 	};
-	public static string[] s_longDescPed = {
+	public static string[] s_longDesc = {
 		  null
 		, "Standing in center of tracking area in 'T' posture, look streight to the direction of either roadside yet to be crossing."
 		, "Walking to cross the road to make sure the space is enough to reach both sides of road."

@@ -31,9 +31,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected delegate bool Action(uint cond);
 	protected enum State {
-						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra, tracking				//the common states shared for driver and pedestrain
-						, teleporting																	//the specific state for pedestrain
-						, pegging, pre_calibra2, pre_adjF, post_adjF, pre_adjR, post_adjR, pre_adjU, post_adjU, pre_adjO, post_adjO	//the specific state for driver
+						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra				//the common states shared for driver and pedestrain
+						, tracking, teleporting												//the specific state for pedestrain
+						, pre_calibra2, pegging, tracking_r, tracking_f, tracking_u			//the specific state for driver
 					};
 
 
