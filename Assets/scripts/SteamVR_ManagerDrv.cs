@@ -101,12 +101,12 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.tracking_u, State.tracking_f, FORWARD, actAdjustCarInspec_f)																//32
 									, new Transition(State.tracking_f, State.tracking_u, UP, actAdjustCarInspec_u)																	//33
 									, new Transition(State.tracking_f, State.tracking_r, RIGHT, actAdjustCarInspec_r)																//34
-									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCarInspec_r)																	//35
-									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCarInspec_u)																	//36
-									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCarInspec_f)																	//37																//1
-									, new Transition(State.tracking_r, State.pre_cnn, R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//38
-									, new Transition(State.tracking_u, State.pre_cnn, R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//39
-									, new Transition(State.tracking_f, State.pre_cnn, R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//40
+									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCar_r)																	//35
+									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCar_u)																	//36
+									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCar_f)																	//37																//1
+									, new Transition(State.tracking_r, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//38
+									, new Transition(State.tracking_u, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//39
+									, new Transition(State.tracking_f, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//40
 								};
 		g_inst = this;
 	}
@@ -434,6 +434,128 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 	const float c_deltaT = 0.005f;
 	const float c_deltaR = 0.5f; //in degree
+
+	protected static bool actAdjustCar_r(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, 0, 0);
+		bool adjusting = false;
+		switch(cond)
+		{
+		case R_ARROW:
+			deltaT.z = c_deltaT;
+			adjusting = true;
+			break;
+		case L_ARROW:
+			deltaT.z = -c_deltaT;
+			adjusting = true;
+			break;
+		case U_ARROW:
+			deltaT.y = c_deltaT;
+			adjusting = true;
+            break;
+		case D_ARROW:
+			deltaT.y = -c_deltaT;
+			adjusting = true;
+			break;
+		}
+		if (adjusting)
+		{
+			if (g_inst.DEF_MOCKSTEAM)
+				Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCar_r");
+			else
+				((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	protected static bool actAdjustCar_u(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, 0, 0);
+        float deltaR = 0;
+
+		bool adjusting_tran = false;
+		bool adjusting_rot = false;
+        switch (cond)
+		{
+		case R_ARROW:
+			deltaT.x = c_deltaT;
+			adjusting_tran = true;
+			break;
+		case L_ARROW:
+			deltaT.x = -c_deltaT;
+			adjusting_tran = true;
+			break;
+		case U_ARROW:
+			deltaT.z = c_deltaT;
+			adjusting_tran = true;
+            break;
+		case D_ARROW:
+			deltaT.z = -c_deltaT;
+			adjusting_tran = true;
+			break;
+		}
+        if ((R_ARROW | ORI) == cond)
+        {
+            deltaR = c_deltaR;
+            adjusting_rot = true;
+        }
+        else if ((L_ARROW | ORI) == cond)
+        {
+            deltaR = -c_deltaR;
+            adjusting_rot = true;
+        }
+
+		if (adjusting_tran || adjusting_rot)
+		{
+			if (g_inst.DEF_MOCKSTEAM)
+				Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCar_u");
+			else if(adjusting_tran)
+				((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			else if(adjusting_rot)
+				((SteamVR_ManagerDrv)g_inst).adjustAvatar_r(deltaR);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	protected static bool actAdjustCar_f(uint cond)
+	{
+		Vector3 deltaT = new Vector3(0, 0, 0);
+		bool adjusting = false;
+		switch(cond)
+		{
+		case R_ARROW:
+			deltaT.x = c_deltaT;
+			adjusting = true;
+			break;
+		case L_ARROW:
+			deltaT.x = -c_deltaT;
+			adjusting = true;
+			break;
+		case U_ARROW:
+			deltaT.y = c_deltaT;
+			adjusting = true;
+            break;
+		case D_ARROW:
+			deltaT.y = -c_deltaT;
+			adjusting = true;
+			break;
+		}
+		if (adjusting)
+		{
+			if (g_inst.DEF_MOCKSTEAM)
+				Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCar_f");
+			else
+				((SteamVR_ManagerDrv)g_inst).adjustAvatar_t(deltaT);
+			return true;
+		}
+		else
+			return false;
+	}
+
 	protected static bool actAvatarAdjF_m(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
