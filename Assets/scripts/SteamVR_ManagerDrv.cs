@@ -71,39 +71,39 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror})			//2
 									, new Transition(State.pre_cnn, State.pre_calibra, L_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror})			//3
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																	//4
-									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actAdjustAvatarInspec_f)														//5
-									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actAdjustAvatarInspec_r)															//6
-									, new Transition(State.pre_calibra, State.pre_calibra, UP, actAdjustAvatarInspec_u)																//7
+									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																//5
+									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																//6
+									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																	//7
 									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)															//8
 									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)															//9
 									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)															//10
-									, new Transition(State.pre_calibra2, State.pre_calibra2, FORWARD, actAdjustAvatarInspec_f)														//11
-									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actAdjustAvatarInspec_r)														//12
-									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actAdjustAvatarInspec_u)															//13
+									, new Transition(State.pre_calibra2, State.pre_calibra2, FORWARD, actInspecAvatar_f)															//11
+									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actInspecAvatar_r)																//12
+									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actInspecAvatar_u)																	//13
 									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})							//14
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})							//15
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																	//16
-									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actAdjustAvatarInspec_f)														//17
-									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actAdjustAvatarInspec_r)														//18
-									, new Transition(State.post_calibra, State.post_calibra, UP, actAdjustAvatarInspec_u)															//19
+									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)															//17
+									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																//18
+									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																	//19
 									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock })										//20
-									, new Transition(State.pegging, State.tracking_r, R_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actAdjustCarInspec_r })		//21
-									, new Transition(State.pegging, State.tracking_r, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actAdjustCarInspec_r })		//22
+									, new Transition(State.pegging, State.tracking_r, R_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actInspecCar_r })			//21
+									, new Transition(State.pegging, State.tracking_r, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actInspecCar_r })			//22
 									, new Transition(State.tracking_r, State.tracking_r, R_GRIP, actAdjustVWCnn)																	//23
 									, new Transition(State.tracking_r, State.tracking_r, L_GRIP, actAdjustVWCnn)																	//24
 									, new Transition(State.tracking_u, State.tracking_u, R_GRIP, actAdjustVWCnn)																	//25
 									, new Transition(State.tracking_u, State.tracking_u, L_GRIP, actAdjustVWCnn)																	//26
 									, new Transition(State.tracking_f, State.tracking_f, R_GRIP, actAdjustVWCnn)																	//27
 									, new Transition(State.tracking_f, State.tracking_f, L_GRIP, actAdjustVWCnn)																	//28
-									, new Transition(State.tracking_r, State.tracking_u, UP, actAdjustCarInspec_u)																	//29
-									, new Transition(State.tracking_r, State.tracking_f, FORWARD, actAdjustCarInspec_f)																//30
-									, new Transition(State.tracking_u, State.tracking_r, RIGHT, actAdjustCarInspec_r)																//31
-									, new Transition(State.tracking_u, State.tracking_f, FORWARD, actAdjustCarInspec_f)																//32
-									, new Transition(State.tracking_f, State.tracking_u, UP, actAdjustCarInspec_u)																	//33
-									, new Transition(State.tracking_f, State.tracking_r, RIGHT, actAdjustCarInspec_r)																//34
-									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCar_r)																	//35
-									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCar_u)																	//36
-									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCar_f)																	//37																//1
+									, new Transition(State.tracking_r, State.tracking_u, UP, actInspecCar_u)																		//29
+									, new Transition(State.tracking_r, State.tracking_f, FORWARD, actInspecCar_f)																	//30
+									, new Transition(State.tracking_u, State.tracking_r, RIGHT, actInspecCar_r)																		//31
+									, new Transition(State.tracking_u, State.tracking_f, FORWARD, actInspecCar_f)																	//32
+									, new Transition(State.tracking_f, State.tracking_u, UP, actInspecCar_u)																		//33
+									, new Transition(State.tracking_f, State.tracking_r, RIGHT, actInspecCar_r)																		//34
+									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCar_r)																		//35
+									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCar_u)																		//36
+									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCar_f)																		//37																//1
 									, new Transition(State.tracking_r, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//38
 									, new Transition(State.tracking_u, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//39
 									, new Transition(State.tracking_f, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//40
@@ -387,11 +387,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 	}
 
-	protected static bool actAdjustCarInspec_r(uint cond)
+	protected static bool actInspecCar_r(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			//Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCarInspec_r");
+			//Debug.LogWarning("SteamVR_ManagerDrv::actInspecCar_r");
 			return true;
 		}
 		else
@@ -402,11 +402,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 	}
 
-	protected static bool actAdjustCarInspec_u(uint cond)
+	protected static bool actInspecCar_u(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			//Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCarInspec_u");
+			//Debug.LogWarning("SteamVR_ManagerDrv::actInspecCar_u");
 			return true;
 		}
 		else
@@ -417,11 +417,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 	}
 
-	protected static bool actAdjustCarInspec_f(uint cond)
+	protected static bool actInspecCar_f(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			//Debug.LogWarning("SteamVR_ManagerDrv::actAdjustCarInspec_f");
+			//Debug.LogWarning("SteamVR_ManagerDrv::actInspecCar_f");
 			return true;
 		}
 		else

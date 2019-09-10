@@ -569,11 +569,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 			base.Refresh();
 	}
 
-	protected static bool actAdjustAvatarInspec_r(uint cond)
+	protected static bool actInspecAvatar_r(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_r");
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_r");
 			return true;
 		}
 		else
@@ -584,11 +584,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
-	protected static bool actAdjustAvatarInspec_u(uint cond)
+	protected static bool actInspecAvatar_u(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_u");
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_u");
 			return true;
 		}
 		else
@@ -599,11 +599,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
-	protected static bool actAdjustAvatarInspec_f(uint cond)
+	protected static bool actInspecAvatar_f(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_f");
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_f");
 			return true;
 		}
 		else
