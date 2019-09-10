@@ -198,7 +198,7 @@ public class ScenarioControl : MonoBehaviour {
 	};
 
 	ConfAvatar m_confAvatar;
-	ConfVehical m_confVehicle;
+	ConfVehical m_confVehicle = new ConfVehical(); //fixme: driving vehicle size is hardcoded
 
 	// Use this for initialization
 	ScenarioControl()
@@ -704,6 +704,7 @@ public class ScenarioControl : MonoBehaviour {
 								mgr.m_carHost = parent;
 							}
 							setLayer(parent, LAYER.host_dynamic);
+							setLayer(child, LAYER.ego_dynamic);
 						}
 					}
 				}
