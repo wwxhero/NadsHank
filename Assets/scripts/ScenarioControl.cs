@@ -129,7 +129,9 @@ public class ScenarioControl : MonoBehaviour {
 
 	public class ConfVehical
 	{
-
+		public float Width = 2.06f;
+		public float Height = 1.55f;
+		public float Depth = 5.15f;
 	};
 
 	public class InspectorHelper
@@ -144,7 +146,6 @@ public class ScenarioControl : MonoBehaviour {
 		Transform m_target;
 		public InspectorHelper(Transform target, ConfAvatar conf)
 		{
-			//fixme: intialize inspector helper for the avatar target
 			m_bHost = false;
 			m_target = target;
             Vector3 s_l = target.localScale;
@@ -157,6 +158,13 @@ public class ScenarioControl : MonoBehaviour {
 		public InspectorHelper(Transform target, ConfVehical conf)
 		{
 			//fixme: intialize inspector helper for the vechical target
+			m_bHost = true;
+			m_target = target;
+			m_bbox.center = new Vector3(0, conf.Height * 0.5f, 0);
+			m_bbox.s_x = conf.Width * 0.5f;
+			m_bbox.s_y = conf.Height * 0.5f;
+			m_bbox.s_z = conf.Depth * 0.5f;
+
 		}
 		public enum Direction {forward = 0, up, right};
 
