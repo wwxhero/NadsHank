@@ -31,9 +31,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected delegate bool Action(uint cond);
 	protected enum State {
-						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra, tracking				//the common states shared for driver and pedestrain
-						, teleporting																	//the specific state for pedestrain
-						, pegging, pre_calibra2, pre_adjF, post_adjF, pre_adjR, post_adjR, pre_adjU, post_adjU, pre_adjO, post_adjO	//the specific state for driver
+						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra				//the common states shared for driver and pedestrain
+						, tracking, teleporting												//the specific state for pedestrain
+						, pre_calibra2, pegging, tracking_r, tracking_f, tracking_u			//the specific state for driver
 					};
 
 
@@ -87,27 +87,29 @@ public class SteamVR_Manager : SteamVR_TDManager
 	};
 
 	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, forward, right, up, ori, plus, minus, n_code };
-	protected static uint R_TRIGGER = 	0x0001;
-	protected static uint R_STEAM = 	0x0002;
-	protected static uint R_MENU = 		0x0004;
-	protected static uint R_PAD_P = 	0x0008;
-	protected static uint R_PAD_T = 	0x0010;
-	protected static uint R_GRIP = 		0x0020;
-	protected static uint L_TRIGGER = 	0x0100;
-	protected static uint L_STEAM = 	0x0200;
-	protected static uint L_MENU = 		0x0400;
-	protected static uint L_PAD_P = 	0x0800;
-	protected static uint L_PAD_T = 	0x1000;
-	protected static uint L_GRIP = 		0x2000;
+	protected const uint R_TRIGGER = 	0x0001;
+	protected const uint R_STEAM = 	0x0002;
+	protected const uint R_MENU = 		0x0004;
+	protected const uint R_PAD_P = 	0x0008;
+	protected const uint R_PAD_T = 	0x0010;
+	protected const uint R_GRIP = 		0x0020;
+	protected const uint L_TRIGGER = 	0x0100;
+	protected const uint L_STEAM = 	0x0200;
+	protected const uint L_MENU = 		0x0400;
+	protected const uint L_PAD_P = 	0x0800;
+	protected const uint L_PAD_T = 	0x1000;
+	protected const uint L_GRIP = 		0x2000;
 
-	protected static uint FORWARD =	   0x10000;
-	protected static uint RIGHT =	   0x20000;
-	protected static uint UP =		   0x40000;
-	protected static uint ORI =		   0x80000;
-	protected static uint PLUS =	  0x100000;
-	protected static uint MINUS =	  0x200000;
-	protected static uint ALL =		0xffffffff;
-	protected static uint NONE = 	0x00000000;
+	protected const uint FORWARD =	   0x10000;
+	protected const uint RIGHT =	   0x20000;
+	protected const uint UP =		   0x40000;
+	protected const uint ORI =		   0x80000;
+	protected const uint R_ARROW =	  0x100000;
+	protected const uint L_ARROW =	  0x200000;
+	protected const uint U_ARROW =	  0x400000;
+	protected const uint D_ARROW =   0x800000;
+	protected const uint ALL =		0xffffffff;
+	protected const uint NONE = 	0x00000000;
 	protected Transition[] m_transition;
 	protected static SteamVR_Manager g_inst;
 
@@ -454,6 +456,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, Input.GetKey(KeyCode.O) //&& (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
 									, Input.GetKey(KeyCode.RightArrow)
 									, Input.GetKey(KeyCode.LeftArrow)
+									, Input.GetKey(KeyCode.UpArrow)
+									, Input.GetKey(KeyCode.DownArrow)
 								};
 		uint[] switch_codes = new uint[] {
 									  R_TRIGGER
@@ -472,8 +476,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, RIGHT
 									, UP
 									, ORI
-									, PLUS
-									, MINUS
+									, R_ARROW
+									, L_ARROW
+									, U_ARROW
+									, D_ARROW
 								};
 
 		if (ctrls_ready)
@@ -531,6 +537,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 				, "ROTATION"
 				, "RIGHT_ARROW"
 				, "LEFT_ARROW"
+				, "UP_ARROW"
+				, "DOWN_ARROW"
 			};
 			Debug.Assert(switch_names.Length == ctrl_switch.Length);
 			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
@@ -561,11 +569,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 			base.Refresh();
 	}
 
-	protected static bool actAdjustAvatarInspec_r(uint cond)
+	protected static bool actInspecAvatar_r(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_r");
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_r");
 			return true;
 		}
 		else
@@ -576,11 +584,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
-	protected static bool actAdjustAvatarInspec_u(uint cond)
+	protected static bool actInspecAvatar_u(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_u");
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_u");
 			return true;
 		}
 		else
@@ -591,11 +599,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	}
 
-	protected static bool actAdjustAvatarInspec_f(uint cond)
+	protected static bool actInspecAvatar_f(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_Manager::actAdjustAvatarInspec_f");
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_f");
 			return true;
 		}
 		else
