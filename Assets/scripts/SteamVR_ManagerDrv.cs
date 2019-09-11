@@ -164,10 +164,13 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 					, m_objects[(int)ObjType.tracker_rhand].transform
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
-        m_data.head.localPosition.Set(0.058919466f, -0.4123205f, -4.607519f); //fixme: hardcoded offset for head
-        VRIKCalibrator.Calibrate(ik
-                    , m_data
-                    , m_objects[(int)ObjType.tracker_head].transform
+		//fixme: this is a workaround solution for head tracker
+		//		, after removing HMD, align head in direction of x-y is difficult
+		float hlp_z = m_data.head.localPosition.z;
+		m_data.head.localPosition.Set(0f, 0f, hlp_z);
+		VRIKCalibrator.Calibrate(ik
+					, m_data
+					, m_objects[(int)ObjType.tracker_head].transform
 					, m_objects[(int)ObjType.tracker_pelvis].transform
 					, m_objects[(int)ObjType.tracker_lhand].transform
 					, m_objects[(int)ObjType.tracker_rhand].transform
@@ -461,7 +464,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		case U_ARROW:
 			deltaT.y = c_deltaT;
 			adjusting = true;
-            break;
+			break;
 		case D_ARROW:
 			deltaT.y = -c_deltaT;
 			adjusting = true;
@@ -482,11 +485,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	protected static bool actAdjustCar_u(uint cond)
 	{
 		Vector3 deltaT = new Vector3(0, 0, 0);
-        float deltaR = 0;
+		float deltaR = 0;
 
 		bool adjusting_tran = false;
 		bool adjusting_rot = false;
-        switch (cond)
+		switch (cond)
 		{
 		case R_ARROW:
 			deltaT.x = c_deltaT;
@@ -499,22 +502,22 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		case U_ARROW:
 			deltaT.z = c_deltaT;
 			adjusting_tran = true;
-            break;
+			break;
 		case D_ARROW:
 			deltaT.z = -c_deltaT;
 			adjusting_tran = true;
 			break;
 		}
-        if ((R_ARROW | ORI) == cond)
-        {
-            deltaR = c_deltaR;
-            adjusting_rot = true;
-        }
-        else if ((L_ARROW | ORI) == cond)
-        {
-            deltaR = -c_deltaR;
-            adjusting_rot = true;
-        }
+		if ((R_ARROW | ORI) == cond)
+		{
+			deltaR = c_deltaR;
+			adjusting_rot = true;
+		}
+		else if ((L_ARROW | ORI) == cond)
+		{
+			deltaR = -c_deltaR;
+			adjusting_rot = true;
+		}
 
 		if (adjusting_tran || adjusting_rot)
 		{
@@ -547,7 +550,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		case U_ARROW:
 			deltaT.y = c_deltaT;
 			adjusting = true;
-            break;
+			break;
 		case D_ARROW:
 			deltaT.y = -c_deltaT;
 			adjusting = true;
