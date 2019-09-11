@@ -164,6 +164,15 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 					, m_objects[(int)ObjType.tracker_rhand].transform
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
+        m_data.head.localPosition.Set(0.058919466f, -0.4123205f, -4.607519f); //fixme: hardcoded offset for head
+        VRIKCalibrator.Calibrate(ik
+                    , m_data
+                    , m_objects[(int)ObjType.tracker_head].transform
+					, m_objects[(int)ObjType.tracker_pelvis].transform
+					, m_objects[(int)ObjType.tracker_lhand].transform
+					, m_objects[(int)ObjType.tracker_rhand].transform
+					, m_objects[(int)ObjType.tracker_lfoot].transform
+					, m_objects[(int)ObjType.tracker_rfoot].transform);
 		return true;
 	}
 
