@@ -139,7 +139,7 @@ public class ScenarioControl : MonoBehaviour {
 		struct BBOX
 		{
 			public Vector3 center;
-			public float s_x, s_y, s_z;
+			public float halfWidth, halfHeight, halfDepth;
 		};
 		BBOX m_bbox;
 		bool m_bHost;
@@ -148,11 +148,11 @@ public class ScenarioControl : MonoBehaviour {
 		{
 			m_bHost = false;
 			m_target = target;
-            Vector3 s_l = target.localScale;
+			Vector3 s_l = target.localScale;
 			m_bbox.center = new Vector3(0, (conf.Height * 0.5f)/s_l.y, 0);
-			m_bbox.s_x = conf.Width * 0.5f;
-			m_bbox.s_y = conf.Height * 0.5f;
-			m_bbox.s_z = 0f; //fixme: the avatar is as thin as a paper
+			m_bbox.halfWidth = conf.Width * 0.5f;
+			m_bbox.halfHeight = conf.Height * 0.5f;
+			m_bbox.halfDepth = 0f; //fixme: the avatar is as thin as a paper
 		}
 
 		public InspectorHelper(Transform target, ConfVehical conf)
@@ -160,10 +160,10 @@ public class ScenarioControl : MonoBehaviour {
 			//fixme: intialize inspector helper for the vechical target
 			m_bHost = true;
 			m_target = target;
-			m_bbox.center = new Vector3(0, conf.Height * 0.5f, 0);
-			m_bbox.s_x = conf.Width * 0.5f;
-			m_bbox.s_y = conf.Height * 0.5f;
-			m_bbox.s_z = conf.Depth * 0.5f;
+			m_bbox.center = new Vector3(0, 0, conf.Height * 0.5f);
+			m_bbox.halfWidth = conf.Width * 0.5f;
+			m_bbox.halfHeight = conf.Height * 0.5f;
+			m_bbox.halfDepth = conf.Depth * 0.5f;
 
 		}
 		public enum Direction {forward = 0, up, right};
@@ -172,9 +172,9 @@ public class ScenarioControl : MonoBehaviour {
 		{
 			//fixme: put camera in the specific direction of the target
 			float[] camSize = {
-				  Mathf.Max(m_bbox.s_x, m_bbox.s_y)
-				, Mathf.Max(m_bbox.s_x, m_bbox.s_z)
-				, Mathf.Max(m_bbox.s_y, m_bbox.s_z)
+				  Mathf.Max(m_bbox.halfWidth, m_bbox.halfHeight)
+				, Mathf.Max(m_bbox.halfWidth, m_bbox.halfDepth)
+				, Mathf.Max(m_bbox.halfHeight, m_bbox.halfDepth)
 			};
 			int host_mask = 1 << (int)LAYER.host_dynamic;
 			int ego_mask = 1 << (int)LAYER.ego_dynamic;
@@ -183,17 +183,32 @@ public class ScenarioControl : MonoBehaviour {
 			cam.orthographicSize = camSize[(int)dir];
 
 			cam.transform.parent = m_target;
-			float c_distance = camSize[(int)dir] * 2;
-			Vector3 [] t_l = {
-				  new Vector3(0, 0, 1)
-				, new Vector3(0, 1, 0)
-				, new Vector3(1, 0, 0)
-			};
-			Quaternion r_l = Quaternion.LookRotation(-t_l[(int)dir]);
+			float c_distance = 10f;
+			Vector3 [] t_l = null;
+			Vector3 u_l;
+			if (m_bHost)
+			{
+				t_l = new Vector3[] {
+						  new Vector3(0, -1, 0)
+						, new Vector3(0,  0, 1)
+						, new Vector3(1, 0, 0)
+					};
+				u_l = new Vector3(0, 0, 1);
+			}
+			else
+			{
+				t_l = new Vector3[] {
+						  new Vector3(0, 0, 1)
+						, new Vector3(0, 1, 0)
+						, new Vector3(1, 0, 0)
+					};
+				u_l = new Vector3(0, 1, 0);
+			}
+
+			Quaternion r_l = Quaternion.LookRotation(-t_l[(int)dir], u_l);
 			Vector3 p_l = t_l[(int)dir] * c_distance + m_bbox.center;
 			cam.transform.localPosition = p_l;
 			cam.transform.localRotation = r_l;
-
 		}
 	};
 
@@ -582,7 +597,7 @@ public class ScenarioControl : MonoBehaviour {
 											RootMotion.Demos.VRIKCalibrationController caliCtrl = ped.AddComponent<RootMotion.Demos.VRIKCalibrationController>();
 											caliCtrl.ik = ik;
 											MockPhysics trackers_mp = m_trackers.GetComponent<MockPhysics>();
-                                            Debug.Assert((int)MockPhysics.Mount.total == trackers_mp.m_trackersMt.Length);
+											Debug.Assert((int)MockPhysics.Mount.total == trackers_mp.m_trackersMt.Length);
 											caliCtrl.headTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.head];
 											caliCtrl.bodyTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.body];
 											caliCtrl.leftHandTracker = trackers_mp.m_trackersMt[(int)MockPhysics.Mount.lh];
@@ -705,7 +720,9 @@ public class ScenarioControl : MonoBehaviour {
 							}
 							setLayer(parent, LAYER.host_dynamic);
 							setLayer(child, LAYER.ego_dynamic);
+							//adjustInspector(InspectorHelper.Direction.forward, true);
 						}
+
 					}
 				}
 
