@@ -90,6 +90,30 @@ public class Tracker
 		return 0 == t.u_d
 			&& (2 == t.r_d || 1 == t.r_d);
 	}
+	static bool IsRightHand_5Drv(Tracker t)
+	{
+		return (3 == t.u_d || 4 == t.u_d)
+			&& (4 == t.r_d);
+	}
+	static bool IsLeftHand_5Drv(Tracker t)
+	{
+		return (3 == t.u_d || 4 == t.u_d)
+			&& (0 == t.r_d);
+	}
+	static bool IsHead_5Drv(Tracker t)
+	{
+		return (2 == t.u_d);
+	}
+	static bool IsRightFoot_5Drv(Tracker t)
+	{
+		return (0 == t.u_d || 1 == t.u_d)
+			&& (2 == t.r_d || 3 == t.r_d);
+	}
+	static bool IsLeftFoot_5Drv(Tracker t)
+	{
+		return (0 == t.u_d || 1 == t.u_d)
+			&& (1 == t.r_d || 2 == t.r_d);
+	}
 	delegate bool Predicate(Tracker t);
 	//function: sort the trackers in order of 0:right foot, 1:left foot, 2:pelvis, 3:right hand, 4:left hand
 	//parameters:
@@ -101,6 +125,14 @@ public class Tracker
 	{
 		Tracker.Predicate[] predicates_5 = new Tracker.Predicate[] {
 			Tracker.IsRightFoot_5, Tracker.IsLeftFoot_5, Tracker.IsPelvis_5, Tracker.IsRightHand_5, Tracker.IsLeftHand_5
+		};
+		return IdentifyTrackers(a_trackers, a_hmd, predicates_5);
+	}
+	//function: sort the trackers in order of 0:right hand, 1:left hand, 2:head, 3:right foot, 4:left foot
+	public static bool IdentifyTrackers_5Drv(GameObject[] a_trackers, Transform a_hmd)
+	{
+		Tracker.Predicate[] predicates_5 = new Tracker.Predicate[] {
+			Tracker.IsRightHand_5Drv, Tracker.IsLeftHand_5Drv, Tracker.IsHead_5Drv, Tracker.IsRightFoot_5Drv, Tracker.IsLeftFoot_5Drv
 		};
 		return IdentifyTrackers(a_trackers, a_hmd, predicates_5);
 	}
