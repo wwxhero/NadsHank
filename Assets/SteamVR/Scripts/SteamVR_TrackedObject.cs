@@ -42,6 +42,11 @@ public class SteamVR_TrackedObject : MonoBehaviour
 	{
 		bool lock_prev = m_lock;
 		m_lock = l;
+		if (l)
+		{
+			transform.position = m_posDft;
+			transform.rotation = m_rotDft;
+		}
 		return lock_prev;
 	}
 	private Vector3 m_posDft = new Vector3(0, 0, 0);
@@ -56,6 +61,8 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		m_posDft = p;
 		m_rotDft = r;
 		m_lock = true;
+		transform.position = m_posDft;
+		transform.rotation = m_rotDft;
 	}
 
 	public bool Locked()
