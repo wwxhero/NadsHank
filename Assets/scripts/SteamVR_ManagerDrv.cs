@@ -87,9 +87,10 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																			//17
 									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																				//18
 									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																					//19
-									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock })														//20
-									, new Transition(State.pegging, State.tracking_r, R_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actInspecCar_r })							//21
-									, new Transition(State.pegging, State.tracking_r, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actInspecCar_r })							//22
+									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																				//19.1
+									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock, actInspecCar_r })										//20
+									, new Transition(State.pegging, State.tracking_r, R_TRIGGER, new Action[]{ actPegUnLock4Tracking, actAdjustVWCnn })												//21
+									, new Transition(State.pegging, State.tracking_r, L_TRIGGER, new Action[]{ actPegUnLock4Tracking, actAdjustVWCnn })												//22
 									, new Transition(State.tracking_r, State.tracking_r, R_GRIP, actAdjustVWCnn)																					//23
 									, new Transition(State.tracking_r, State.tracking_r, L_GRIP, actAdjustVWCnn)																					//24
 									, new Transition(State.tracking_u, State.tracking_u, R_GRIP, actAdjustVWCnn)																					//25
