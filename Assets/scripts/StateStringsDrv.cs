@@ -13,8 +13,8 @@ public class StateStringsDrv
 		, "Encarnation is done, move your arms and head to confirm for IK effect."
 		, null
 		, null
-		, "Replace HMD with head tracker."
-		, "Avatar is in car."
+		, "Replace HMD with head tracker, then stand in 'T' posture, look straight forward."
+		, "Avatar is in the car."
 		, "Inspect avatar driver from right."
 		, "Inspect avatar driver from front."
 		, "Inspect avatar driver from top."
