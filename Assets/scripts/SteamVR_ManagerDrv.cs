@@ -83,6 +83,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})											//14
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})											//15
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																					//16
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustIK_head)																					//16.1
 									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																			//17
 									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																				//18
 									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																					//19
@@ -180,6 +181,32 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
 		return true;
+	}
+
+	public static bool actAdjustIK_head(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustIK_head");
+			return true;
+		}
+		else
+		{
+			float delta_y = 0f;
+			if (D_ARROW == cond)
+				delta_y = -0.005f;
+			else if (U_ARROW == cond)
+				delta_y = +0.005f;
+			if (0 != delta_y)
+			{
+				VRIK ik = ((SteamVR_ManagerDrv)g_inst).m_avatar.GetComponent<VRIK>();
+				ik.solver.spine.headTarget.Translate(0f, delta_y, 0f, Space.World);
+				((SteamVR_ManagerDrv)g_inst).m_data.head.localPosition = ik.solver.spine.headTarget.localPosition;
+				return true;
+			}
+			else
+				return false;
+		}
 	}
 
 	public override void UnCalibration()

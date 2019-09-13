@@ -17,6 +17,7 @@ public class TransitionStringsDrv
 		, "Press 'SHIFT + M' to complete calibration after replacing HMD with head tracker."												//14
 		, null																																//15
 		, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."										//16
+		, "Press 'UP' to pull avatar upward, 'DOWN' to push avatar downward"										//16.1
 		, "Press 'F' to inspect avatar from front."																							//17
 		, "Press 'R' to inspect avatar from right."																							//18
 		, "Press 'U' to inspect avatar from top."																							//19
