@@ -727,6 +727,7 @@ public class ScenarioControl : MonoBehaviour
 							}
 							setLayer(parent, LAYER.host_dynamic);
 							setLayer(child, LAYER.ego_dynamic);
+							setLayer(m_trackers, LAYER.ego_dynamic);
 							//adjustInspector(InspectorHelper.Direction.forward, true);
 						}
 
