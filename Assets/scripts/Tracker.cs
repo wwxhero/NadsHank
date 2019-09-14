@@ -107,7 +107,7 @@ public class Tracker
 	static bool IsRightFoot_5Drv(Tracker t)
 	{
 		return (0 == t.u_d || 1 == t.u_d)
-			&& (2 == t.r_d || 3 == t.r_d);
+			&& (3 == t.r_d);
 	}
 	static bool IsLeftFoot_5Drv(Tracker t)
 	{
