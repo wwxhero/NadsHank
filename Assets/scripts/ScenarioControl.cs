@@ -479,7 +479,7 @@ public class ScenarioControl : MonoBehaviour
 		}
 	}
 
-	void SetMapElevation(float e_t)
+	public void SetMapElevation(float e_t)
 	{
 		Matrix4x4 t_u = new Matrix4x4(
 						  new Vector4(1,	0,		0,		0)

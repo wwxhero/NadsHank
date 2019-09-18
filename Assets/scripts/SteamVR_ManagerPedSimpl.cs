@@ -26,7 +26,8 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rfoot;
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_cnn, ALL)																													//1
+									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, actGroundEle_r)																								//1
+									, new Transition(State.initial, State.pre_cnn, L_TRIGGER, actGroundEle_l)																								//1.1
 									, new Transition(State.pre_cnn, State.pre_cnn, FORWARD, actInspecAvatar_f)																							//2
 									, new Transition(State.pre_cnn, State.pre_cnn, RIGHT, actInspecAvatar_r)																							//3
 									, new Transition(State.pre_cnn, State.pre_cnn, UP, actInspecAvatar_u)																								//4

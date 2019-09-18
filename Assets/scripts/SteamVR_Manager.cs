@@ -88,16 +88,16 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, forward, right, up, ori, plus, minus, n_code };
 	protected const uint R_TRIGGER = 	0x0001;
-	protected const uint R_STEAM = 	0x0002;
+	protected const uint R_STEAM = 		0x0002;
 	protected const uint R_MENU = 		0x0004;
-	protected const uint R_PAD_P = 	0x0008;
-	protected const uint R_PAD_T = 	0x0010;
+	protected const uint R_PAD_P = 		0x0008;
+	protected const uint R_PAD_T = 		0x0010;
 	protected const uint R_GRIP = 		0x0020;
 	protected const uint L_TRIGGER = 	0x0100;
-	protected const uint L_STEAM = 	0x0200;
+	protected const uint L_STEAM = 		0x0200;
 	protected const uint L_MENU = 		0x0400;
-	protected const uint L_PAD_P = 	0x0800;
-	protected const uint L_PAD_T = 	0x1000;
+	protected const uint L_PAD_P = 		0x0800;
+	protected const uint L_PAD_T = 		0x1000;
 	protected const uint L_GRIP = 		0x2000;
 
 	protected const uint FORWARD =	   0x10000;
@@ -107,7 +107,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected const uint R_ARROW =	  0x100000;
 	protected const uint L_ARROW =	  0x200000;
 	protected const uint U_ARROW =	  0x400000;
-	protected const uint D_ARROW =   0x800000;
+	protected const uint D_ARROW =	  0x800000;
 	protected const uint ALL =		0xffffffff;
 	protected const uint NONE = 	0x00000000;
 	protected Transition[] m_transition;
@@ -123,6 +123,38 @@ public class SteamVR_Manager : SteamVR_TDManager
     public virtual bool IdentifyTrackers()
 	{
 		return false;
+	}
+
+	protected static bool actGroundEle_r(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actGroundEle_r");
+			return true;
+		}
+		else
+		{
+			ScenarioControl ctrl = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			float y = g_inst.m_ctrlR.transform.localPosition.y;
+			ctrl.SetMapElevation(y);
+            return true;
+		}
+	}
+
+	protected static bool actGroundEle_l(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actGroundEle_r");
+			return true;
+		}
+		else
+		{
+			ScenarioControl ctrl = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			float y = g_inst.m_ctrlL.transform.localPosition.y;
+			ctrl.SetMapElevation(y);
+            return true;
+		}
 	}
 
 	protected static bool actIdentifyTrackers(uint cond)
