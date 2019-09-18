@@ -32,31 +32,31 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		}
 	}
 
-	enum ObjType { tracker_rhand = 2, tracker_lhand, tracker_pelvis, tracker_head, tracker_rfoot, tracker_lfoot };
-	enum TrackerType { tracker_rhand = 0, tracker_lhand, tracker_pelvis, tracker_head, tracker_rfoot, tracker_lfoot };
+	enum ObjType { tracker_rhand = 2, tracker_lhand, tracker_head, tracker_rfoot, tracker_lfoot, tracker_pelvis };
+	enum TrackerType { tracker_rhand = 0, tracker_lhand, tracker_head, tracker_rfoot, tracker_lfoot, tracker_pelvis };
 	string [] c_trackerNames = {
 				"tracker_rhand"
 				, "tracker_lhand"
-				, "tracker_pelvis"
 				, "tracker_head"
 				, "tracker_rfoot"
 				, "tracker_lfoot"
+				, "tracker_pelvis"
 			};
 	string [] c_vtrackerAvatarNames = {
 				"rhand_vtracker"
 				, "lhand_vtracker"
-				, "pelvis_vtracker"
 				, "head_vtracker"
 				, "rfoot_vtracker"
 				, "lfoot_vtracker"
+				, "pelvis_vtracker"
 			};
 	string [] c_vtrackerCarNames = {
 				"rhand_vtracker_default"
 				, "lhand_vtracker_default"
-				, "pelvis_vtracker_default"
 				, "head_vtracker_default"
 				, "rfoot_vtracker_default"
 				, "lfoot_vtracker_default"
+				, "pelvis_vtracker_default"
 			};
 	const int c_totalTrackers = 6;
 	[HideInInspector]
@@ -67,46 +67,48 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_cnn, ALL)																								//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror})			//2
-									, new Transition(State.pre_cnn, State.pre_calibra, L_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror})			//3
-									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																	//4
-									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																//5
-									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																//6
-									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																	//7
-									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)															//8
-									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)															//9
-									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)															//10
-									, new Transition(State.pre_calibra2, State.pre_calibra2, FORWARD, actInspecAvatar_f)															//11
-									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actInspecAvatar_r)																//12
-									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actInspecAvatar_u)																	//13
-									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})							//14
-									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})							//15
-									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																	//16
-									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)															//17
-									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																//18
-									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																	//19
-									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock })										//20
-									, new Transition(State.pegging, State.tracking_r, R_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actInspecCar_r })			//21
-									, new Transition(State.pegging, State.tracking_r, L_TRIGGER, new Action[] { actPegUnLock4Tracking, actAdjustVWCnn, actInspecCar_r })			//22
-									, new Transition(State.tracking_r, State.tracking_r, R_GRIP, actAdjustVWCnn)																	//23
-									, new Transition(State.tracking_r, State.tracking_r, L_GRIP, actAdjustVWCnn)																	//24
-									, new Transition(State.tracking_u, State.tracking_u, R_GRIP, actAdjustVWCnn)																	//25
-									, new Transition(State.tracking_u, State.tracking_u, L_GRIP, actAdjustVWCnn)																	//26
-									, new Transition(State.tracking_f, State.tracking_f, R_GRIP, actAdjustVWCnn)																	//27
-									, new Transition(State.tracking_f, State.tracking_f, L_GRIP, actAdjustVWCnn)																	//28
-									, new Transition(State.tracking_r, State.tracking_u, UP, actInspecCar_u)																		//29
-									, new Transition(State.tracking_r, State.tracking_f, FORWARD, actInspecCar_f)																	//30
-									, new Transition(State.tracking_u, State.tracking_r, RIGHT, actInspecCar_r)																		//31
-									, new Transition(State.tracking_u, State.tracking_f, FORWARD, actInspecCar_f)																	//32
-									, new Transition(State.tracking_f, State.tracking_u, UP, actInspecCar_u)																		//33
-									, new Transition(State.tracking_f, State.tracking_r, RIGHT, actInspecCar_r)																		//34
-									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCar_r)																		//35
-									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCar_u)																		//36
-									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCar_f)																		//37																//1
-									, new Transition(State.tracking_r, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//38
-									, new Transition(State.tracking_u, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//39
-									, new Transition(State.tracking_f, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld})		//40
+									  new Transition(State.initial, State.pre_cnn, ALL)																												//1
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//2
+									, new Transition(State.pre_cnn, State.pre_calibra, L_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//3
+									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																					//4
+									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																				//5
+									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																				//6
+									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																					//7
+									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)																			//8
+									, new Transition(State.pre_calibra, State.pre_calibra2, L_TRIGGER, actPosTrackerLock)																			//9
+									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)																			//10
+									, new Transition(State.pre_calibra2, State.pre_calibra2, FORWARD, actInspecAvatar_f)																			//11
+									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actInspecAvatar_r)																				//12
+									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actInspecAvatar_u)																					//13
+									, new Transition(State.pre_calibra2, State.post_calibra, L_MENU, new Action[] {actCalibration, actPosTrackerUnLock})											//14
+									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})											//15
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																					//16
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustIK_head)																					//16.1
+									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																			//17
+									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																				//18
+									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																					//19
+									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																				//19.1
+									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock, actInspecCar_r })										//20
+									, new Transition(State.pegging, State.tracking_r, R_TRIGGER, new Action[]{ actPegUnLock4Tracking, actAdjustVWCnn })												//21
+									, new Transition(State.pegging, State.tracking_r, L_TRIGGER, new Action[]{ actPegUnLock4Tracking, actAdjustVWCnn })												//22
+									, new Transition(State.tracking_r, State.tracking_r, R_GRIP, actAdjustVWCnn)																					//23
+									, new Transition(State.tracking_r, State.tracking_r, L_GRIP, actAdjustVWCnn)																					//24
+									, new Transition(State.tracking_u, State.tracking_u, R_GRIP, actAdjustVWCnn)																					//25
+									, new Transition(State.tracking_u, State.tracking_u, L_GRIP, actAdjustVWCnn)																					//26
+									, new Transition(State.tracking_f, State.tracking_f, R_GRIP, actAdjustVWCnn)																					//27
+									, new Transition(State.tracking_f, State.tracking_f, L_GRIP, actAdjustVWCnn)																					//28
+									, new Transition(State.tracking_r, State.tracking_u, UP, actInspecCar_u)																						//29
+									, new Transition(State.tracking_r, State.tracking_f, FORWARD, actInspecCar_f)																					//30
+									, new Transition(State.tracking_u, State.tracking_r, RIGHT, actInspecCar_r)																						//31
+									, new Transition(State.tracking_u, State.tracking_f, FORWARD, actInspecCar_f)																					//32
+									, new Transition(State.tracking_f, State.tracking_u, UP, actInspecCar_u)																						//33
+									, new Transition(State.tracking_f, State.tracking_r, RIGHT, actInspecCar_r)																						//34
+									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCar_r)																						//35
+									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCar_u)																						//36
+									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCar_f)																						//37																//1
+									, new Transition(State.tracking_r, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//38
+									, new Transition(State.tracking_u, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//39
+									, new Transition(State.tracking_f, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//40
 								};
 		g_inst = this;
 	}
@@ -117,25 +119,28 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		//1 hmd
 		Transform ori = m_hmd.transform;
 		GameObject [] trackers = new GameObject[] {
-			  m_objects[(int)ObjType.tracker_pelvis]
-			, m_objects[(int)ObjType.tracker_rhand]
+			  m_objects[(int)ObjType.tracker_rhand]
 			, m_objects[(int)ObjType.tracker_lhand]
 			, m_objects[(int)ObjType.tracker_head]
+			, m_objects[(int)ObjType.tracker_rfoot]
+			, m_objects[(int)ObjType.tracker_lfoot]
 		};
 		bool trackers_ready = true;
 		for (int i = 0; i < trackers.Length && trackers_ready; i ++)
 			trackers_ready = trackers[i].activeSelf;
 
-		if (trackers_ready && Tracker.IdentifyTrackers_4(trackers, ori))
+		if (trackers_ready && Tracker.IdentifyTrackers_5Drv(trackers, ori))
 		{
 			m_objects[(int)ObjType.tracker_rhand] = trackers[0];
 			m_objects[(int)ObjType.tracker_lhand] = trackers[1];
-			m_objects[(int)ObjType.tracker_pelvis] = trackers[2];
-			m_objects[(int)ObjType.tracker_head] = trackers[3];
+			m_objects[(int)ObjType.tracker_head] = trackers[2];
+			m_objects[(int)ObjType.tracker_rfoot] = trackers[3];
+			m_objects[(int)ObjType.tracker_lfoot] = trackers[4];
 			trackers[0].name = c_trackerNames[(int)TrackerType.tracker_rhand];
 			trackers[1].name = c_trackerNames[(int)TrackerType.tracker_lhand];
-			trackers[2].name = c_trackerNames[(int)TrackerType.tracker_pelvis];
-			trackers[3].name = c_trackerNames[(int)TrackerType.tracker_head];
+			trackers[2].name = c_trackerNames[(int)TrackerType.tracker_head];
+			trackers[3].name = c_trackerNames[(int)TrackerType.tracker_rfoot];
+			trackers[4].name = c_trackerNames[(int)TrackerType.tracker_lfoot];
 			return true;
 		}
 		else
@@ -164,7 +169,45 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 					, m_objects[(int)ObjType.tracker_rhand].transform
 					, m_objects[(int)ObjType.tracker_lfoot].transform
 					, m_objects[(int)ObjType.tracker_rfoot].transform);
+		//fixme: this is a workaround solution for head tracker
+		//		, after removing HMD, align head in direction of x-y is difficult
+		float hlp_z = m_data.head.localPosition.z;
+		m_data.head.localPosition.Set(0f, 0f, hlp_z);
+		VRIKCalibrator.Calibrate(ik
+					, m_data
+					, m_objects[(int)ObjType.tracker_head].transform
+					, m_objects[(int)ObjType.tracker_pelvis].transform
+					, m_objects[(int)ObjType.tracker_lhand].transform
+					, m_objects[(int)ObjType.tracker_rhand].transform
+					, m_objects[(int)ObjType.tracker_lfoot].transform
+					, m_objects[(int)ObjType.tracker_rfoot].transform);
 		return true;
+	}
+
+	public static bool actAdjustIK_head(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustIK_head");
+			return true;
+		}
+		else
+		{
+			float delta_y = 0f;
+			if (D_ARROW == cond)
+				delta_y = -0.005f;
+			else if (U_ARROW == cond)
+				delta_y = +0.005f;
+			if (0 != delta_y)
+			{
+				VRIK ik = ((SteamVR_ManagerDrv)g_inst).m_avatar.GetComponent<VRIK>();
+				ik.solver.spine.headTarget.Translate(0f, delta_y, 0f, Space.World);
+				((SteamVR_ManagerDrv)g_inst).m_data.head.localPosition = ik.solver.spine.headTarget.localPosition;
+				return true;
+			}
+			else
+				return false;
+		}
 	}
 
 	public override void UnCalibration()
@@ -220,8 +263,9 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_rfoot])
 		};
 		SteamVR_TrackedObject [] ftrackers = new SteamVR_TrackedObject[] {
-			m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
-			, m_objects[(int)ObjType.tracker_rfoot].GetComponent<SteamVR_TrackedObject>()
+			//m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
+			//, m_objects[(int)ObjType.tracker_rfoot].GetComponent<SteamVR_TrackedObject>()
+			m_objects[(int)ObjType.tracker_pelvis].GetComponent<SteamVR_TrackedObject>()
 		};
 		for (int i_ftrack = 0; i_ftrack < ftrackers.Length; i_ftrack ++)
 		{
@@ -349,7 +393,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		{
 			GameObject [] trackers = new GameObject[] {
 				  g_inst.m_objects[(int)ObjType.tracker_head]
-				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
 				, g_inst.m_objects[(int)ObjType.tracker_rhand]
 				, g_inst.m_objects[(int)ObjType.tracker_lhand]
 			};
@@ -452,7 +495,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		case U_ARROW:
 			deltaT.y = c_deltaT;
 			adjusting = true;
-            break;
+			break;
 		case D_ARROW:
 			deltaT.y = -c_deltaT;
 			adjusting = true;
@@ -473,11 +516,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	protected static bool actAdjustCar_u(uint cond)
 	{
 		Vector3 deltaT = new Vector3(0, 0, 0);
-        float deltaR = 0;
+		float deltaR = 0;
 
 		bool adjusting_tran = false;
 		bool adjusting_rot = false;
-        switch (cond)
+		switch (cond)
 		{
 		case R_ARROW:
 			deltaT.x = c_deltaT;
@@ -490,22 +533,22 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		case U_ARROW:
 			deltaT.z = c_deltaT;
 			adjusting_tran = true;
-            break;
+			break;
 		case D_ARROW:
 			deltaT.z = -c_deltaT;
 			adjusting_tran = true;
 			break;
 		}
-        if ((R_ARROW | ORI) == cond)
-        {
-            deltaR = c_deltaR;
-            adjusting_rot = true;
-        }
-        else if ((L_ARROW | ORI) == cond)
-        {
-            deltaR = -c_deltaR;
-            adjusting_rot = true;
-        }
+		if ((R_ARROW | ORI) == cond)
+		{
+			deltaR = c_deltaR;
+			adjusting_rot = true;
+		}
+		else if ((L_ARROW | ORI) == cond)
+		{
+			deltaR = -c_deltaR;
+			adjusting_rot = true;
+		}
 
 		if (adjusting_tran || adjusting_rot)
 		{
@@ -538,7 +581,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		case U_ARROW:
 			deltaT.y = c_deltaT;
 			adjusting = true;
-            break;
+			break;
 		case D_ARROW:
 			deltaT.y = -c_deltaT;
 			adjusting = true;

@@ -323,8 +323,21 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected void adjustAvatar_t(Vector3 t)
 	{
+		bool [] locks = new bool[m_objects.Length];
+		for (int i = 0; i < m_objects.Length; i ++)
+		{
+			SteamVR_TrackedObject tracker = m_objects[i].GetComponent<SteamVR_TrackedObject>();
+			Debug.Assert(null != tracker);
+            locks[i] = tracker.Locked();
+		}
 		Vector3 t_w = m_avatar.transform.localToWorldMatrix.MultiplyVector(t);
 		transform.Translate(t_w, Space.World);
+		for (int i = 0; i < m_objects.Length; i ++)
+		{
+			SteamVR_TrackedObject tracker = m_objects[i].GetComponent<SteamVR_TrackedObject>();
+			Debug.Assert(null != tracker);
+			tracker.Lock(locks[i]);
+		}
 	}
 
 	protected void adjustAvatar_r(float d)

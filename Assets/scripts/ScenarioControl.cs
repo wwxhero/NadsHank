@@ -7,7 +7,8 @@ using System.Xml;
 using JointsReduction;
 using System.Globalization;
 
-public class ScenarioControl : MonoBehaviour {
+public class ScenarioControl : MonoBehaviour
+{
 
 	private string m_scenePath;
 	public GameObject[] m_vehiPrefabs;
@@ -32,7 +33,7 @@ public class ScenarioControl : MonoBehaviour {
 
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-	enum LAYER {scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic};
+	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic };
 	public class ConfAvatar
 	{
 		public float Height
@@ -41,7 +42,7 @@ public class ScenarioControl : MonoBehaviour {
 		}
 		public float Width
 		{
-			get { return width + (2*hand0) * width/width0; }
+			get { return width + (2 * hand0) * width / width0; }
 		}
 		private float height;
 		private float width;
@@ -111,7 +112,7 @@ public class ScenarioControl : MonoBehaviour {
 			int i = idx % lstLat_test.Count;
 			if (i < 0)
 				i += lstLat_test.Count;
-			Debug.Assert(!(i<0));
+			Debug.Assert(!(i < 0));
 			pos = (Vector3)lstPos_test[i];
 			tan = (Vector3)lstTan_test[i];
 			lat = (Vector3)lstLat_test[i];
@@ -124,7 +125,10 @@ public class ScenarioControl : MonoBehaviour {
 			lstLat_test.Add(l_sim);
 		}
 
-
+		public static string s_name = "avatar";
+		public static string s_height = "height";
+		public static string s_width = "width";
+		public static string s_teleport = "teleport";
 	};
 
 	public class ConfVehical
@@ -149,7 +153,7 @@ public class ScenarioControl : MonoBehaviour {
 			m_bHost = false;
 			m_target = target;
 			Vector3 s_l = target.localScale;
-			m_bbox.center = new Vector3(0, (conf.Height * 0.5f)/s_l.y, 0);
+			m_bbox.center = new Vector3(0, (conf.Height * 0.5f) / s_l.y, 0);
 			m_bbox.halfWidth = conf.Width * 0.5f;
 			m_bbox.halfHeight = conf.Height * 0.5f;
 			m_bbox.halfDepth = 0f; //fixme: the avatar is as thin as a paper
@@ -166,7 +170,7 @@ public class ScenarioControl : MonoBehaviour {
 			m_bbox.halfDepth = conf.Depth * 0.5f;
 
 		}
-		public enum Direction {forward = 0, up, right};
+		public enum Direction { forward = 0, up, right };
 
 		public void Apply(Camera cam, Direction dir)
 		{
@@ -178,13 +182,13 @@ public class ScenarioControl : MonoBehaviour {
 			};
 			int host_mask = 1 << (int)LAYER.host_dynamic;
 			int ego_mask = 1 << (int)LAYER.ego_dynamic;
-			cam.cullingMask = m_bHost ? host_mask|ego_mask : ego_mask;
+			cam.cullingMask = m_bHost ? host_mask | ego_mask : ego_mask;
 			cam.orthographic = true;
 			cam.orthographicSize = camSize[(int)dir];
 
 			cam.transform.parent = m_target;
 			float c_distance = 10f;
-			Vector3 [] t_l = null;
+			Vector3[] t_l = null;
 			Vector3 u_l;
 			if (m_bHost)
 			{
@@ -250,7 +254,7 @@ public class ScenarioControl : MonoBehaviour {
 		//      0   f2m 0   0
 		//      0   0   f2m 0
 		//      0   0   0   1
-		c_sim2unity =  m_s_f2m * m_2 * m_1;
+		c_sim2unity = m_s_f2m * m_2 * m_1;
 		c_unity2sim = c_sim2unity.inverse;
 
 	}
@@ -268,10 +272,10 @@ public class ScenarioControl : MonoBehaviour {
 		Vector3 t, l, p, u;
 		Vector3 t_prime, l_prime, p_prime, u_prime;
 		m_confAvatar.getTeleport(out p, out t, out l);
-		t_prime = tan_s; l_prime = lat_s;p_prime = pos_s;
+		t_prime = tan_s; l_prime = lat_s; p_prime = pos_s;
 		m_confAvatar.setTeleport(p_prime, t_prime, l_prime);
 		u = Vector3.Cross(t, l); u_prime = Vector3.Cross(t_prime, l_prime);
-		Matrix4x4 m = new Matrix4x4(  new Vector4(t.x, t.y, t.z, 0)
+		Matrix4x4 m = new Matrix4x4(new Vector4(t.x, t.y, t.z, 0)
 									, new Vector4(l.x, l.y, l.z, 0)
 									, new Vector4(u.x, u.y, u.z, 0)
 									, new Vector4(p.x, p.y, p.z, 1));
@@ -309,7 +313,8 @@ public class ScenarioControl : MonoBehaviour {
 	}
 
 
-	void Start () {
+	void Start()
+	{
 		if (null == m_ctrl)
 		{
 			try
@@ -324,59 +329,44 @@ public class ScenarioControl : MonoBehaviour {
 				m_ctrl.Initialize(m_scenePath);
 
 				XmlNodeList children = root.ChildNodes;
-				for (int i_node = 0; i_node < children.Count; i_node ++)
+				for (int i_node = 0; i_node < children.Count; i_node++)
 				{
 					XmlNode n_child = children[i_node];
-					if ("avatar" == n_child.Name)
+					if (ConfAvatar.s_name == n_child.Name)
 					{
 						XmlElement e_avatar = (XmlElement)n_child;
-						XmlAttribute height_attr = e_avatar.GetAttributeNode("height");
-						XmlAttribute width_attr = e_avatar.GetAttributeNode("width");
+						XmlAttribute height_attr = e_avatar.GetAttributeNode(ConfAvatar.s_height);
+						XmlAttribute width_attr = e_avatar.GetAttributeNode(ConfAvatar.s_width);
 						uint height = uint.Parse(height_attr.Value);
 						uint width = uint.Parse(width_attr.Value);
 						m_confAvatar = new ConfAvatar(height, width);
-						XmlNodeList teleports = n_child.ChildNodes;
-						if (null != teleports)
+						XmlNodeList children_avatar = n_child.ChildNodes;
+						if (null != children_avatar)
 						{
-							for (int i_tel = 0; i_tel < teleports.Count; i_tel ++)
+							for (int i = 0; i < children_avatar.Count; i++)
 							{
-								XmlNode tel = teleports[i_tel];
-								if ("teleport" != tel.Name)
-									continue;
-								XmlElement telElement = (XmlElement)tel;
-								string [] name = {"x", "y", "z", "i", "j", "k"};
-								float [] val  = new float[name.Length];
-								for (int i_attr = 0; i_attr < name.Length; i_attr ++)
+								XmlNode child_avatar = children_avatar[i];
+								if (ConfAvatar.s_teleport == child_avatar.Name)
 								{
-									XmlElement v_text = telElement[name[i_attr]];
-									val[i_attr] = float.Parse(v_text.InnerXml);
+									XmlElement telElement = (XmlElement)child_avatar;
+									string[] name = { "x", "y", "z", "i", "j", "k" };
+									float[] val = new float[name.Length];
+									for (int i_attr = 0; i_attr < name.Length; i_attr++)
+									{
+										XmlElement v_text = telElement[name[i_attr]];
+										val[i_attr] = float.Parse(v_text.InnerXml);
+									}
+									Vector3 u = new Vector3(0, 0, 1);
+									Vector3 p = new Vector3(val[0], val[1], val[2]);
+									Vector3 t = new Vector3(val[3], val[4], val[5]);
+									Vector3 l = Vector3.Cross(t, u); //fixme: not yet confirmed the cross product order
+									m_confAvatar.testAddTeleport(p, t, l);
 								}
-								Vector3 u = new Vector3(0, 0, 1);
-								Vector3 p = new Vector3(val[0], val[1], val[2]);
-								Vector3 t = new Vector3(val[3], val[4], val[5]);
-								Vector3 l = Vector3.Cross(t, u); //fixme: not yet confirmed the cross product order
-								m_confAvatar.testAddTeleport(p, t, l);
 							}
 						}
 					}
-					else if("map" == n_child.Name)
+					else if ("map" == n_child.Name)
 					{
-						XmlElement e_map = (XmlElement)n_child;
-						XmlAttribute e_t_attr = e_map.GetAttributeNode("elevation_t");
-						float e_t = float.Parse(e_t_attr.Value);
-						Matrix4x4 t_u = new Matrix4x4(
-											new Vector4(1,		0,		0,		0)
-										,	new Vector4(0,		1,		0,		0)
-										,	new Vector4(0,		0,		1,		0)
-										,	new Vector4(0,		e_t,	0,		1)
-										);
-						Matrix4x4 t_u_inv = new Matrix4x4(
-											new Vector4(1,		0,		0,		0)
-										,	new Vector4(0,		1,		0,		0)
-										,	new Vector4(0,		0,		1,		0)
-										,	new Vector4(0,		-e_t,	0,		1)
-										);
-						transform.Translate(new Vector3(0, e_t, 0), Space.World);
 						XmlNodeList points = n_child.ChildNodes;
 						Debug.Assert(null == points
 									|| 3 == points.Count);
@@ -384,14 +374,14 @@ public class ScenarioControl : MonoBehaviour {
 						{
 							Vector3[] p_u = new Vector3[4];
 							Vector3[] p_s = new Vector3[4];
-							string [] name = {"x_u", "y_u", "z_u"
+							string[] name = {"x_u", "y_u", "z_u"
 											, "x_s", "y_s", "z_s"};
-							float [] val = new float[name.Length];
-							for (int i_point = 0; i_point < 3; i_point ++)
+							float[] val = new float[name.Length];
+							for (int i_point = 0; i_point < 3; i_point++)
 							{
 								XmlNode point_node = points[i_point];
 								XmlElement point_ele = (XmlElement)point_node;
-								for (int i_attr = 0; i_attr < name.Length; i_attr ++)
+								for (int i_attr = 0; i_attr < name.Length; i_attr++)
 								{
 									XmlElement v_text = point_ele[name[i_attr]];
 									val[i_attr] = float.Parse(v_text.InnerXml);
@@ -400,19 +390,17 @@ public class ScenarioControl : MonoBehaviour {
 								p_s[i_point] = new Vector3(val[3], val[4], val[5]);
 							}
 
-
-
 							Vector4[] v4_u = new Vector4[4];
 							Vector4[] v4_s = new Vector4[4];
 							v4_u[0] = new Vector4(p_u[0].x, p_u[0].y, p_u[0].z, 1);
 							v4_s[0] = new Vector4(p_s[0].x, p_s[0].y, p_s[0].z, 1);
-							for (int i_v4 = 1; i_v4 < 3; i_v4 ++)
+							for (int i_v4 = 1; i_v4 < 3; i_v4++)
 							{
-								v4_u[i_v4] = new Vector4( p_u[i_v4].x - p_u[0].x
+								v4_u[i_v4] = new Vector4(p_u[i_v4].x - p_u[0].x
 														, p_u[i_v4].y - p_u[0].y
 														, p_u[i_v4].z - p_u[0].z
 														, 0);
-								v4_s[i_v4] = new Vector4( p_s[i_v4].x - p_s[0].x
+								v4_s[i_v4] = new Vector4(p_s[i_v4].x - p_s[0].x
 														, p_s[i_v4].y - p_s[0].y
 														, p_s[i_v4].z - p_s[0].z
 														, 0);
@@ -427,8 +415,8 @@ public class ScenarioControl : MonoBehaviour {
 
 							if (DEF_LOGMATRIXFAC)
 							{
-								Matrix4x4 c_sim2unity_prime = t_u * m_u * m_s.inverse;
-								Matrix4x4 c_unity2sim_prime = m_s * m_u.inverse * t_u_inv;
+								Matrix4x4 c_sim2unity_prime = m_u * m_s.inverse;
+								Matrix4x4 c_unity2sim_prime = m_s * m_u.inverse;
 								float error_u = 0;
 								float error_s = 0;
 								for (int i = 0; i < 4; i++)
@@ -455,15 +443,14 @@ public class ScenarioControl : MonoBehaviour {
 								string strInfo = string.Format("matrix_s:\n{0}", m_s.ToString());
 								strInfo += string.Format("matrix_u:\n{0}", m_u.ToString());
 								Debug.Log(strInfo);
-								c_sim2unity = t_u * m_u * m_s.inverse;
-								c_unity2sim = m_s * m_u.inverse * t_u_inv;
+								c_sim2unity = m_u * m_s.inverse;
+								c_unity2sim = m_s * m_u.inverse;
 							}
 						}
-						else
-						{
-							c_sim2unity = t_u * c_sim2unity;
-							c_unity2sim = c_unity2sim * t_u_inv;
-						}
+						XmlElement e_map = (XmlElement)n_child;
+						XmlAttribute e_t_attr = e_map.GetAttributeNode("elevation_t");
+						float e_t = float.Parse(e_t_attr.Value);
+						SetMapElevation(e_t);
 					}
 				}
 
@@ -492,9 +479,29 @@ public class ScenarioControl : MonoBehaviour {
 		}
 	}
 
+	void SetMapElevation(float e_t)
+	{
+		Matrix4x4 t_u = new Matrix4x4(
+						  new Vector4(1,	0,		0,		0)
+						, new Vector4(0,	1,		0,		0)
+						, new Vector4(0,	0,		1,		0)
+						, new Vector4(0,	e_t,	0,		1)
+						);
+		Matrix4x4 t_u_inv = new Matrix4x4(
+						  new Vector4(1,	0,		0,		0)
+						, new Vector4(0,	1,		0,		0)
+						, new Vector4(0,	0,		1,		0)
+						, new Vector4(0,	-e_t,	0,		1)
+						);
+		transform.Translate(new Vector3(0, e_t, 0), Space.World);
+		c_sim2unity = t_u * c_sim2unity;
+		c_unity2sim = c_unity2sim * t_u_inv;
+	}
+
 	int m_iTeleport = 0;
 	// Update is called once per frame
-	void Update () {
+	void Update()
+	{
 		if (null != m_ctrl)
 		{
 			try
@@ -628,19 +635,19 @@ public class ScenarioControl : MonoBehaviour {
 
 
 									//bind joints with (id, name)
-									int [] ids = new int[nParts];
-									string [] names = new string[nParts];
-									for (int i_part = 0; i_part < nParts; i_part ++)
+									int[] ids = new int[nParts];
+									string[] names = new string[nParts];
+									for (int i_part = 0; i_part < nParts; i_part++)
 									{
-									   string namePartS;
-									   m_ctrl.GetcrtPedPartName(id, i_part, out namePartS); //fixme: replace it with node name
-									   if (DEF_LOGJOINTIDNAME)
-									   {
-										   string log = string.Format("{0}:{1}", i_part, namePartS);
-										   Debug.Log(log);
-									   }
-									   ids[i_part] = i_part;
-									   names[i_part] = namePartS;
+										string namePartS;
+										m_ctrl.GetcrtPedPartName(id, i_part, out namePartS); //fixme: replace it with node name
+										if (DEF_LOGJOINTIDNAME)
+										{
+											string log = string.Format("{0}:{1}", i_part, namePartS);
+											Debug.Log(log);
+										}
+										ids[i_part] = i_part;
+										names[i_part] = namePartS;
 									}
 									DriverDiguy driver = ped.GetComponent<DriverDiguy>();
 									driver.Initialize(ids, names, own);
@@ -720,6 +727,7 @@ public class ScenarioControl : MonoBehaviour {
 							}
 							setLayer(parent, LAYER.host_dynamic);
 							setLayer(child, LAYER.ego_dynamic);
+							setLayer(m_trackers, LAYER.ego_dynamic);
 							//adjustInspector(InspectorHelper.Direction.forward, true);
 						}
 
@@ -746,7 +754,7 @@ public class ScenarioControl : MonoBehaviour {
 
 					DriverDiguy driver = pedOwn.GetComponent<DriverDiguy>();
 					driver.SyncOut();
-					for (int i_part = 0; i_part < driver.m_art.Length; i_part ++)
+					for (int i_part = 0; i_part < driver.m_art.Length; i_part++)
 					{
 						ArtPart art = driver.m_art[i_part];
 						m_ctrl.OnPushUpdateArt(c_ownPedId, art.id, art.q.w, art.q.x, art.q.y, art.q.z, art.t.x, art.t.y, art.t.z);
@@ -784,7 +792,7 @@ public class ScenarioControl : MonoBehaviour {
 						kv.Value.transform.position = p_unity;
 						kv.Value.transform.rotation = q_unity;
 					}
-//fixme debugging log
+					//fixme debugging log
 					//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
 					//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
 					//Debug.Log(strTuple);
@@ -817,7 +825,7 @@ public class ScenarioControl : MonoBehaviour {
 						DriverDiguy driver = kv.Value.GetComponent<DriverDiguy>();
 						double q_w, q_x, q_y, q_z;
 						double t_x, t_y, t_z;
-						for (int i_part = 0; i_part < driver.m_art.Length; i_part ++)
+						for (int i_part = 0; i_part < driver.m_art.Length; i_part++)
 						{
 							//fixme: performance might be sacrified here from loop manage to native code call
 							ArtPart art = driver.m_art[i_part];
@@ -829,7 +837,7 @@ public class ScenarioControl : MonoBehaviour {
 						}
 						driver.SyncIn();
 					}
-//fixme debugging log
+					//fixme debugging log
 					//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
 					//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
 					//Debug.Log(strTuple);
