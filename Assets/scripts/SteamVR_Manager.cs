@@ -475,8 +475,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 	State m_state = State.initial;
-
-	void Update()
+    void Start()
+    {
+        UpdateInstructionDisplay(m_state);
+    }
+    void Update()
 	{
 		State s_n = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
