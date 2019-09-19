@@ -189,8 +189,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
-			Debug.LogWarning("SteamVR_ManagerDrv::actAdjustIK_head");
-			return true;
+			//Debug.LogWarning("SteamVR_ManagerDrv::actAdjustIK_head");
+			return false;
 		}
 		else
 		{

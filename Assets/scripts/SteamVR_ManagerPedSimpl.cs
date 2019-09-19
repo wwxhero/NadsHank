@@ -31,8 +31,8 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 									, new Transition(State.pre_cnn, State.pre_cnn, FORWARD, actInspecAvatar_f)																							//2
 									, new Transition(State.pre_cnn, State.pre_cnn, RIGHT, actInspecAvatar_r)																							//3
 									, new Transition(State.pre_cnn, State.pre_cnn, UP, actInspecAvatar_u)																								//4
-									, new Transition(State.pre_cnn, State.pre_calibra, R_MENU, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})			//5
-									, new Transition(State.pre_cnn, State.pre_calibra, L_MENU, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})			//6
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})			//5
+									, new Transition(State.pre_cnn, State.pre_calibra, L_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})			//6
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																						//7
 									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																					//8
 									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																					//9
