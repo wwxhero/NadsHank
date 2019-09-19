@@ -3,6 +3,7 @@ using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 public class SteamVR_Manager : SteamVR_TDManager
 {
@@ -18,10 +19,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 	[HideInInspector]
 	public GameObject Avatar
 	{
-        get { return m_avatar; }
+		get { return m_avatar; }
 		set {
-		    m_avatar = value;
-		    gameObject.SetActive(true);
+			m_avatar = value;
+			gameObject.SetActive(true);
 		}
 	}
 	protected GameObject m_avatar;
@@ -120,12 +121,12 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 
-    public virtual bool IdentifyTrackers()
+	public virtual bool IdentifyTrackers()
 	{
 		return false;
 	}
 
-	protected static bool actGroundEle_r(uint cond)
+	protected static bool actGroundEle(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 		{
@@ -135,25 +136,30 @@ public class SteamVR_Manager : SteamVR_TDManager
 		else
 		{
 			ScenarioControl ctrl = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			float y = g_inst.m_ctrlR.transform.localPosition.y;
-			ctrl.SetMapElevation(y);
-            return true;
-		}
-	}
+			Transform t = null;
+			bool controllerOn = (OpenVR.k_unTrackedDeviceIndexInvalid != g_inst.m_ctrlLIndex
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != g_inst.m_ctrlRIndex);
+			if (controllerOn && 3 == g_inst.m_objects.Length)
+			{
+				t = g_inst.m_objects[2].transform;
+			}
+			else if(!controllerOn && 1 == g_inst.m_objects.Length)
+			{
+				t = g_inst.m_objects[0].transform;
+			}
 
-	protected static bool actGroundEle_l(uint cond)
-	{
-		if (g_inst.DEF_MOCKSTEAM)
-		{
-			Debug.LogWarning("SteamVR_Manager::actGroundEle_r");
-			return true;
-		}
-		else
-		{
-			ScenarioControl ctrl = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			float y = g_inst.m_ctrlL.transform.localPosition.y;
-			ctrl.SetMapElevation(y);
-            return true;
+			if (null == t)
+			{
+				Exception e = new Exception("Please turn one and only one tracker on!!!");
+				throw e;
+				return false;
+			}
+			else
+			{
+				float y = t.localPosition.y - 0.01f; //assume the pad on tracker has 1 cm thickness
+				ctrl.SetMapElevation(y);
+				return true;
+			}
 		}
 	}
 
@@ -360,7 +366,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			SteamVR_TrackedObject tracker = m_objects[i].GetComponent<SteamVR_TrackedObject>();
 			Debug.Assert(null != tracker);
-            locks[i] = tracker.Locked();
+			locks[i] = tracker.Locked();
 		}
 		Vector3 t_w = m_avatar.transform.localToWorldMatrix.MultiplyVector(t);
 		transform.Translate(t_w, Space.World);
@@ -475,11 +481,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 	State m_state = State.initial;
-    void Start()
-    {
-        UpdateInstructionDisplay(m_state);
-    }
-    void Update()
+	void Start()
+	{
+		UpdateInstructionDisplay(m_state);
+	}
+	void Update()
 	{
 		State s_n = m_state;
 		bool ctrls_ready = (m_ctrlRIndex != OpenVR.k_unTrackedDeviceIndexInvalid
@@ -554,50 +560,57 @@ public class SteamVR_Manager : SteamVR_TDManager
 				code_ctrl |= switch_codes[i_switch];
 		}
 
-
-		bool state_tran = false;
-		int n_transi = m_transition.Length;
-		for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
-			state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
-		State s_np = m_state;
-		if (s_np != s_n)
-			UpdateInstructionDisplay(m_state);
-		if (DEF_DBG)
+		try
 		{
-			string switches = null;
-			bool switched = false;
-			string[] switch_names = {
-				  "R_TRIGGER"
-				, "R_STEAM"
-				, "R_MENU"
-				, "R_PAD_P"
-				, "R_PAD_T"
-				, "R_GRIP"
-				, "L_TRIGGER"
-				, "L_STEAM"
-				, "L_MENU"
-				, "L_PAD_P"
-				, "L_PAD_T"
-				, "L_GRIP"
-				, "FRONT"
-				, "RIGHT"
-				, "UP"
-				, "ROTATION"
-				, "RIGHT_ARROW"
-				, "LEFT_ARROW"
-				, "UP_ARROW"
-				, "DOWN_ARROW"
-			};
-			Debug.Assert(switch_names.Length == ctrl_switch.Length);
-			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
+			bool state_tran = false;
+			int n_transi = m_transition.Length;
+			for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
+				state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
+			State s_np = m_state;
+			if (s_np != s_n)
+				UpdateInstructionDisplay(m_state);
+			if (DEF_DBG)
 			{
-				switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
-				switched = switched || ctrl_switch[i_switch];
+				string switches = null;
+				bool switched = false;
+				string[] switch_names = {
+					  "R_TRIGGER"
+					, "R_STEAM"
+					, "R_MENU"
+					, "R_PAD_P"
+					, "R_PAD_T"
+					, "R_GRIP"
+					, "L_TRIGGER"
+					, "L_STEAM"
+					, "L_MENU"
+					, "L_PAD_P"
+					, "L_PAD_T"
+					, "L_GRIP"
+					, "FRONT"
+					, "RIGHT"
+					, "UP"
+					, "ROTATION"
+					, "RIGHT_ARROW"
+					, "LEFT_ARROW"
+					, "UP_ARROW"
+					, "DOWN_ARROW"
+				};
+				Debug.Assert(switch_names.Length == ctrl_switch.Length);
+				for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
+				{
+					switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
+					switched = switched || ctrl_switch[i_switch];
+				}
+				if (switched)
+					Debug.LogWarning(switches);
+				string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
+				Debug.Log(strInfo);
 			}
-			if (switched)
-				Debug.LogWarning(switches);
-			string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
-			Debug.Log(strInfo);
+		}
+		catch(Exception e)
+		{
+			string exp = string.Format("\r\n\r\nERRPR:{0}", e.Message);
+			m_refDispBody.text += exp;
 		}
 	}
 	protected virtual void UpdateInstructionDisplay(State s)

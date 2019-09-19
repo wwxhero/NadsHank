@@ -8,6 +8,7 @@ using UnityEngine;
 using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
+using System;
 
 public class SteamVR_ManagerDrv : SteamVR_Manager
 {
@@ -67,8 +68,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, actGroundEle_r)																						//1
-									, new Transition(State.initial, State.pre_cnn, L_TRIGGER, actGroundEle_l)																						//1.1
+									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, actGroundEle)																						//1
+									, new Transition(State.initial, State.pre_cnn, L_TRIGGER, actGroundEle)																						//1.1
 									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//2
 									, new Transition(State.pre_cnn, State.pre_calibra, L_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//3
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																					//4
@@ -145,7 +146,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			return true;
 		}
 		else
+		{
+			Exception e = new Exception("Indentify trackers failed, \r\n\tconfirm if all the trackers are valid, \r\n\tthe head tracker is hanging on leftside, \r\n\tand the participant is standing in 'T' posture!");
+			throw e;
 			return false;
+		}
 	}
 
 	public override bool Calibration()
