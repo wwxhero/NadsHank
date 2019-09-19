@@ -139,11 +139,18 @@ public class SteamVR_Manager : SteamVR_TDManager
 			Transform t = null;
 			bool controllerOn = (OpenVR.k_unTrackedDeviceIndexInvalid != g_inst.m_ctrlLIndex
 								&& OpenVR.k_unTrackedDeviceIndexInvalid != g_inst.m_ctrlRIndex);
-			if (controllerOn && 3 == g_inst.m_objects.Length)
+			GameObject[] trackers = g_inst.m_objects;
+			int cnt = 0;
+			for (int i_tracker = 0; i_tracker < trackers.Length; i_tracker ++)
+			{
+				if (trackers[i_tracker].activeSelf)
+					cnt++;
+			}
+			if (controllerOn && 3 == cnt)
 			{
 				t = g_inst.m_objects[2].transform;
 			}
-			else if(!controllerOn && 1 == g_inst.m_objects.Length)
+			else if(!controllerOn && 1 == cnt)
 			{
 				t = g_inst.m_objects[0].transform;
 			}
