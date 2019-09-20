@@ -3,6 +3,7 @@ using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System;
 
 public class SteamVR_Manager : SteamVR_TDManager
 {
@@ -18,10 +19,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 	[HideInInspector]
 	public GameObject Avatar
 	{
-        get { return m_avatar; }
+		get { return m_avatar; }
 		set {
-		    m_avatar = value;
-		    gameObject.SetActive(true);
+			m_avatar = value;
+			gameObject.SetActive(true);
 		}
 	}
 	protected GameObject m_avatar;
@@ -88,16 +89,16 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, forward, right, up, ori, plus, minus, n_code };
 	protected const uint R_TRIGGER = 	0x0001;
-	protected const uint R_STEAM = 	0x0002;
+	protected const uint R_STEAM = 		0x0002;
 	protected const uint R_MENU = 		0x0004;
-	protected const uint R_PAD_P = 	0x0008;
-	protected const uint R_PAD_T = 	0x0010;
+	protected const uint R_PAD_P = 		0x0008;
+	protected const uint R_PAD_T = 		0x0010;
 	protected const uint R_GRIP = 		0x0020;
 	protected const uint L_TRIGGER = 	0x0100;
-	protected const uint L_STEAM = 	0x0200;
+	protected const uint L_STEAM = 		0x0200;
 	protected const uint L_MENU = 		0x0400;
-	protected const uint L_PAD_P = 	0x0800;
-	protected const uint L_PAD_T = 	0x1000;
+	protected const uint L_PAD_P = 		0x0800;
+	protected const uint L_PAD_T = 		0x1000;
 	protected const uint L_GRIP = 		0x2000;
 
 	protected const uint FORWARD =	   0x10000;
@@ -107,7 +108,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected const uint R_ARROW =	  0x100000;
 	protected const uint L_ARROW =	  0x200000;
 	protected const uint U_ARROW =	  0x400000;
-	protected const uint D_ARROW =   0x800000;
+	protected const uint D_ARROW =	  0x800000;
 	protected const uint ALL =		0xffffffff;
 	protected const uint NONE = 	0x00000000;
 	protected Transition[] m_transition;
@@ -120,9 +121,53 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 
-    public virtual bool IdentifyTrackers()
+	public virtual bool IdentifyTrackers()
 	{
 		return false;
+	}
+
+	protected static bool actGroundEle(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+		{
+			Debug.LogWarning("SteamVR_Manager::actGroundEle_r");
+			return true;
+		}
+		else
+		{
+			ScenarioControl ctrl = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+			Transform t = null;
+			bool controllerOn = (OpenVR.k_unTrackedDeviceIndexInvalid != g_inst.m_ctrlLIndex
+								&& OpenVR.k_unTrackedDeviceIndexInvalid != g_inst.m_ctrlRIndex);
+			GameObject[] trackers = g_inst.m_objects;
+			int cnt = 0;
+			for (int i_tracker = 0; i_tracker < trackers.Length; i_tracker ++)
+			{
+				if (trackers[i_tracker].activeSelf)
+					cnt++;
+			}
+			if (controllerOn && 3 == cnt)
+			{
+				t = g_inst.m_objects[2].transform;
+			}
+			else if(!controllerOn && 1 == cnt)
+			{
+				t = g_inst.m_objects[0].transform;
+			}
+
+			if (null == t)
+			{
+				Exception e = new Exception("Please turn one and only one tracker on!!!");
+				throw e;
+				return false;
+			}
+			else
+			{
+				float y = t.localPosition.y - 0.015f; //assume the pad on tracker has 1 cm thickness
+				ctrl.SetMapElevation(y);
+				return true;
+			}
+		}
 	}
 
 	protected static bool actIdentifyTrackers(uint cond)
@@ -328,7 +373,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			SteamVR_TrackedObject tracker = m_objects[i].GetComponent<SteamVR_TrackedObject>();
 			Debug.Assert(null != tracker);
-            locks[i] = tracker.Locked();
+			locks[i] = tracker.Locked();
 		}
 		Vector3 t_w = m_avatar.transform.localToWorldMatrix.MultiplyVector(t);
 		transform.Translate(t_w, Space.World);
@@ -443,7 +488,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 	}
 
 	State m_state = State.initial;
-
+	void Start()
+	{
+		UpdateInstructionDisplay(m_state);
+	}
 	void Update()
 	{
 		State s_n = m_state;
@@ -519,50 +567,57 @@ public class SteamVR_Manager : SteamVR_TDManager
 				code_ctrl |= switch_codes[i_switch];
 		}
 
-
-		bool state_tran = false;
-		int n_transi = m_transition.Length;
-		for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
-			state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
-		State s_np = m_state;
-		if (s_np != s_n)
-			UpdateInstructionDisplay(m_state);
-		if (DEF_DBG)
+		try
 		{
-			string switches = null;
-			bool switched = false;
-			string[] switch_names = {
-				  "R_TRIGGER"
-				, "R_STEAM"
-				, "R_MENU"
-				, "R_PAD_P"
-				, "R_PAD_T"
-				, "R_GRIP"
-				, "L_TRIGGER"
-				, "L_STEAM"
-				, "L_MENU"
-				, "L_PAD_P"
-				, "L_PAD_T"
-				, "L_GRIP"
-				, "FRONT"
-				, "RIGHT"
-				, "UP"
-				, "ROTATION"
-				, "RIGHT_ARROW"
-				, "LEFT_ARROW"
-				, "UP_ARROW"
-				, "DOWN_ARROW"
-			};
-			Debug.Assert(switch_names.Length == ctrl_switch.Length);
-			for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
+			bool state_tran = false;
+			int n_transi = m_transition.Length;
+			for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
+				state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
+			State s_np = m_state;
+			if (s_np != s_n)
+				UpdateInstructionDisplay(m_state);
+			if (DEF_DBG)
 			{
-				switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
-				switched = switched || ctrl_switch[i_switch];
+				string switches = null;
+				bool switched = false;
+				string[] switch_names = {
+					  "R_TRIGGER"
+					, "R_STEAM"
+					, "R_MENU"
+					, "R_PAD_P"
+					, "R_PAD_T"
+					, "R_GRIP"
+					, "L_TRIGGER"
+					, "L_STEAM"
+					, "L_MENU"
+					, "L_PAD_P"
+					, "L_PAD_T"
+					, "L_GRIP"
+					, "FRONT"
+					, "RIGHT"
+					, "UP"
+					, "ROTATION"
+					, "RIGHT_ARROW"
+					, "LEFT_ARROW"
+					, "UP_ARROW"
+					, "DOWN_ARROW"
+				};
+				Debug.Assert(switch_names.Length == ctrl_switch.Length);
+				for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
+				{
+					switches += string.Format("{0}={1}\t", switch_names[i_switch], ctrl_switch[i_switch].ToString());
+					switched = switched || ctrl_switch[i_switch];
+				}
+				if (switched)
+					Debug.LogWarning(switches);
+				string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
+				Debug.Log(strInfo);
 			}
-			if (switched)
-				Debug.LogWarning(switches);
-			string strInfo = string.Format("state transition:{0}=>{1}", s_n.ToString(), s_np.ToString());
-			Debug.Log(strInfo);
+		}
+		catch(Exception e)
+		{
+			string exp = string.Format("\r\n\r\nERRPR:{0}", e.Message);
+			m_refDispBody.text += exp;
 		}
 	}
 	protected virtual void UpdateInstructionDisplay(State s)

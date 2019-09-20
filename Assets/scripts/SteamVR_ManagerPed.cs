@@ -8,6 +8,7 @@ using UnityEngine;
 using Valve.VR;
 using RootMotion.FinalIK;
 using System.Collections.Generic;
+using System;
 
 public class SteamVR_ManagerPed : SteamVR_Manager
 {
@@ -83,7 +84,11 @@ public class SteamVR_ManagerPed : SteamVR_Manager
 			return true;
 		}
 		else
+		{
+			Exception e = new Exception("Indentify trackers failed, \r\n\tconfirm if all the trackers are valid \r\n\tand the participant is standing in 'T' posture!");
+			throw e;
 			return false;
+		}
 	}
 
 	public override bool Calibration()

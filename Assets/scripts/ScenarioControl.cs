@@ -54,10 +54,10 @@ public class ScenarioControl : MonoBehaviour
 		private ArrayList lstPos_test = new ArrayList();
 		private ArrayList lstTan_test = new ArrayList();
 		private ArrayList lstLat_test = new ArrayList();
-		public ConfAvatar(uint a_height, uint a_width)
+		public ConfAvatar(float a_height, float a_width)
 		{
-			height = ((float)a_height) * 0.01f;
-			width = ((float)a_width) * 0.01f;
+			height = a_height;
+			width = a_width;
 			perceptualHeight = height;
 		}
 
@@ -337,8 +337,8 @@ public class ScenarioControl : MonoBehaviour
 						XmlElement e_avatar = (XmlElement)n_child;
 						XmlAttribute height_attr = e_avatar.GetAttributeNode(ConfAvatar.s_height);
 						XmlAttribute width_attr = e_avatar.GetAttributeNode(ConfAvatar.s_width);
-						uint height = uint.Parse(height_attr.Value);
-						uint width = uint.Parse(width_attr.Value);
+						float height = float.Parse(height_attr.Value);
+						float width = float.Parse(width_attr.Value);
 						m_confAvatar = new ConfAvatar(height, width);
 						XmlNodeList children_avatar = n_child.ChildNodes;
 						if (null != children_avatar)
@@ -479,7 +479,7 @@ public class ScenarioControl : MonoBehaviour
 		}
 	}
 
-	void SetMapElevation(float e_t)
+	public void SetMapElevation(float e_t)
 	{
 		Matrix4x4 t_u = new Matrix4x4(
 						  new Vector4(1,	0,		0,		0)

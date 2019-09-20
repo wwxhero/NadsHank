@@ -1,7 +1,8 @@
 public class TransitionStringsPedSimpl
 {
 	public static string [] s_Desc = {
-			  null																							//1
+			  "Press 'SHIFT + T' to messure ground elevation."												//1
+			, null																							//1.1
 			, "Press 'F' to inspect avatar from front."														//2
 			, "Press 'R' to inspect avatar from right."														//3
 			, "Press 'U' to inspect avatar from top."														//4

@@ -6,7 +6,7 @@ public class StateStringsDrv
 		  , "Prepare for encarnation step 2 of 2", "Ready for drive", "Tracking", "Tracking", "Tracking"
 	};
 	public static string[] s_longDesc = {
-		  null
+		  "Turn on one and only one tracker, put it on ground where the participant is to stand!"
 		, "Standing in 'T' posture, look straight to the direction the car heads to."
 		, null
 		, "Stand in 'T' posture to match the posture of the avatar, confirm matching by looking at the trackers directly or through mirror."

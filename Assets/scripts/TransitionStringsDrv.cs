@@ -1,7 +1,8 @@
 public class TransitionStringsDrv
 {
 	public static string [] s_Desc = {
-		  null																																//1
+		  "Press 'SHIFT + T' to messure ground elevation."																					//1
+		, null																																//1.1
 		, "Press 'SHIFT + G' to set up the scene."																							//2
 		, null																																//3
 		, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."										//4
