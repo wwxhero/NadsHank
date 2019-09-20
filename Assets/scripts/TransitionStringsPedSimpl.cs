@@ -1,7 +1,7 @@
 public class TransitionStringsPedSimpl
 {
 	public static string [] s_Desc = {
-			  "Put controller on ground and then press the trigger to set ground elevation."				//1
+			  "Press 'SHIFT + T' to messure ground elevation."												//1
 			, null																							//1.1
 			, "Press 'F' to inspect avatar from front."														//2
 			, "Press 'R' to inspect avatar from right."														//3

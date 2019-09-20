@@ -163,7 +163,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 			}
 			else
 			{
-				float y = t.localPosition.y - 0.01f; //assume the pad on tracker has 1 cm thickness
+				float y = t.localPosition.y - 0.015f; //assume the pad on tracker has 1 cm thickness
 				ctrl.SetMapElevation(y);
 				return true;
 			}
