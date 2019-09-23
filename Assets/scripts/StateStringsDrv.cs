@@ -7,9 +7,9 @@ public class StateStringsDrv
 	};
 	public static string[] s_longDesc = {
 		  "Turn on one and only one tracker, put it on ground where the participant is to stand!"
-		, "Standing in 'T' posture, face towards the front of the car, and look straight ahead."
+		, "Turn on all 5 trackers, standing in 'T' posture, face towards the front of the car, and look straight ahead."
 		, null
-		, "Step into the avatar and then stand in 'T' posture, confirm that you match the avatar's pose by looking at the mirror, or at your own limbs."
+		, "Confirm all the trackers are tracking, and then step into the avatar and then stand in 'T' posture, confirm that you match the avatar's pose by looking at the mirror, or at your own limbs."
 		, "Move arms and head to confirm good tracking, adjust person's height as needed."
 		, null
 		, null
