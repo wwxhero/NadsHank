@@ -33,8 +33,8 @@ public class TransitionStringsDrv
 		, "Press 'ARROW' to move the avatar relative to the car."																			//31
 		, "Press 'ARROW' to move the avatar relative to the car."																			//32
 		, "Press 'ARROW' to move the avatar relative to the car."																			//33
-		, "Press '(left)SHIFT + (right)SHIFT + M to start over for next participant."														//34
-		, "Press '(left)SHIFT + (right)SHIFT + M to start over for next participant."														//35
-		, "Press '(left)SHIFT + (right)SHIFT + M to start over for next participant."														//36
+		, "Press '(left)SHIFT + M + (left)ARROW to start over for next participant."														//34
+		, "Press '(left)SHIFT + M + (left)ARROW to start over for next participant."														//35
+		, "Press '(left)SHIFT + M + (left)ARROW to start over for next participant."														//36
 	};
 }

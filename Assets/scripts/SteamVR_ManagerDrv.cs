@@ -100,9 +100,9 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.tracking_r, State.tracking_r, ALL, actAdjustCar_r)																						//31
 									, new Transition(State.tracking_u, State.tracking_u, ALL, actAdjustCar_u)																						//32
 									, new Transition(State.tracking_f, State.tracking_f, ALL, actAdjustCar_f)																						//33																//1
-									, new Transition(State.tracking_r, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//34
-									, new Transition(State.tracking_u, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//35
-									, new Transition(State.tracking_f, State.pre_cnn, L_MENU|R_MENU, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//36
+									, new Transition(State.tracking_r, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})	//34
+									, new Transition(State.tracking_u, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})	//35
+									, new Transition(State.tracking_f, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})	//36
 								};
 		g_inst = this;
 	}
