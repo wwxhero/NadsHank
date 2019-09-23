@@ -32,8 +32,8 @@ public class TransitionStringsDrvSimpl
 		, "Press 'Arrow' keys to adjust avatar position while placing hands on steering wheel and lookforward."								//31
 		, "Press 'Arrow' keys to adjust avatar position while placing hands on steering wheel and lookforward."								//32
 		, "Press 'Arrow' keys to adjust avatar position while placing hands on steering wheel and lookforward."								//33
-		, "Press '(left)SHIFT + M + left Arrow to start over for next participant."															//34
-		, "Press '(left)SHIFT + M + left Arrow to start over for next participant."															//35
-		, "Press '(left)SHIFT + M + left Arrow to start over for next participant."															//36
+		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//34
+		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//35
+		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//36
 	};
 }

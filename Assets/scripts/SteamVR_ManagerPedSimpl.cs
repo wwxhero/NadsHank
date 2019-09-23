@@ -27,31 +27,27 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, actGroundEle)																								//1
-									, new Transition(State.initial, State.pre_cnn, L_TRIGGER, actGroundEle)																								//1.1
 									, new Transition(State.pre_cnn, State.pre_cnn, FORWARD, actInspecAvatar_f)																							//2
 									, new Transition(State.pre_cnn, State.pre_cnn, RIGHT, actInspecAvatar_r)																							//3
 									, new Transition(State.pre_cnn, State.pre_cnn, UP, actInspecAvatar_u)																								//4
 									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})			//5
-									, new Transition(State.pre_cnn, State.pre_calibra, L_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})			//6
-									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																						//7
-									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																					//8
-									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																					//9
-									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																						//10
-									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)																					//11
-									, new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)																					//12
-									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																						//13
-									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																				//14
-									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																					//15
-									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																						//16
-									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })														//17
-									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																					//18
-									, new Transition(State.tracking, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//20
-									, new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)																						//21
-									, new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)																						//22
-									, new Transition(State.teleporting, State.tracking, NONE)																											//23
-									, new Transition(State.tracking, State.tracking, FORWARD, actInspecAvatar_f)																						//24
-									, new Transition(State.tracking, State.tracking, RIGHT, actInspecAvatar_r)																							//25
-									, new Transition(State.tracking, State.tracking, UP, actInspecAvatar_u)																								//26
+									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																						//6
+									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																					//7
+									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																					//8
+									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																						//9
+									, new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)																					//10
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																						//11
+									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																				//12
+									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																					//13
+									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																						//14
+									, new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })														//15
+									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																					//16
+									, new Transition(State.tracking, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//17
+									, new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)																						//18
+									, new Transition(State.teleporting, State.tracking, NONE)																											//19
+									, new Transition(State.tracking, State.tracking, FORWARD, actInspecAvatar_f)																						//20
+									, new Transition(State.tracking, State.tracking, RIGHT, actInspecAvatar_r)																							//21
+									, new Transition(State.tracking, State.tracking, UP, actInspecAvatar_u)																								//22
 								};
 		g_inst = this;
 	}
