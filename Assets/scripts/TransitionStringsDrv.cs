@@ -3,7 +3,7 @@ public class TransitionStringsDrv
 	public static string [] s_Desc = {
 		  "Press '(right)SHIFT + T' to messure ground elevation."																			//1
 		, "Press '(right)SHIFT + G' to set up the scene."																					//2
-		, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."										//3
+		, "Press 'Down arrow' to move mirror closer, 'Up arrow' to move mirror farthur."										//3
 		, "Press 'F' to inspect avatar from front."																							//4
 		, "Press 'R' to inspect avatar from right."																							//5
 		, "Press 'U' to inspect avatar from top."																							//6
@@ -13,7 +13,6 @@ public class TransitionStringsDrv
 		, "Press 'R' to inspect avatar from right."																							//12
 		, "Press 'U' to inspect avatar from top."																							//13
 		, "Press '(right)SHIFT + M' to complete calibration after replacing HMD with head tracker."											//14
-		, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."										//15
 		, "Press 'UP' to pull avatar upward, 'DOWN' to push avatar downward"																//16
 		, "Press 'F' to inspect avatar from front."																							//17
 		, "Press 'R' to inspect avatar from right."																							//18

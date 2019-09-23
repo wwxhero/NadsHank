@@ -60,6 +60,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 				, "pelvis_vtracker_default"
 			};
 	const int c_totalTrackers = 6;
+	public bool m_simplified = false;
 	[HideInInspector]
 	public GameObject m_carHost;
 
@@ -80,7 +81,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actInspecAvatar_r)																				//12
 									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actInspecAvatar_u)																					//13
 									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})											//14
-									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)																					//15
 									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustIK_head)																					//16
 									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																			//17
 									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																				//18
@@ -722,7 +722,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		string body = StateStringsDrv.s_longDesc[(int)s] + "\n";
 		for (int i_tran = 0; i_tran < m_transition.Length; i_tran ++)
 		{
-			string desc_tran = TransitionStringsDrv.s_Desc[i_tran];
+			string desc_tran = null;
+			if (m_simplified)
+				desc_tran = TransitionStringsDrvSimpl.s_Desc[i_tran];
+			else
+				desc_tran = TransitionStringsDrv.s_Desc[i_tran];
 			if (m_transition[i_tran].From == s
 				&& null != desc_tran)
 			{

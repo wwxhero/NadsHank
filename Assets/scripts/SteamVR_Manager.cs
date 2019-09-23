@@ -297,8 +297,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			GameObject mirror = g_inst.GetPrimeMirror();
 			Debug.Assert(null != mirror);
-			bool l_pad_t = (cond == L_PAD_T);
-			bool r_pad_t = (cond == R_PAD_T);
+			bool l_pad_t = (cond == U_ARROW);
+			bool r_pad_t = (cond == D_ARROW);
 			bool acted = (l_pad_t
 						|| r_pad_t);
 			float dz = 0;
@@ -547,18 +547,18 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			SteamVR_TrackedController ctrlR = m_ctrlR.GetComponent<SteamVR_TrackedController>();
 			SteamVR_TrackedController ctrlL = m_ctrlL.GetComponent<SteamVR_TrackedController>();
-			ctrl_switch[0] = ctrl_switch[0] || ctrlR.triggerPressed;
-			ctrl_switch[1] = ctrl_switch[1] || ctrlR.steamPressed;
-			ctrl_switch[2] = ctrl_switch[2] || ctrlR.menuPressed;
-			ctrl_switch[3] = ctrl_switch[3] || ctrlR.padPressed;
-			ctrl_switch[4] = ctrl_switch[4] || ctrlR.padTouched;
-			ctrl_switch[5] = ctrl_switch[5] || ctrlR.gripped;
-			ctrl_switch[6] = ctrl_switch[6] || ctrlL.triggerPressed;
-			ctrl_switch[7] = ctrl_switch[7] || ctrlL.steamPressed;
-			ctrl_switch[8] = ctrl_switch[8] || ctrlL.menuPressed;
-			ctrl_switch[9] = ctrl_switch[9] || ctrlL.padPressed;
-			ctrl_switch[10] = ctrl_switch[10] || ctrlL.padTouched;
-			ctrl_switch[11] = ctrl_switch[11] || ctrlL.gripped;
+			ctrl_switch[0] = ctrl_switch[0] 	|| ctrlR.triggerPressed;
+			ctrl_switch[1] = ctrl_switch[1] 	|| ctrlR.steamPressed;
+			ctrl_switch[2] = ctrl_switch[2] 	|| ctrlR.menuPressed;
+			ctrl_switch[3] = ctrl_switch[3] 	|| ctrlR.padPressed;
+			ctrl_switch[4] = ctrl_switch[4] 	|| ctrlR.padTouched;
+			ctrl_switch[5] = ctrl_switch[5] 	|| ctrlR.gripped;
+			ctrl_switch[6] = ctrl_switch[6] 	|| ctrlL.triggerPressed;
+			ctrl_switch[7] = ctrl_switch[7] 	|| ctrlL.steamPressed;
+			ctrl_switch[8] = ctrl_switch[8] 	|| ctrlL.menuPressed;
+			ctrl_switch[9] = ctrl_switch[9] 	|| ctrlL.padPressed;
+			ctrl_switch[10] = ctrl_switch[10] 	|| ctrlL.padTouched;
+			ctrl_switch[11] = ctrl_switch[11] 	|| ctrlL.gripped;
 		}
 
 		for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
@@ -570,9 +570,26 @@ public class SteamVR_Manager : SteamVR_TDManager
 		try
 		{
 			bool state_tran = false;
-			int n_transi = m_transition.Length;
-			for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
-				state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
+
+		    uint [] codes_enter = 	{R_TRIGGER, R_GRIP, R_MENU, R_PAD_P, R_PAD_T, R_STEAM};
+			uint [] codes_backspace = {L_TRIGGER, L_GRIP, L_MENU, L_PAD_P, L_PAD_T, L_STEAM};
+			uint [] codes_neither = 	{0};
+			uint [] codes_extra = null;
+			if (Input.GetKeyUp(KeyCode.Return))
+				codes_extra = codes_enter;
+			else if (Input.GetKeyUp(KeyCode.Backspace))
+				codes_extra = codes_backspace;
+			else
+				codes_extra = codes_neither;
+
+			for (int i_codeEx = 0; i_codeEx < codes_extra.Length && !state_tran; i_codeEx ++)
+			{
+				uint code_ctrl_ex = code_ctrl | codes_extra[i_codeEx];
+				int n_transi = m_transition.Length;
+				for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
+					state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl_ex);
+			}
+
 			State s_np = m_state;
 			if (s_np != s_n)
 				UpdateInstructionDisplay(m_state);
