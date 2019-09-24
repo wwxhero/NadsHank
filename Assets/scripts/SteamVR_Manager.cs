@@ -14,6 +14,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	public GameObject m_prefMirror;
 	public Text m_refDispHeader;
 	public Text m_refDispBody;
+	public CanvasMgr m_refCanvasMgr;
 	protected GameObject m_mirrow;
 	bool m_trackersIdentified = false;
 	[HideInInspector]
@@ -33,7 +34,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected delegate bool Action(uint cond);
 	protected enum State {
 						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra				//the common states shared for driver and pedestrain
-						, tracking, teleporting												//the specific state for pedestrain
+						, tracking_inspec, tracking_hmd, tracking_td, teleporting			//the specific state for pedestrain
 						, pre_calibra2, pegging, tracking_r, tracking_f, tracking_u			//the specific state for driver
 					};
 
@@ -123,6 +124,32 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	public virtual bool IdentifyTrackers()
 	{
+		return false;
+	}
+
+	protected static bool actViewHmd(uint cond)
+	{
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.viewHmd();
+		g_inst.m_refCanvasMgr.viewHmd();
+		return true;
+	}
+
+	protected static bool actViewInspec(uint cond)
+	{
+		g_inst.m_refCanvasMgr.viewInspec();
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.viewInspec();
+		return true;
+	}
+
+	protected static bool actViewTd(uint cond)
+	{
+		//fixme: resize inspecting view
+		//		transparent instruction view
+		//		adjust inspecting camera on whole map
+		Exception e = new Exception("Top-down view is not yet implemented!");
+		throw e;
 		return false;
 	}
 
@@ -571,7 +598,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			bool state_tran = false;
 
-		    uint [] codes_enter = 	{R_TRIGGER, R_GRIP, R_MENU, R_PAD_P, R_PAD_T, R_STEAM};
+			uint [] codes_enter = 	{R_TRIGGER, R_GRIP, R_MENU, R_PAD_P, R_PAD_T, R_STEAM};
 			uint [] codes_backspace = {L_TRIGGER, L_GRIP, L_MENU, L_PAD_P, L_PAD_T, L_STEAM};
 			uint [] codes_neither = 	{0};
 			uint [] codes_extra = null;

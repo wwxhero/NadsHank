@@ -31,14 +31,14 @@ public class SteamVR_ManagerDrv_2 : SteamVR_Manager
                                     , new Transition(State.pre_calibra, State.post_calibra, R_TRIGGER, actCalibration)
                                     , new Transition(State.pre_calibra, State.post_calibra, L_TRIGGER, actCalibration)
                                     , new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustMirror)
-                                    , new Transition(State.post_calibra, State.tracking, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
+                                    , new Transition(State.post_calibra, State.tracking_inspec, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })
                                     , new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)
                                     , new Transition(State.post_calibra, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnShowMirror, actUnCalibration, actUnConnectVirtualWorld})
-                                    , new Transition(State.tracking, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
-                                    , new Transition(State.tracking, State.teleporting, R_TRIGGER, actTeleportP)
-                                    , new Transition(State.tracking, State.teleporting, L_TRIGGER, actTeleportM)
-                                    , new Transition(State.teleporting, State.tracking, NONE)
-                                    , new Transition(State.teleporting, State.tracking, NONE)
+                                    , new Transition(State.tracking_inspec, State.pre_cnn, L_MENU|R_MENU, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld})
+                                    , new Transition(State.tracking_inspec, State.teleporting, R_TRIGGER, actTeleportP)
+                                    , new Transition(State.tracking_inspec, State.teleporting, L_TRIGGER, actTeleportM)
+                                    , new Transition(State.teleporting, State.tracking_inspec, NONE)
+                                    , new Transition(State.teleporting, State.tracking_inspec, NONE)
                                 };
         g_inst = this;
 	}

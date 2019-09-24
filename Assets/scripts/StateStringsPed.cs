@@ -2,7 +2,7 @@ public class StateStringsPed
 {
 	public static string[] s_shortDesc = {
 		  "Initial", "Setting road-crossing scenario", "Road-crossing scenario is set", "Setup trackers", "Trackers are attached"
-		  , "Road-crossing", "Teleporting"
+		  , "Road-crossing", "Road-crossing", "Road-crossing", "Teleporting"
 	};
 	public static string[] s_longDesc = {
 		  "Turn on one and only one tracker, put it on ground where the participant is to stand!"
@@ -10,6 +10,8 @@ public class StateStringsPed
 		, "Walking to cross the road to make sure the space is enough to reach both sides of road."
 		, "Step into the avatar and stand in 'T' posture, confirm that you match the avatar's pose by looking at the mirror, or at your own limbs."
 		, "Move around to make sure tracking works good."
+		, "You may now cross the road."
+		, "You may now cross the road."
 		, "You may now cross the road."
 		, "Teleporting to a new road crossing site."
 	};

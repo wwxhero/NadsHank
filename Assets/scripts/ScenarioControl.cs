@@ -976,4 +976,14 @@ public class ScenarioControl : MonoBehaviour
 		inspector.Apply(m_egoInspector, dir);
 	}
 
+	public void viewInspec()
+	{
+		m_egoInspector.gameObject.SetActive(true);
+		adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
+	}
+
+	public void viewHmd()
+	{
+		m_egoInspector.gameObject.SetActive(false);
+	}
 }
