@@ -568,11 +568,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		bool adjusting = false;
 		switch(cond)
 		{
-		case R_ARROW:
+		case L_ARROW:
 			deltaT.x = c_deltaT;
 			adjusting = true;
 			break;
-		case L_ARROW:
+		case R_ARROW:
 			deltaT.x = -c_deltaT;
 			adjusting = true;
 			break;
