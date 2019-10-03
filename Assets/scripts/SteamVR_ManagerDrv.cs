@@ -394,16 +394,12 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 				, g_inst.m_objects[(int)ObjType.tracker_rhand]
 				, g_inst.m_objects[(int)ObjType.tracker_lhand]
 			};
-			bool all_trackers_unlocked = true;
 			for (int i = 0; i < trackers.Length; i ++)
 			{
 				SteamVR_TrackedObject t = trackers[i].GetComponent<SteamVR_TrackedObject>();
 				t.Lock(false);		//trackers are unlocked with latency
-				all_trackers_unlocked = all_trackers_unlocked && !t.Locked();
 			}
-			g_inst.Avatar.GetComponent<VRIK>().LockSolver(!all_trackers_unlocked);
-
-			return all_trackers_unlocked;
+			return true;
 		}
 	}
 
