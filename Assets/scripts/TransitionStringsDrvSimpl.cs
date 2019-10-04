@@ -20,9 +20,9 @@ public class TransitionStringsDrvSimpl
 		, "Press 'Backspace' to re-attach trackers."																						//19
 		, "Press 'Enter' to place avatar in car."																							//20
 		, "Press 'Enter' to proceed."																										//21
-		, "Press 'Enter' to re-attach avatar to car."																						//22
-		, "Press 'Enter' to re-attach avatar to car."																						//23
-		, "Press 'Enter' to re-attach avatar to car."																						//24
+		, "Press 'Backspace' to re-attach avatar to car."																					//22
+		, "Press 'Backspace' to re-attach avatar to car."																					//23
+		, "Press 'Backspace' to re-attach avatar to car."																					//24
 		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//25
 		, null																																//26
 		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//27
@@ -32,8 +32,9 @@ public class TransitionStringsDrvSimpl
 		, "Press 'Arrow' keys to adjust avatar position while placing hands on steering wheel and lookforward."								//31
 		, "Press 'Arrow' keys to adjust avatar position while placing hands on steering wheel and lookforward."								//32
 		, "Press 'Arrow' keys to adjust avatar position while placing hands on steering wheel and lookforward."								//33
-		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//34
-		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//35
-		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//36
+		, "Press 'Enter' to proceed."																										//34
+		, "Press 'Enter' to proceed."																										//35
+		, "Press 'Enter' to proceed."																										//36
+		, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."														//37
 	};
 }

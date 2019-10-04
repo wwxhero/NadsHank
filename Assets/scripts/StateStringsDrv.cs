@@ -3,7 +3,7 @@ public class StateStringsDrv
 	public static string[] s_shortDesc = {
 		  "Initial", "Start Calibration", "Driving scenario is set", "Setup trackers, step 1 of 2", "Standing height adjustment"
 		  , null, null, null, null
-		  , "Setup trackers, step 2 of 2", "Move to Car", "Sitting adjustments", "Sitting adjustments", "Sitting adjustments"
+		  , "Setup trackers, step 2 of 2", "Move to Car", "Sitting adjustments", "Sitting adjustments", "Sitting adjustments", "Calibration is done"
 	};
 	public static string[] s_longDesc = {
 		  "Turn on one and only one tracker, put it on ground where the participant is to stand!"
@@ -20,5 +20,6 @@ public class StateStringsDrv
 		, "Adjust avatar location in car until satisfied."
 		, "Adjust avatar location in car until satisfied."
 		, "Adjust avatar location in car until satisfied."
+		, "You may now drive."
 	};
 }

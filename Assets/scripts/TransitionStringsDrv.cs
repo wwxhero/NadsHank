@@ -20,9 +20,9 @@ public class TransitionStringsDrv
 		, "Press '(left)SHIFT + G' to redo encarnation"																						//19.1
 		, "Press '(right)SHIFT + G' to put avatar into car."																				//20
 		, "Put both hands onto steering wheel to be ready for drive, then Press '(right)SHIFT + T'"											//21
-		, "Press 'SHIFT + G' while both hands on steering wheel for adjusting position"														//22
-		, "Press 'SHIFT + G' while both hands on steering wheel for adjusting position"														//23
-		, "Press 'SHIFT + G' while both hands on steering wheel for adjusting position"														//24
+		, "Press '(left)SHIFT + G' while both hands on steering wheel for adjusting position"														//22
+		, "Press '(left)SHIFT + G' while both hands on steering wheel for adjusting position"														//23
+		, "Press '(left)SHIFT + G' while both hands on steering wheel for adjusting position"														//24
 		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//25
 		, null																																//26
 		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//27
@@ -32,8 +32,9 @@ public class TransitionStringsDrv
 		, "Press 'ARROW' to move the avatar relative to the car."																			//31
 		, "Press 'ARROW' to move the avatar relative to the car."																			//32
 		, "Press 'ARROW' to move the avatar relative to the car."																			//33
-		, "Press '(left)SHIFT + M + (left)ARROW to start over for next participant."														//34
-		, "Press '(left)SHIFT + M + (left)ARROW to start over for next participant."														//35
-		, "Press '(left)SHIFT + M + (left)ARROW to start over for next participant."														//36
+		, "Press '(right)SHIFT + G' to proceed."																							//34
+		, "Press '(right)SHIFT + G' to proceed."																							//35
+		, "Press '(right)SHIFT + G' to proceed."																							//36
+		, "Press '(left)SHIFT + M + (left)ARROW' to start over for next participant."														//37
 	};
 }
