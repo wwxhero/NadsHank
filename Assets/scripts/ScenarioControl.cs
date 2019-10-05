@@ -450,7 +450,7 @@ public class ScenarioControl : MonoBehaviour
 						XmlElement e_map = (XmlElement)n_child;
 						XmlAttribute e_t_attr = e_map.GetAttributeNode("elevation_t");
 						float e_t = float.Parse(e_t_attr.Value);
-						SetMapElevation(0.0f);
+						SetMapElevation(e_t);
 					}
 				}
 
@@ -479,8 +479,9 @@ public class ScenarioControl : MonoBehaviour
 		}
 	}
 
-	public void SetMapElevation(float e_t)
+	public void SetMapElevation(float elevation_t)
 	{
+		float e_t = elevation_t - transform.position.y;
 		Vector3 tl_w = new Vector3(0, e_t, 0);
 		transform.Translate(tl_w, Space.World);
 		foreach (KeyValuePair<int, GameObject> dyno in m_id2Dyno)
