@@ -18,7 +18,7 @@ public class TransitionStringsPedSimpl
 			, "Press 'Enter' to start road crossing."														//15
 			, "Press 'Backspace' to re-attach trackers."													//16
 			, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."					//17
-			, "Press 'Enter' to teleport to next site."														//18
+			, "Press 'Right arrow' to teleport to next site."												//18
 			, null //teleporting to tracking no hint														//19
 			, "Press 'F' to inspect avatar from front."														//20
 			, "Press 'R' to inspect avatar from right."														//21

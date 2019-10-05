@@ -43,8 +43,8 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 									, new Transition(State.post_calibra, State.tracking_inspec, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })													//15
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																						//16
 									, new Transition(State.tracking_inspec, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})	//17
-									, new Transition(State.tracking_td, State.teleporting, R_TRIGGER, actTeleportP)																							//18
-									, new Transition(State.teleporting, State.tracking_td, NONE)																											//19
+									, new Transition(State.tracking_hmd, State.teleporting, R_ARROW, actTeleportP)																							//18
+									, new Transition(State.teleporting, State.tracking_hmd, NONE)																												//19
 									, new Transition(State.tracking_inspec, State.tracking_inspec, FORWARD, actInspecAvatar_f)																				//20
 									, new Transition(State.tracking_inspec, State.tracking_inspec, RIGHT, actInspecAvatar_r)																				//21
 									, new Transition(State.tracking_inspec, State.tracking_inspec, UP, actInspecAvatar_u)																					//22
