@@ -450,7 +450,7 @@ public class ScenarioControl : MonoBehaviour
 						XmlElement e_map = (XmlElement)n_child;
 						XmlAttribute e_t_attr = e_map.GetAttributeNode("elevation_t");
 						float e_t = float.Parse(e_t_attr.Value);
-						SetMapElevation(e_t);
+						SetMapElevation(0.0f);
 					}
 				}
 
