@@ -1,48 +1,40 @@
 public class TransitionStringsDrv
 {
 	public static string [] s_Desc = {
-		  "Press 'SHIFT + T' to messure ground elevation."																					//1
-		, null																																//1.1
-		, "Press 'SHIFT + G' to set up the scene."																							//2
-		, null																																//3
-		, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."										//4
-		, "Press 'F' to inspect avatar from front."																							//5
-		, "Press 'R' to inspect avatar from right."																							//6
-		, "Press 'U' to inspect avatar from top."																							//7
-		, "Press 'SHIFT + T' to lock trackers, and then replace HMD with head tracker."														//8
-		, null																																//9
+		  "Press '(right)SHIFT + T' to messure ground elevation."																			//1
+		, "Press '(right)SHIFT + G' to set up the scene."																					//2
+		, "Press 'Down arrow' to move mirror closer, 'Up arrow' to move mirror farthur."										//3
+		, "Press 'F' to inspect avatar from front."																							//4
+		, "Press 'R' to inspect avatar from right."																							//5
+		, "Press 'U' to inspect avatar from top."																							//6
+		, "Press '(right)SHIFT + T' to lock trackers, and then replace HMD with head tracker."												//7
 		, "Press '(left)SHIFT + G' to re-align trackers with avatar."																		//10
 		, "Press 'F' to inspect avatar from front."																							//11
 		, "Press 'R' to inspect avatar from right."																							//12
 		, "Press 'U' to inspect avatar from top."																							//13
-		, "Press 'SHIFT + M' to complete calibration after replacing HMD with head tracker."												//14
-		, null																																//15
-		, "Press '(right)SHIFT + O' to move mirror closer, '(left)SHIFT + O' to move mirror farthur."										//16
-		, "Press 'UP' to pull avatar upward, 'DOWN' to push avatar downward"																//16.1
+		, "Press '(right)SHIFT + M' to complete calibration after replacing HMD with head tracker."											//14
+		, "Press 'UP' to pull avatar upward, 'DOWN' to push avatar downward"																//16
 		, "Press 'F' to inspect avatar from front."																							//17
 		, "Press 'R' to inspect avatar from right."																							//18
 		, "Press 'U' to inspect avatar from top."																							//19
 		, "Press '(left)SHIFT + G' to redo encarnation"																						//19.1
 		, "Press '(right)SHIFT + G' to put avatar into car."																				//20
-		, "Put both hands onto steering wheel to be ready for drive, then Press 'SHIFT + T'"												//21
-		, null																																//22
-		, "Press 'SHIFT + G' while both hands on steering wheel for adjusting position"														//23
-		, null																																//24
-		, "Press 'SHIFT + G' while both hands on steering wheel for adjusting position"														//25
+		, "Put both hands onto steering wheel to be ready for drive, then Press '(right)SHIFT + T'"											//21
+		, "Press '(left)SHIFT + G' while both hands on steering wheel for adjusting position"														//22
+		, "Press '(left)SHIFT + G' while both hands on steering wheel for adjusting position"														//23
+		, "Press '(left)SHIFT + G' while both hands on steering wheel for adjusting position"														//24
+		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//25
 		, null																																//26
-		, "Press 'SHIFT + G' while both hands on steering wheel for adjusting position"														//25
+		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//27
 		, null																																//28
 		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//29
 		, null																																//30
-		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//31
-		, null																																//32
-		, "Press 'F' to inspect avatar from front.\r\nPress 'R' to inspect avatar from right.\r\nPress 'U' to inspect avatar from top."		//33
-		, null																																//34
-		, "Press 'ARROW' to move the avatar relative to the car."																			//35
-		, "Press 'ARROW' to move the avatar relative to the car."																			//36
-		, "Press 'ARROW' to move the avatar relative to the car."																			//37
-		, "Press '(left)SHIFT + (right)SHIFT + M to start over for next participant."														//38
-		, "Press '(left)SHIFT + (right)SHIFT + M to start over for next participant."														//39
-		, "Press '(left)SHIFT + (right)SHIFT + M to start over for next participant."														//40
+		, "Press 'ARROW' to move the avatar relative to the car."																			//31
+		, "Press 'ARROW' to move the avatar relative to the car."																			//32
+		, "Press 'ARROW' to move the avatar relative to the car."																			//33
+		, "Press '(right)SHIFT + G' to proceed."																							//34
+		, "Press '(right)SHIFT + G' to proceed."																							//35
+		, "Press '(right)SHIFT + G' to proceed."																							//36
+		, "Press '(left)SHIFT + M + (left)ARROW' to start over for next participant."														//37
 	};
 }

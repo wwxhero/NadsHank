@@ -14,6 +14,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	public GameObject m_prefMirror;
 	public Text m_refDispHeader;
 	public Text m_refDispBody;
+	public CanvasMgr m_refCanvasMgr;
 	protected GameObject m_mirrow;
 	bool m_trackersIdentified = false;
 	[HideInInspector]
@@ -33,8 +34,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected delegate bool Action(uint cond);
 	protected enum State {
 						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra				//the common states shared for driver and pedestrain
-						, tracking, teleporting												//the specific state for pedestrain
-						, pre_calibra2, pegging, tracking_r, tracking_f, tracking_u			//the specific state for driver
+						, tracking_inspec, tracking_hmd, tracking_td, teleporting			//the specific state for pedestrain
+						, pre_calibra2, pegging, adjusting_r, adjusting_f, adjusting_u, tracking			//the specific state for driver
 					};
 
 
@@ -123,6 +124,32 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	public virtual bool IdentifyTrackers()
 	{
+		return false;
+	}
+
+	protected static bool actViewHmd(uint cond)
+	{
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.viewHmd();
+		g_inst.m_refCanvasMgr.viewHmd();
+		return true;
+	}
+
+	protected static bool actViewInspec(uint cond)
+	{
+		g_inst.m_refCanvasMgr.viewInspec();
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.viewInspec();
+		return true;
+	}
+
+	protected static bool actViewTd(uint cond)
+	{
+		//fixme: resize inspecting view
+		//		transparent instruction view
+		//		adjust inspecting camera on whole map
+		Exception e = new Exception("Top-down view is not yet implemented!");
+		throw e;
 		return false;
 	}
 
@@ -297,8 +324,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			GameObject mirror = g_inst.GetPrimeMirror();
 			Debug.Assert(null != mirror);
-			bool l_pad_t = (cond == L_PAD_T);
-			bool r_pad_t = (cond == R_PAD_T);
+			bool l_pad_t = (cond == U_ARROW);
+			bool r_pad_t = (cond == D_ARROW);
 			bool acted = (l_pad_t
 						|| r_pad_t);
 			float dz = 0;
@@ -547,18 +574,18 @@ public class SteamVR_Manager : SteamVR_TDManager
 		{
 			SteamVR_TrackedController ctrlR = m_ctrlR.GetComponent<SteamVR_TrackedController>();
 			SteamVR_TrackedController ctrlL = m_ctrlL.GetComponent<SteamVR_TrackedController>();
-			ctrl_switch[0] = ctrl_switch[0] || ctrlR.triggerPressed;
-			ctrl_switch[1] = ctrl_switch[1] || ctrlR.steamPressed;
-			ctrl_switch[2] = ctrl_switch[2] || ctrlR.menuPressed;
-			ctrl_switch[3] = ctrl_switch[3] || ctrlR.padPressed;
-			ctrl_switch[4] = ctrl_switch[4] || ctrlR.padTouched;
-			ctrl_switch[5] = ctrl_switch[5] || ctrlR.gripped;
-			ctrl_switch[6] = ctrl_switch[6] || ctrlL.triggerPressed;
-			ctrl_switch[7] = ctrl_switch[7] || ctrlL.steamPressed;
-			ctrl_switch[8] = ctrl_switch[8] || ctrlL.menuPressed;
-			ctrl_switch[9] = ctrl_switch[9] || ctrlL.padPressed;
-			ctrl_switch[10] = ctrl_switch[10] || ctrlL.padTouched;
-			ctrl_switch[11] = ctrl_switch[11] || ctrlL.gripped;
+			ctrl_switch[0] = ctrl_switch[0] 	|| ctrlR.triggerPressed;
+			ctrl_switch[1] = ctrl_switch[1] 	|| ctrlR.steamPressed;
+			ctrl_switch[2] = ctrl_switch[2] 	|| ctrlR.menuPressed;
+			ctrl_switch[3] = ctrl_switch[3] 	|| ctrlR.padPressed;
+			ctrl_switch[4] = ctrl_switch[4] 	|| ctrlR.padTouched;
+			ctrl_switch[5] = ctrl_switch[5] 	|| ctrlR.gripped;
+			ctrl_switch[6] = ctrl_switch[6] 	|| ctrlL.triggerPressed;
+			ctrl_switch[7] = ctrl_switch[7] 	|| ctrlL.steamPressed;
+			ctrl_switch[8] = ctrl_switch[8] 	|| ctrlL.menuPressed;
+			ctrl_switch[9] = ctrl_switch[9] 	|| ctrlL.padPressed;
+			ctrl_switch[10] = ctrl_switch[10] 	|| ctrlL.padTouched;
+			ctrl_switch[11] = ctrl_switch[11] 	|| ctrlL.gripped;
 		}
 
 		for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
@@ -570,9 +597,26 @@ public class SteamVR_Manager : SteamVR_TDManager
 		try
 		{
 			bool state_tran = false;
-			int n_transi = m_transition.Length;
-			for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
-				state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl);
+
+			uint [] codes_enter = 	{R_TRIGGER, R_GRIP, R_MENU, R_PAD_P, R_PAD_T, R_STEAM};
+			uint [] codes_backspace = {L_TRIGGER, L_GRIP, L_MENU, L_PAD_P, L_PAD_T, L_STEAM};
+			uint [] codes_neither = 	{0};
+			uint [] codes_extra = null;
+			if (Input.GetKeyUp(KeyCode.Return))
+				codes_extra = codes_enter;
+			else if (Input.GetKeyUp(KeyCode.Backspace))
+				codes_extra = codes_backspace;
+			else
+				codes_extra = codes_neither;
+
+			for (int i_codeEx = 0; i_codeEx < codes_extra.Length && !state_tran; i_codeEx ++)
+			{
+				uint code_ctrl_ex = code_ctrl | codes_extra[i_codeEx];
+				int n_transi = m_transition.Length;
+				for (int i_transi = 0; i_transi < n_transi && !state_tran; i_transi++)
+					state_tran = m_transition[i_transi].Exe(ref m_state, code_ctrl_ex);
+			}
+
 			State s_np = m_state;
 			if (s_np != s_n)
 				UpdateInstructionDisplay(m_state);

@@ -479,8 +479,15 @@ public class ScenarioControl : MonoBehaviour
 		}
 	}
 
-	public void SetMapElevation(float e_t)
+	public void SetMapElevation(float elevation_t)
 	{
+		float e_t = elevation_t - transform.position.y;
+		Vector3 tl_w = new Vector3(0, e_t, 0);
+		transform.Translate(tl_w, Space.World);
+		foreach (KeyValuePair<int, GameObject> dyno in m_id2Dyno)
+			dyno.Value.transform.Translate(tl_w, Space.World);
+		foreach (KeyValuePair<int, GameObject> ped in m_id2Ped)
+			ped.Value.transform.Translate(tl_w, Space.World);
 		Matrix4x4 t_u = new Matrix4x4(
 						  new Vector4(1,	0,		0,		0)
 						, new Vector4(0,	1,		0,		0)
@@ -493,7 +500,6 @@ public class ScenarioControl : MonoBehaviour
 						, new Vector4(0,	0,		1,		0)
 						, new Vector4(0,	-e_t,	0,		1)
 						);
-		transform.Translate(new Vector3(0, e_t, 0), Space.World);
 		c_sim2unity = t_u * c_sim2unity;
 		c_unity2sim = c_unity2sim * t_u_inv;
 	}
@@ -976,4 +982,14 @@ public class ScenarioControl : MonoBehaviour
 		inspector.Apply(m_egoInspector, dir);
 	}
 
+	public void viewInspec()
+	{
+		m_egoInspector.gameObject.SetActive(true);
+		adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
+	}
+
+	public void viewHmd()
+	{
+		m_egoInspector.gameObject.SetActive(false);
+	}
 }
