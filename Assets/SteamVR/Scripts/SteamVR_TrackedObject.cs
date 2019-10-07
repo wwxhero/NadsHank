@@ -38,6 +38,8 @@ public class SteamVR_TrackedObject : MonoBehaviour
 	public bool isValid { get; private set; }
 
 	private bool m_lock = false;
+	private Vector3 m_posAct = new Vector3(0, 0, 0);
+	private Quaternion m_rotAct = Quaternion.identity;
 	public bool Lock(bool l)
 	{
 		bool lock_prev = m_lock;
@@ -46,6 +48,11 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		{
 			transform.position = m_posDft;
 			transform.rotation = m_rotDft;
+		}
+		else
+		{
+			transform.position = m_posAct;
+			transform.rotation = m_rotAct;
 		}
 		return lock_prev;
 	}
@@ -74,14 +81,7 @@ public class SteamVR_TrackedObject : MonoBehaviour
 
 	private void OnNewPoses(TrackedDevicePose_t[] poses)
 	{
-		if (m_lock)
-		{
-			transform.position = m_posDft;
-			transform.rotation = m_rotDft;
-		}
-
-		if (index == EIndex.None
-			|| m_lock)
+		if (index == EIndex.None)
 			return;
 
 		var i = (int)index;
@@ -111,6 +111,14 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		{
 			transform.localPosition = pose.pos;
 			transform.localRotation = pose.rot;
+		}
+
+		if (m_lock)
+		{
+			m_posAct = transform.position;
+			m_rotAct = transform.rotation;
+			transform.position = m_posDft;
+			transform.rotation = m_rotDft;
 		}
 	}
 
