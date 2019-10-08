@@ -9,7 +9,6 @@ public class SteamVR_Manager : SteamVR_TDManager
 {
 	public bool DEF_MOCKSTEAM = true;
 	public bool DEF_DBG = true;
-	public bool DEF_TESTTELEPORT = true;
 	public GameObject m_senarioCtrl;
 	public GameObject m_prefMirror;
 	public Text m_refDispHeader;
@@ -216,13 +215,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 			Debug.LogWarning("SteamVR_Manager::actTeleportP");
 			return true;
 		}
-		else if (g_inst.DEF_TESTTELEPORT)
+		else
 		{
 			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
 			return scenario.testTeleport(++s_idx);
 		}
-		else
-			return true;
 	}
 
 	protected static bool actTeleportM(uint cond)
@@ -232,13 +229,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 			Debug.LogWarning("SteamVR_Manager::actTeleportM");
 			return true;
 		}
-		else if (g_inst.DEF_TESTTELEPORT)
+		else
 		{
 			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
 			return scenario.testTeleport(--s_idx);
 		}
-		else
-			return true;
 	}
 
 	public virtual void ConnectVirtualWorld()
