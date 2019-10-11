@@ -435,7 +435,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, true);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, ScenarioControl.InspectorHelper.ObjType.Host);
 			return true;
 		}
 	}
@@ -450,7 +450,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, true);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, ScenarioControl.InspectorHelper.ObjType.Host);
 			return true;
 		}
 	}
@@ -465,7 +465,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, true);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, ScenarioControl.InspectorHelper.ObjType.Host);
 			return true;
 		}
 	}

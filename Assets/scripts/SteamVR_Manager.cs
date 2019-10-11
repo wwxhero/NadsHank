@@ -144,12 +144,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected static bool actViewTd(uint cond)
 	{
-		//fixme: resize inspecting view
-		//		transparent instruction view
-		//		adjust inspecting camera on whole map
-		Exception e = new Exception("Top-down view is not yet implemented!");
-		throw e;
-		return false;
+		g_inst.m_refCanvasMgr.viewInspec();
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.viewMap();
+		return true;
 	}
 
 	protected static bool actGroundEle(uint cond)
@@ -686,7 +684,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, false);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, ScenarioControl.InspectorHelper.ObjType.Ego);
 			return true;
 		}
 	}
@@ -701,7 +699,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, false);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, ScenarioControl.InspectorHelper.ObjType.Ego);
 			return true;
 		}
 	}
@@ -716,7 +714,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, ScenarioControl.InspectorHelper.ObjType.Ego);
 			return true;
 		}
 	}

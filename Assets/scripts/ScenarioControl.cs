@@ -9,7 +9,6 @@ using System.Globalization;
 
 public class ScenarioControl : MonoBehaviour
 {
-
 	private string m_scenePath;
 	public GameObject[] m_vehiPrefabs;
 	public GameObject m_pedPrefab;
@@ -44,8 +43,13 @@ public class ScenarioControl : MonoBehaviour
 		{
 			get { return width + (2 * hand0) * width / width0; }
 		}
+		public float Depth
+		{
+			get { return depth; }
+		}
 		private float height;
 		private float width;
+		private float depth;
 		private float perceptualHeight;
 		private const float height0 = 1.77f;
 		private const float width0 = 1.40f;
@@ -54,10 +58,11 @@ public class ScenarioControl : MonoBehaviour
 		private ArrayList lstPos_test = new ArrayList();
 		private ArrayList lstTan_test = new ArrayList();
 		private ArrayList lstLat_test = new ArrayList();
-		public ConfAvatar(float a_height, float a_width)
+		public ConfAvatar(float a_height, float a_width, float a_depth)
 		{
 			height = a_height;
 			width = a_width;
+			depth = a_depth;
 			perceptualHeight = height;
 		}
 
@@ -128,6 +133,7 @@ public class ScenarioControl : MonoBehaviour
 		public static string s_name = "avatar";
 		public static string s_height = "height";
 		public static string s_width = "width";
+		public static string s_depth = "depth";
 		public static string s_teleport = "teleport";
 	};
 
@@ -138,6 +144,40 @@ public class ScenarioControl : MonoBehaviour
 		public float Depth = 5.15f;
 	};
 
+	public class ConfMap
+	{
+		Vector3 center;
+		float width, height, depth;
+		public ConfMap(Transform t)
+		{
+			Transform bcube = t.Find("Bcube");
+			Debug.Assert(null != bcube);
+			if (null == bcube)
+				throw new Exception("no bounding cube defined for map!");
+			center = bcube.localPosition;
+            Vector3 size = bcube.lossyScale;
+			width = size.x;
+			height = size.y;
+			depth = size.z;
+		}
+		public float Height
+		{
+			get { return height; }
+		}
+		public float Width
+		{
+			get { return width; }
+		}
+		public float Depth
+		{
+			get { return depth; }
+		}
+		public Vector3 Center
+		{
+			get { return center; }
+		}
+	}
+
 	public class InspectorHelper
 	{
 		struct BBOX
@@ -146,29 +186,38 @@ public class ScenarioControl : MonoBehaviour
 			public float halfWidth, halfHeight, halfDepth;
 		};
 		BBOX m_bbox;
-		bool m_bHost;
-		Transform m_target;
+		public enum ObjType {Host, Ego, Map};
+        ObjType m_type;
+        Transform m_target;
 		public InspectorHelper(Transform target, ConfAvatar conf)
 		{
-			m_bHost = false;
+			m_type = ObjType.Ego;
 			m_target = target;
 			Vector3 s_l = target.localScale;
 			m_bbox.center = new Vector3(0, (conf.Height * 0.5f) / s_l.y, 0);
 			m_bbox.halfWidth = conf.Width * 0.5f;
 			m_bbox.halfHeight = conf.Height * 0.5f;
-			m_bbox.halfDepth = 0f; //fixme: the avatar is as thin as a paper
+			m_bbox.halfDepth = conf.Depth * 0.5f;
 		}
 
 		public InspectorHelper(Transform target, ConfVehical conf)
 		{
-			//fixme: intialize inspector helper for the vechical target
-			m_bHost = true;
+			m_type = ObjType.Host;
 			m_target = target;
 			m_bbox.center = new Vector3(0, 0, conf.Height * 0.5f);
 			m_bbox.halfWidth = conf.Width * 0.5f;
 			m_bbox.halfHeight = conf.Height * 0.5f;
 			m_bbox.halfDepth = conf.Depth * 0.5f;
+		}
 
+		public InspectorHelper(Transform target, ConfMap conf)
+		{
+			m_type = ObjType.Map;
+			m_target = target;
+			m_bbox.center = conf.Center;
+			m_bbox.halfWidth = conf.Width * 0.5f;
+			m_bbox.halfHeight = conf.Height * 0.5f;
+			m_bbox.halfDepth = conf.Depth * 0.5f;
 		}
 		public enum Direction { forward = 0, up, right };
 
@@ -182,15 +231,24 @@ public class ScenarioControl : MonoBehaviour
 			};
 			int host_mask = 1 << (int)LAYER.host_dynamic;
 			int ego_mask = 1 << (int)LAYER.ego_dynamic;
-			cam.cullingMask = m_bHost ? host_mask | ego_mask : ego_mask;
+			int static_mask = 1 << (int)LAYER.scene_static;
+			int dyn_mask = 1 << (int)LAYER.peer_dynamic;
+
+			if (ObjType.Host == m_type)
+				cam.cullingMask = host_mask | ego_mask;
+			else if (ObjType.Ego == m_type)
+				cam.cullingMask = ego_mask;
+			else // ObjType.Map == m_type
+				cam.cullingMask = static_mask; //fixme: area indicationn for vehicle and for pedestrain is missing
+
 			cam.orthographic = true;
 			cam.orthographicSize = camSize[(int)dir];
 
 			cam.transform.parent = m_target;
-			float c_distance = 10f;
+			float c_distance = 100f;
 			Vector3[] t_l = null;
 			Vector3 u_l;
-			if (m_bHost)
+			if (ObjType.Host == m_type)
 			{
 				t_l = new Vector3[] {
 						  new Vector3(0, -1, 0)
@@ -199,7 +257,7 @@ public class ScenarioControl : MonoBehaviour
 					};
 				u_l = new Vector3(0, 0, 1);
 			}
-			else
+			else if (ObjType.Ego == m_type)
 			{
 				t_l = new Vector3[] {
 						  new Vector3(0, 0, 1)
@@ -207,6 +265,15 @@ public class ScenarioControl : MonoBehaviour
 						, new Vector3(1, 0, 0)
 					};
 				u_l = new Vector3(0, 1, 0);
+			}
+			else //if (ObjType.Map == m_type)
+			{
+				t_l = new Vector3[] {
+						  new Vector3(0, 1, 0)
+						, new Vector3(0, 1, 0)
+						, new Vector3(0, 1, 0)
+					};
+				u_l = new Vector3(0, 0, -1);
 			}
 
 			Quaternion r_l = Quaternion.LookRotation(-t_l[(int)dir], u_l);
@@ -218,6 +285,7 @@ public class ScenarioControl : MonoBehaviour
 
 	ConfAvatar m_confAvatar;
 	ConfVehical m_confVehicle = new ConfVehical(); //fixme: driving vehicle size is hardcoded
+	ConfMap m_confMap;
 
 	// Use this for initialization
 	ScenarioControl()
@@ -337,9 +405,11 @@ public class ScenarioControl : MonoBehaviour
 						XmlElement e_avatar = (XmlElement)n_child;
 						XmlAttribute height_attr = e_avatar.GetAttributeNode(ConfAvatar.s_height);
 						XmlAttribute width_attr = e_avatar.GetAttributeNode(ConfAvatar.s_width);
+						XmlAttribute depth_attr = e_avatar.GetAttributeNode(ConfAvatar.s_depth);
 						float height = float.Parse(height_attr.Value);
 						float width = float.Parse(width_attr.Value);
-						m_confAvatar = new ConfAvatar(height, width);
+						float depth = float.Parse(depth_attr.Value);
+						m_confAvatar = new ConfAvatar(height, width, depth);
 						XmlNodeList children_avatar = n_child.ChildNodes;
 						if (null != children_avatar)
 						{
@@ -452,17 +522,19 @@ public class ScenarioControl : MonoBehaviour
 						float e_t = float.Parse(e_t_attr.Value);
 						SetMapElevation(e_t);
 					}
+					m_confMap = new ConfMap(transform);
 				}
 
 				setLayer(gameObject, LAYER.scene_static);
 			}
 			catch (System.IO.FileNotFoundException)
 			{
-				Debug.Log("scene load failed!");
+				Debug.LogError("scene load failed!");
 			}
 			catch (Exception e)
 			{
-				Debug.Log(e.Message);
+				Debug.LogError("scene load failed!");
+				Debug.LogError(e.Message);
 				m_ctrl.ReleaseNetworkExternalObjectControl();
 				m_ctrl = null;
 			}
@@ -604,6 +676,11 @@ public class ScenarioControl : MonoBehaviour
 										ik.AutoDetectReferences();
 
 										bool mockTracking = (null != m_mockTrackersPrefab);
+										GameObject steamVR = GameObject.Find("[CameraRig]");
+										Debug.Assert(null != steamVR);
+										SteamVR_Manager mgr = steamVR.GetComponent<SteamVR_Manager>();
+										mgr.Avatar = ped;
+										mgr.DEF_MOCKSTEAM = mockTracking;
 										if (mockTracking)
 										{
 											m_trackers = Instantiate(m_mockTrackersPrefab, p_unity, q_unity);
@@ -621,10 +698,6 @@ public class ScenarioControl : MonoBehaviour
 										}
 										else
 										{
-											GameObject steamVR = GameObject.Find("[CameraRig]");
-											Debug.Assert(null != steamVR);
-											SteamVR_Manager mgr = steamVR.GetComponent<SteamVR_Manager>();
-											mgr.Avatar = ped;
 											m_trackers = steamVR;
 											Debug.Assert(null != m_confAvatar);
 											m_confAvatar.Apply(ik);
@@ -972,24 +1045,32 @@ public class ScenarioControl : MonoBehaviour
 		}
 	}
 
-	public void adjustInspector(InspectorHelper.Direction dir, bool host)
+	public void adjustInspector(InspectorHelper.Direction dir, InspectorHelper.ObjType type)
 	{
 		InspectorHelper inspector = null;
-		if (host)
+		if (type == InspectorHelper.ObjType.Host)
 			inspector = new InspectorHelper(m_id2Ped[0].transform.parent, m_confVehicle);
-		else
+		else if (type == InspectorHelper.ObjType.Ego)
 			inspector = new InspectorHelper(m_id2Ped[0].transform, m_confAvatar);
+        else if (type == InspectorHelper.ObjType.Map)
+        	inspector = new InspectorHelper(transform, m_confMap);
 		inspector.Apply(m_egoInspector, dir);
 	}
 
 	public void viewInspec()
 	{
 		m_egoInspector.gameObject.SetActive(true);
-		adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, false);
+		adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, InspectorHelper.ObjType.Ego);
 	}
 
 	public void viewHmd()
 	{
 		m_egoInspector.gameObject.SetActive(false);
+	}
+
+	public void viewMap()
+	{
+		m_egoInspector.gameObject.SetActive(true);
+		adjustInspector(ScenarioControl.InspectorHelper.Direction.up, InspectorHelper.ObjType.Map);
 	}
 }
