@@ -15,12 +15,12 @@ public class ScenarioControl : MonoBehaviour
 	public GameObject m_drvPrefab;
 	public GameObject m_camInspectorPrefab;
 	public GameObject m_mockTrackersPrefab;
-	public GameObject m_pedAreaPrefab;
-	private GameObject m_pedArea;
+	public GameObject m_areaPrefab;
 	public bool m_bDriver;
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
+    Dictionary<int, GameObject> m_id2Marker = new Dictionary<int, GameObject>();
 	GameObject m_trackers;
 	Camera m_egoInspector;
 
@@ -380,8 +380,9 @@ public class ScenarioControl : MonoBehaviour
 			SteamVR_Manager rigCamMgr = rigCam.GetComponent<SteamVR_Manager>();
 			rigCamMgr.Transport(q_rig, p_rig);
 		}
-		var pedArea = m_pedArea.GetComponent<PlayArea>();
-		pedArea.Teleport(t_u);
+		GameObject pedArea = m_id2Marker[0];
+		Debug.Assert(null != pedArea);
+		pedArea.GetComponent<PlayArea>().Teleport(t_u);
 
 	}
 
@@ -675,7 +676,11 @@ public class ScenarioControl : MonoBehaviour
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
-                                        m_pedArea = Instantiate(m_pedAreaPrefab, p_unity, q_unity);
+                                        GameObject pedArea = Instantiate(m_areaPrefab, p_unity, q_unity);
+                                        m_id2Marker.Add(id, pedArea);
+                                        var area = pedArea.GetComponent<PlayArea>();
+                                        area.color = Color.red;
+                                        area.size = PlayArea.Size._200x400;
 										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
