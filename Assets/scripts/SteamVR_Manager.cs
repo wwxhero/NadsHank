@@ -216,7 +216,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		else
 		{
 			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			return scenario.testTeleport(++s_idx);
+			return scenario.Teleport(++s_idx);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		else
 		{
 			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			return scenario.testTeleport(--s_idx);
+			return scenario.Teleport(--s_idx);
 		}
 	}
 

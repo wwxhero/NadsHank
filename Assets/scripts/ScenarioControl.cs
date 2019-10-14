@@ -15,6 +15,8 @@ public class ScenarioControl : MonoBehaviour
 	public GameObject m_drvPrefab;
 	public GameObject m_camInspectorPrefab;
 	public GameObject m_mockTrackersPrefab;
+	public GameObject m_pedAreaPrefab;
+	private GameObject m_pedArea;
 	public bool m_bDriver;
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
@@ -32,7 +34,7 @@ public class ScenarioControl : MonoBehaviour
 
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic };
+	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic, ego_dynamic_marker };
 	public class ConfAvatar
 	{
 		public float Height
@@ -112,7 +114,7 @@ public class ScenarioControl : MonoBehaviour
 			l_sim = new Vector3(latTel.x, latTel.y, latTel.z);
 		}
 
-		public void testTeleport(int idx, out Vector3 pos, out Vector3 tan, out Vector3 lat)
+		public void Teleport(int idx, out Vector3 pos, out Vector3 tan, out Vector3 lat)
 		{
 			int i = idx % lstLat_test.Count;
 			if (i < 0)
@@ -123,7 +125,7 @@ public class ScenarioControl : MonoBehaviour
 			lat = (Vector3)lstLat_test[i];
 		}
 
-		public void testAddTeleport(Vector3 p_sim, Vector3 t_sim, Vector3 l_sim)
+		public void AddTeleport(Vector3 p_sim, Vector3 t_sim, Vector3 l_sim)
 		{
 			lstPos_test.Add(p_sim);
 			lstTan_test.Add(t_sim);
@@ -233,13 +235,14 @@ public class ScenarioControl : MonoBehaviour
 			int ego_mask = 1 << (int)LAYER.ego_dynamic;
 			int static_mask = 1 << (int)LAYER.scene_static;
 			int dyn_mask = 1 << (int)LAYER.peer_dynamic;
+			int ego_marker_mask = 1 << (int)LAYER.ego_dynamic_marker;
 
 			if (ObjType.Host == m_type)
 				cam.cullingMask = host_mask | ego_mask;
 			else if (ObjType.Ego == m_type)
 				cam.cullingMask = ego_mask;
 			else // ObjType.Map == m_type
-				cam.cullingMask = static_mask; //fixme: area indicationn for vehicle and for pedestrain is missing
+				cam.cullingMask = static_mask | ego_marker_mask;
 
 			cam.orthographic = true;
 			cam.orthographicSize = camSize[(int)dir];
@@ -327,10 +330,10 @@ public class ScenarioControl : MonoBehaviour
 
 	}
 
-	public bool testTeleport(int idx)
+	public bool Teleport(int idx)
 	{
 		Vector3 pos, tan, lat;
-		m_confAvatar.testTeleport(idx, out pos, out tan, out lat);
+		m_confAvatar.Teleport(idx, out pos, out tan, out lat);
 		Teleport(pos, tan, lat);
 		return true;
 	}
@@ -377,6 +380,8 @@ public class ScenarioControl : MonoBehaviour
 			SteamVR_Manager rigCamMgr = rigCam.GetComponent<SteamVR_Manager>();
 			rigCamMgr.Transport(q_rig, p_rig);
 		}
+		var pedArea = m_pedArea.GetComponent<PlayArea>();
+		pedArea.Teleport(t_u);
 
 	}
 
@@ -430,7 +435,7 @@ public class ScenarioControl : MonoBehaviour
 									Vector3 p = new Vector3(val[0], val[1], val[2]);
 									Vector3 t = new Vector3(val[3], val[4], val[5]);
 									Vector3 l = Vector3.Cross(t, u); //fixme: not yet confirmed the cross product order
-									m_confAvatar.testAddTeleport(p, t, l);
+									m_confAvatar.AddTeleport(p, t, l);
 								}
 							}
 						}
@@ -670,6 +675,7 @@ public class ScenarioControl : MonoBehaviour
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
+                                        m_pedArea = Instantiate(m_pedAreaPrefab, p_unity, Quaternion.identity);
 										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
@@ -929,7 +935,7 @@ public class ScenarioControl : MonoBehaviour
 					&& (Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.LeftAlt)))
 				{
 					Vector3 pos, tan, lat;
-					m_confAvatar.testTeleport(++m_iTeleport, out pos, out tan, out lat);
+					m_confAvatar.Teleport(++m_iTeleport, out pos, out tan, out lat);
 					Teleport(pos, tan, lat);
 				}
 

@@ -6,7 +6,7 @@ using RootMotion;
 namespace RootMotion.FinalIK {
 
 	/// <summary>
-	/// Hybrid %IK solver designed for mapping a character to a VR headset and 2 hand controllers 
+	/// Hybrid %IK solver designed for mapping a character to a VR headset and 2 hand controllers
 	/// </summary>
 	[System.Serializable]
 	public partial class IKSolverVR: IKSolver {
@@ -21,7 +21,7 @@ namespace RootMotion.FinalIK {
 				Debug.LogError("Invalid references, one or more Transforms are missing.");
 				return;
 			}
-			
+
 			solverTransforms = references.GetTransforms();
 
 			hasChest = solverTransforms [3] != null;
@@ -32,7 +32,7 @@ namespace RootMotion.FinalIK {
 
 			readPositions = new Vector3[solverTransforms.Length];
 			readRotations = new Quaternion[solverTransforms.Length];
-			
+
 			DefaultAnimationCurves();
 			GuessHandOrientations(references, true);
 		}
@@ -45,19 +45,19 @@ namespace RootMotion.FinalIK {
 				Debug.LogWarning("VRIK References are not filled in, can not guess hand orientations. Right-click on VRIK header and slect 'Guess Hand Orientations' when you have filled in the References.", references.root);
 				return;
 			}
-			
+
 			if (leftArm.wristToPalmAxis == Vector3.zero || !onlyIfZero) {
 				leftArm.wristToPalmAxis = GuessWristToPalmAxis(references.leftHand, references.leftForearm);
 			}
-			
+
 			if (leftArm.palmToThumbAxis == Vector3.zero || !onlyIfZero) {
 				leftArm.palmToThumbAxis = GuessPalmToThumbAxis(references.leftHand, references.leftForearm);
 			}
-			
+
 			if (rightArm.wristToPalmAxis == Vector3.zero || !onlyIfZero) {
 				rightArm.wristToPalmAxis = GuessWristToPalmAxis(references.rightHand, references.rightForearm);
 			}
-			
+
 			if (rightArm.palmToThumbAxis == Vector3.zero || !onlyIfZero) {
 				rightArm.palmToThumbAxis = GuessPalmToThumbAxis(references.rightHand, references.rightForearm);
 			}
@@ -69,11 +69,11 @@ namespace RootMotion.FinalIK {
 		public void DefaultAnimationCurves() {
 			if (locomotion.stepHeight == null) locomotion.stepHeight = new AnimationCurve();
 			if (locomotion.heelHeight == null) locomotion.heelHeight = new AnimationCurve ();
-			
+
 			if (locomotion.stepHeight.keys.Length == 0) {
 				locomotion.stepHeight.keys = GetSineKeyframes(0.03f);
 			}
-			
+
 			if (locomotion.heelHeight.keys.Length == 0) {
 				locomotion.heelHeight.keys = GetSineKeyframes(0.03f);
 			}
@@ -133,7 +133,7 @@ namespace RootMotion.FinalIK {
 
 			UpdateSolverTransforms();
 			Read(readPositions, readRotations, hasChest, hasNeck, hasShoulders, hasToes, hasLegs);
-			
+
 			spine.faceDirection = rootBone.readRotation * Vector3.forward;
 
             if (hasLegs)
@@ -151,7 +151,7 @@ namespace RootMotion.FinalIK {
 				}
 			}
 		}
-		
+
 		public override void FixTransforms() {
 			if (!initiated) return;
 
@@ -167,43 +167,43 @@ namespace RootMotion.FinalIK {
 				}
 			}
 		}
-		
+
 		public override IKSolver.Point[] GetPoints() {
 			Debug.LogError("GetPoints() is not applicable to IKSolverVR.");
 			return null;
 		}
-		
+
 		public override IKSolver.Point GetPoint(Transform transform) {
 			Debug.LogError("GetPoint is not applicable to IKSolverVR.");
 			return null;
 		}
-		
+
 		public override bool IsValid(ref string message) {
 			if (solverTransforms == null || solverTransforms.Length == 0) {
 				message = "Trying to initiate IKSolverVR with invalid bone references.";
 				return false;
 			}
-			
+
 			if (leftArm.wristToPalmAxis == Vector3.zero) {
 				message = "Left arm 'Wrist To Palm Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the wrist towards the palm. If the arrow points away from the palm, axis must be negative.";
 				return false;
 			}
-			
+
 			if (rightArm.wristToPalmAxis == Vector3.zero) {
 				message = "Right arm 'Wrist To Palm Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the wrist towards the palm. If the arrow points away from the palm, axis must be negative.";
 				return false;
 			}
-			
+
 			if (leftArm.palmToThumbAxis == Vector3.zero) {
 				message = "Left arm 'Palm To Thumb Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the palm towards the thumb. If the arrow points away from the thumb, axis must be negative.";
 				return false;
 			}
-			
+
 			if (rightArm.palmToThumbAxis == Vector3.zero) {
 				message = "Right arm 'Palm To Thumb Axis' needs to be set in VRIK. Please select the hand bone, set it to the axis that points from the palm towards the thumb. If the arrow points away from the thumb, axis must be negative.";
 				return false;
 			}
-			
+
 			return true;
 		}
 
@@ -216,7 +216,7 @@ namespace RootMotion.FinalIK {
 		//private Vector3 defaultPelvisLocalPosition;
 		private Quaternion[] defaultLocalRotations = new Quaternion[21];
 		private Vector3[] defaultLocalPositions = new Vector3[21];
-		
+
 		private Vector3 GetNormal(Transform[] transforms) {
 			Vector3 normal = Vector3.zero;
 
@@ -229,7 +229,7 @@ namespace RootMotion.FinalIK {
 			for (int i = 0; i < transforms.Length - 1; i++) {
 				normal += Vector3.Cross(transforms[i].position - centroid, transforms[i + 1].position - centroid).normalized;
 			}
-			
+
 			return normal;
 		}
 
@@ -390,7 +390,15 @@ namespace RootMotion.FinalIK {
 				float leftHeelOffset = 0f;
 				float rightHeelOffset = 0f;
 
-				locomotion.Solve(rootBone, spine, leftLeg, rightLeg, leftArm, rightArm, supportLegIndex, out leftFootPosition, out rightFootPosition, out leftFootRotation, out rightFootRotation, out leftFootOffset, out rightFootOffset, out leftHeelOffset, out rightHeelOffset);
+				locomotion.Solve(rootBone, spine, leftLeg, rightLeg, leftArm, rightArm, supportLegIndex
+								, out leftFootPosition
+								, out rightFootPosition
+								, out leftFootRotation
+								, out rightFootRotation
+								, out leftFootOffset
+								, out rightFootOffset
+								, out leftHeelOffset
+								, out rightHeelOffset);
 
 				leftFootPosition += root.up * leftFootOffset;
 				rightFootPosition += root.up * rightFootOffset;
