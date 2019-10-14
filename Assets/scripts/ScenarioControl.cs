@@ -675,7 +675,7 @@ public class ScenarioControl : MonoBehaviour
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
-                                        m_pedArea = Instantiate(m_pedAreaPrefab, p_unity, Quaternion.identity);
+                                        m_pedArea = Instantiate(m_pedAreaPrefab, p_unity, q_unity);
 										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();

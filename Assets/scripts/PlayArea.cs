@@ -17,13 +17,15 @@ public class PlayArea : MonoBehaviour
 	const float c_elevation = 10.0f;
 	public enum Size
 	{
+		_300x400,
 		_400x300,
 		_300x225,
 		_200x150
 	}
     private float[,] c_sizes =
     {
-          { 400f, 300f }
+          { 300f, 400f }
+        , { 400f, 300f }
         , { 300f, 225f }
         , { 200f, 150f }
     };
@@ -159,6 +161,7 @@ public class PlayArea : MonoBehaviour
 	{
 		Vector3 p = transform.position;
         transform.position = t.MultiplyPoint3x4(p);
+        transform.rotation = t.GetRotation() * transform.rotation;
 	}
 }
 
