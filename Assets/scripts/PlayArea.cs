@@ -21,6 +21,12 @@ public class PlayArea : MonoBehaviour
 		_300x225,
 		_200x150
 	}
+    private float[,] c_sizes =
+    {
+          { 400f, 300f }
+        , { 300f, 225f }
+        , { 200f, 150f }
+    };
 
 	public Size size;
 	public Color color = Color.cyan;
@@ -28,15 +34,13 @@ public class PlayArea : MonoBehaviour
 	[HideInInspector]
 	public Vector3[] vertices;
 
-	public static bool GetBounds( Size size, ref HmdQuad_t pRect )
+	public static bool GetBounds( Size size, float [,] sizes, ref HmdQuad_t pRect )
 	{
 		try
 		{
-			var str = size.ToString().Substring(1);
-			var arr = str.Split(new char[] {'x'}, 2);
 			// convert to half size in meters (from cm)
-			var x = float.Parse(arr[0]) / 200;
-			var z = float.Parse(arr[1]) / 200;
+			var x = sizes[(int)size, 0] / 200;
+			var z = sizes[(int)size, 1] / 200;
 			pRect.vCorners0.v0 =  x;
 			pRect.vCorners0.v1 =  0;
 			pRect.vCorners0.v2 = -z;
@@ -59,7 +63,7 @@ public class PlayArea : MonoBehaviour
 	public void BuildMesh()
 	{
 		var rect = new HmdQuad_t();
-		if ( !GetBounds( size, ref rect ) )
+		if ( !GetBounds( size, c_sizes, ref rect ) )
 			return;
 
 		var corners = new HmdVector3_t[] { rect.vCorners0, rect.vCorners1, rect.vCorners2, rect.vCorners3 };
