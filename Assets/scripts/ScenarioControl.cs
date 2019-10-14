@@ -34,7 +34,7 @@ public class ScenarioControl : MonoBehaviour
 
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic, ego_dynamic_marker };
+	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic, dynamic_marker };
 	public class ConfAvatar
 	{
 		public float Height
@@ -235,14 +235,14 @@ public class ScenarioControl : MonoBehaviour
 			int ego_mask = 1 << (int)LAYER.ego_dynamic;
 			int static_mask = 1 << (int)LAYER.scene_static;
 			int dyn_mask = 1 << (int)LAYER.peer_dynamic;
-			int ego_marker_mask = 1 << (int)LAYER.ego_dynamic_marker;
+			int dyn_marker_mask = 1 << (int)LAYER.dynamic_marker;
 
 			if (ObjType.Host == m_type)
 				cam.cullingMask = host_mask | ego_mask;
 			else if (ObjType.Ego == m_type)
 				cam.cullingMask = ego_mask;
 			else // ObjType.Map == m_type
-				cam.cullingMask = static_mask | ego_marker_mask;
+				cam.cullingMask = static_mask | dyn_marker_mask;
 
 			cam.orthographic = true;
 			cam.orthographicSize = camSize[(int)dir];
@@ -628,6 +628,16 @@ public class ScenarioControl : MonoBehaviour
 									o.name = name;
 									setLayer(o, LAYER.peer_dynamic);
 									m_id2Dyno.Add(id, o);
+
+									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
+									GameObject marker = Instantiate(m_areaPrefab, p_unity, q_unity);
+                                    setLayer(marker, LAYER.dynamic_marker);
+									m_id2Marker.Add(id, marker);
+									PlayArea area = marker.GetComponent<PlayArea>();
+									area.color = Color.blue;
+									area.size = PlayArea.Size._200x400;
+                                    area.borderThickness = 0.8f;
+                                    marker.transform.parent = o.transform;
 									break;
 								}
 							case EVT.delDyno:
@@ -638,6 +648,11 @@ public class ScenarioControl : MonoBehaviour
 									if (m_id2Dyno.TryGetValue(id, out o))
 									{
 										m_id2Dyno.Remove(id);
+										GameObject.Destroy(o);
+									}
+									if (m_id2Marker.TryGetValue(id, out o))
+									{
+										m_id2Marker.Remove(id);
 										GameObject.Destroy(o);
 									}
 									break;

@@ -17,6 +17,7 @@ public class PlayArea : MonoBehaviour
 	const float c_elevation = 10.0f;
 	public enum Size
 	{
+		_100x300,
 		_200x400,
 		_300x400,
 		_400x300,
@@ -25,7 +26,8 @@ public class PlayArea : MonoBehaviour
 	}
     private float[,] c_sizes =
     {
-          { 200f, 400f }
+          { 100f, 300f }
+        , { 200f, 400f }
         , { 300f, 400f }
         , { 400f, 300f }
         , { 300f, 225f }
