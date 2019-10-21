@@ -20,7 +20,7 @@ public class ScenarioControl : MonoBehaviour
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
-    Dictionary<int, GameObject> m_id2Marker = new Dictionary<int, GameObject>();
+	Dictionary<int, GameObject> m_id2Marker = new Dictionary<int, GameObject>();
 	GameObject m_trackers;
 	Camera m_egoInspector;
 
@@ -40,13 +40,13 @@ public class ScenarioControl : MonoBehaviour
 		public float Height
 		{
 			get { return height; }
-            set { height = value; }
+			set { height = value; }
 		}
-        public float WingSpan
-        {
-            get { return width; }
-            set { width = value; }
-        }
+		public float WingSpan
+		{
+			get { return width; }
+			set { width = value; }
+		}
 		public float Width
 		{
 			get { return width + (2 * hand0) * width / width0; }
@@ -163,7 +163,7 @@ public class ScenarioControl : MonoBehaviour
 			if (null == bcube)
 				throw new Exception("no bounding cube defined for map!");
 			center = bcube.localPosition;
-            Vector3 size = bcube.lossyScale;
+			Vector3 size = bcube.lossyScale;
 			width = size.x;
 			height = size.y;
 			depth = size.z;
@@ -195,8 +195,8 @@ public class ScenarioControl : MonoBehaviour
 		};
 		BBOX m_bbox;
 		public enum ObjType {Host, Ego, Map};
-        ObjType m_type;
-        Transform m_target;
+		ObjType m_type;
+		Transform m_target;
 		public InspectorHelper(Transform target, ConfAvatar conf)
 		{
 			m_type = ObjType.Ego;
@@ -568,10 +568,9 @@ public class ScenarioControl : MonoBehaviour
 		float e_t = elevation_t - transform.position.y;
 		Vector3 tl_w = new Vector3(0, e_t, 0);
 		transform.Translate(tl_w, Space.World);
-		foreach (KeyValuePair<int, GameObject> dyno in m_id2Dyno)
-			dyno.Value.transform.Translate(tl_w, Space.World);
-		foreach (KeyValuePair<int, GameObject> ped in m_id2Ped)
-			ped.Value.transform.Translate(tl_w, Space.World);
+		GameObject ped = null;
+		if (m_id2Ped.TryGetValue(0, out ped))
+			ped.transform.Translate(tl_w, Space.World);
 		Matrix4x4 t_u = new Matrix4x4(
 						  new Vector4(1,	0,		0,		0)
 						, new Vector4(0,	1,		0,		0)
@@ -637,14 +636,14 @@ public class ScenarioControl : MonoBehaviour
 
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
 									GameObject marker = Instantiate(m_areaPrefab, p_unity, q_unity);
-                                    setLayer(marker, LAYER.marker_dynamic);
-                                    m_id2Marker.Add(id, marker);
+									setLayer(marker, LAYER.marker_dynamic);
+									m_id2Marker.Add(id, marker);
 									PlayArea area = marker.GetComponent<PlayArea>();
 									area.color = Color.blue;
 									area.size = PlayArea.Size._200x400;
-                                    area.borderThickness = 0.8f;
-                                    marker.transform.parent = o.transform;
-                                    setLayer(marker, LAYER.marker_dynamic);
+									area.borderThickness = 0.8f;
+									marker.transform.parent = o.transform;
+									setLayer(marker, LAYER.marker_dynamic);
 									break;
 								}
 							case EVT.delDyno:
@@ -698,11 +697,11 @@ public class ScenarioControl : MonoBehaviour
 									m_id2Ped.Add(id, ped);
 									if (own)
 									{
-                                        GameObject pedArea = Instantiate(m_areaPrefab, p_unity, q_unity);
-                                        m_id2Marker.Add(id, pedArea);
-                                        var area = pedArea.GetComponent<PlayArea>();
-                                        area.color = Color.red;
-                                        area.size = PlayArea.Size._200x400;
+										GameObject pedArea = Instantiate(m_areaPrefab, p_unity, q_unity);
+										m_id2Marker.Add(id, pedArea);
+										var area = pedArea.GetComponent<PlayArea>();
+										area.color = Color.red;
+										area.size = PlayArea.Size._200x400;
 										m_confAvatar.setTeleport(p_sim, t_sim, l_sim);
 										RootMotion.FinalIK.VRIK ik = ped.AddComponent<RootMotion.FinalIK.VRIK>();
 										ped.AddComponent<RootMotion.FinalIK.VRIKBackup>();
@@ -1086,8 +1085,8 @@ public class ScenarioControl : MonoBehaviour
 			inspector = new InspectorHelper(m_id2Ped[0].transform.parent, m_confVehicle);
 		else if (type == InspectorHelper.ObjType.Ego)
 			inspector = new InspectorHelper(m_id2Ped[0].transform, m_confAvatar);
-        else if (type == InspectorHelper.ObjType.Map)
-        	inspector = new InspectorHelper(transform, m_confMap);
+		else if (type == InspectorHelper.ObjType.Map)
+			inspector = new InspectorHelper(transform, m_confMap);
 		inspector.Apply(m_egoInspector, dir);
 	}
 
