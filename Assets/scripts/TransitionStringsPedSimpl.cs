@@ -2,9 +2,6 @@ public class TransitionStringsPedSimpl
 {
 	public static string [] s_Desc = {
 			  "Press 'Enter' to messure ground elevation."													//1
-			, "Press 'F' to inspect avatar from front."														//2
-			, "Press 'R' to inspect avatar from right."														//3
-			, "Press 'U' to inspect avatar from top."														//4
 			, "Press 'Enter' to set up road crossing scenario."												//5
 			, "Press 'Down arrow' to move mirror closer, 'Up arrow' to move mirror farthur away."			//6
 			, "Press 'F' to inspect avatar from front."														//7
@@ -17,7 +14,7 @@ public class TransitionStringsPedSimpl
 			, "Press 'U' to inspect avatar from top."														//14
 			, "Press 'Enter' to start road crossing."														//15
 			, "Press 'Backspace' to re-attach trackers."													//16
-			, "Press '(left)SHIFT + M + left Arrow' to start over for next participant."					//17
+			, "Press '(left)SHIFT + T + left Arrow' to start over for next participant."					//17
 			, "Press 'Right arrow' to teleport to next site."												//18
 			, null //teleporting to tracking no hint														//19
 			, "Press 'F' to inspect avatar from front."														//20

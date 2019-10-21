@@ -1,4 +1,4 @@
-﻿//====== Copyright (c) Valve Corporation, All rights reserved. ===============
+//====== Copyright (c) Valve Corporation, All rights reserved. ===============
 //
 // Purpose: Enables/disables objects based on connectivity and assigned roles.
 //
@@ -26,11 +26,8 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rfoot;
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actViewInspec, actGroundEle})																	//1
-									, new Transition(State.pre_cnn, State.pre_cnn, FORWARD, actInspecAvatar_f)																								//2
-									, new Transition(State.pre_cnn, State.pre_cnn, RIGHT, actInspecAvatar_r)																								//3
-									, new Transition(State.pre_cnn, State.pre_cnn, UP, actInspecAvatar_u)																									//4
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})				//5
+									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actViewInspec, actGroundEle, actPersonpanelUpdateF})																	//1
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actPersonpanelUpdateT, actInspecAvatar_f})				//5
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																							//6
 									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																						//7
 									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																						//8
@@ -42,18 +39,18 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																							//14
 									, new Transition(State.post_calibra, State.tracking_inspec, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })													//15
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																						//16
-									, new Transition(State.tracking_inspec, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})	//17
+									, new Transition(State.tracking_inspec, State.pre_cnn, L_TRIGGER|L_ARROW, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld, actPersonpanelUpdateF, actInspecAvatar_f})	//17
 									, new Transition(State.tracking_td, State.teleporting, R_ARROW, actTeleportP)																							//18
-									, new Transition(State.teleporting, State.tracking_td, NONE)																												//19
+									, new Transition(State.teleporting, State.tracking_td, NONE)																											//19
 									, new Transition(State.tracking_inspec, State.tracking_inspec, FORWARD, actInspecAvatar_f)																				//20
 									, new Transition(State.tracking_inspec, State.tracking_inspec, RIGHT, actInspecAvatar_r)																				//21
 									, new Transition(State.tracking_inspec, State.tracking_inspec, UP, actInspecAvatar_u)																					//22
-									, new Transition(State.tracking_inspec, State.tracking_hmd, R_MENU, actViewHmd)													//23
-									, new Transition(State.tracking_inspec, State.tracking_td, L_MENU, actViewTd)													//24
-									, new Transition(State.tracking_hmd, State.tracking_td, R_MENU, actViewTd)															//25
-									, new Transition(State.tracking_hmd, State.tracking_inspec, L_MENU, actViewInspec)													//26
-									, new Transition(State.tracking_td, State.tracking_inspec, R_MENU, actViewInspec)													//27
-									, new Transition(State.tracking_td, State.tracking_hmd, L_MENU, actViewHmd)															//28
+									, new Transition(State.tracking_inspec, State.tracking_hmd, R_MENU, actViewHmd)																							//23
+									, new Transition(State.tracking_inspec, State.tracking_td, L_MENU, actViewTd)																							//24
+									, new Transition(State.tracking_hmd, State.tracking_td, R_MENU, actViewTd)																								//25
+									, new Transition(State.tracking_hmd, State.tracking_inspec, L_MENU, actViewInspec)																						//26
+									, new Transition(State.tracking_td, State.tracking_inspec, R_MENU, actViewInspec)																						//27
+									, new Transition(State.tracking_td, State.tracking_hmd, L_MENU, actViewHmd)																								//28
 								};
 		g_inst = this;
 	}

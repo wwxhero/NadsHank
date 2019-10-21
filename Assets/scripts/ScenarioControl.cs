@@ -40,7 +40,13 @@ public class ScenarioControl : MonoBehaviour
 		public float Height
 		{
 			get { return height; }
+            set { height = value; }
 		}
+        public float WingSpan
+        {
+            get { return width; }
+            set { width = value; }
+        }
 		public float Width
 		{
 			get { return width + (2 * hand0) * width / width0; }
@@ -286,7 +292,7 @@ public class ScenarioControl : MonoBehaviour
 		}
 	};
 
-	ConfAvatar m_confAvatar;
+	public ConfAvatar m_confAvatar;
 	ConfVehical m_confVehicle = new ConfVehical(); //fixme: driving vehicle size is hardcoded
 	ConfMap m_confMap;
 

@@ -677,45 +677,46 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected static bool actInspecAvatar_r(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-		{
 			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_r");
-			return true;
-		}
-		else
-		{
-			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, ScenarioControl.InspectorHelper.ObjType.Ego);
-			return true;
-		}
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.right, ScenarioControl.InspectorHelper.ObjType.Ego);
+		return true;
 	}
 
 	protected static bool actInspecAvatar_u(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-		{
 			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_u");
-			return true;
-		}
-		else
-		{
-			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, ScenarioControl.InspectorHelper.ObjType.Ego);
-			return true;
-		}
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.up, ScenarioControl.InspectorHelper.ObjType.Ego);
+		return true;
 	}
 
 	protected static bool actInspecAvatar_f(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-		{
 			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_f");
-			return true;
-		}
-		else
-		{
-			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, ScenarioControl.InspectorHelper.ObjType.Ego);
-			return true;
-		}
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, ScenarioControl.InspectorHelper.ObjType.Ego);
+		return true;
+	}
+
+	protected static bool actPersonpanelUpdateT(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("SteamVR_Manager::actPersonpanelUpdateT");
+		ScenarioControl.ConfAvatar conf = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().m_confAvatar;
+		g_inst.m_refCanvasMgr.UpdateData(conf, true);
+		RootMotion.FinalIK.VRIK ik = g_inst.m_avatar.GetComponent<RootMotion.FinalIK.VRIK>();
+		conf.Apply(ik);
+		return true;
+	}
+
+	protected static bool actPersonpanelUpdateF(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("SteamVR_Manager::actPersonpanelUpdateF");
+		g_inst.m_refCanvasMgr.Update(g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().m_confAvatar, false);
+		return true;
 	}
 }
