@@ -34,7 +34,7 @@ public class ScenarioControl : MonoBehaviour
 
 	enum IMPLE { IGCOMM = 0, DISVRLINK };
 	enum TERMINAL { edo_controller = 0, ado_controller, ped_controller };
-	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic, dynamic_marker };
+	enum LAYER { scene_static = 8, peer_dynamic, host_dynamic, ego_dynamic, marker_dynamic };
 	public class ConfAvatar
 	{
 		public float Height
@@ -241,7 +241,7 @@ public class ScenarioControl : MonoBehaviour
 			int ego_mask = 1 << (int)LAYER.ego_dynamic;
 			int static_mask = 1 << (int)LAYER.scene_static;
 			int dyn_mask = 1 << (int)LAYER.peer_dynamic;
-			int dyn_marker_mask = 1 << (int)LAYER.dynamic_marker;
+			int dyn_marker_mask = 1 << (int)LAYER.marker_dynamic;
 
 			if (ObjType.Host == m_type)
 				cam.cullingMask = host_mask | ego_mask;
@@ -637,7 +637,7 @@ public class ScenarioControl : MonoBehaviour
 
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
 									GameObject marker = Instantiate(m_areaPrefab, p_unity, q_unity);
-                                    setLayer(marker, LAYER.dynamic_marker);
+                                    setLayer(marker, LAYER.marker_dynamic);
 									m_id2Marker.Add(id, marker);
 									PlayArea area = marker.GetComponent<PlayArea>();
 									area.color = Color.blue;

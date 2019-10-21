@@ -103,7 +103,7 @@ public class CanvasMgr : MonoBehaviour {
 		}
 	}
 
-	public bool Update(ScenarioControl.ConfAvatar conf, bool save)
+	public void UpdateData(ScenarioControl.ConfAvatar conf, bool save)
 	{
 		if (save)
 		{
@@ -114,7 +114,6 @@ public class CanvasMgr : MonoBehaviour {
 			const float c_inch2meters = 0.0254f;
 			conf.Height = h_feet * c_feet2meters + h_inch * c_inch2meters;
 			enableInputField(false);
-			return true;
 		}
 		else
 		{
@@ -127,7 +126,6 @@ public class CanvasMgr : MonoBehaviour {
 			m_refH_f.text = h_feet_i.ToString();
 			m_refH_i.text = string.Format("{0,4:#.0}", h_inch);
 			m_refW.text = string.Format("{0,4:#.00}", conf.WingSpan);
-			return true;
 		}
 	}
 }

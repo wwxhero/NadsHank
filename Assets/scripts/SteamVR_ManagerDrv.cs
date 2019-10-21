@@ -69,8 +69,8 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, actGroundEle)																							//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//2
+									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actGroundEle, actPersonpanelUpdateF })																							//1
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actPersonpanelUpdateT, actInspecAvatar_f})		//2
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																					//3
 									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																				//4
 									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																				//5
@@ -103,7 +103,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.adjusting_r, State.tracking, R_GRIP)																										//34
 									, new Transition(State.adjusting_f, State.tracking, R_GRIP)																										//35
 									, new Transition(State.adjusting_u, State.tracking, R_GRIP)																										//36
-									, new Transition(State.tracking, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actInspecAvatar_f})		//37
+									, new Transition(State.tracking, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actPersonpanelUpdateF, actInspecAvatar_f})		//37
 								};
 		g_inst = this;
 	}

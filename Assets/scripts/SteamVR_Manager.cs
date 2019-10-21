@@ -716,7 +716,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("SteamVR_Manager::actPersonpanelUpdateF");
-		g_inst.m_refCanvasMgr.Update(g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().m_confAvatar, false);
+		g_inst.m_refCanvasMgr.UpdateData(g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().m_confAvatar, false);
 		return true;
 	}
 }
