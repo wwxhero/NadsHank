@@ -638,12 +638,13 @@ public class ScenarioControl : MonoBehaviour
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
 									GameObject marker = Instantiate(m_areaPrefab, p_unity, q_unity);
                                     setLayer(marker, LAYER.marker_dynamic);
-									m_id2Marker.Add(id, marker);
+                                    m_id2Marker.Add(id, marker);
 									PlayArea area = marker.GetComponent<PlayArea>();
 									area.color = Color.blue;
 									area.size = PlayArea.Size._200x400;
                                     area.borderThickness = 0.8f;
                                     marker.transform.parent = o.transform;
+                                    setLayer(marker, LAYER.marker_dynamic);
 									break;
 								}
 							case EVT.delDyno:
@@ -839,6 +840,7 @@ public class ScenarioControl : MonoBehaviour
 							setLayer(parent, LAYER.host_dynamic);
 							setLayer(child, LAYER.ego_dynamic);
 							setLayer(m_trackers, LAYER.ego_dynamic);
+							setLayer(m_id2Marker[i_parent], LAYER.marker_dynamic);
 							//adjustInspector(InspectorHelper.Direction.forward, true);
 						}
 
