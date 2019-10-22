@@ -288,7 +288,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			GameObject [] trackers = new GameObject[] {
 				  g_inst.m_objects[(int)ObjType.tracker_rfoot]
 				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
 				, g_inst.m_objects[(int)ObjType.tracker_rhand]
 				, g_inst.m_objects[(int)ObjType.tracker_lhand]
 			};
@@ -316,7 +315,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 			GameObject [] trackers = new GameObject[] {
 				  g_inst.m_objects[(int)ObjType.tracker_rfoot]
 				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
 				, g_inst.m_objects[(int)ObjType.tracker_rhand]
 				, g_inst.m_objects[(int)ObjType.tracker_lhand]
 			};
@@ -369,7 +367,6 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 				  g_inst.m_objects[(int)ObjType.tracker_head]
 				, g_inst.m_objects[(int)ObjType.tracker_rfoot]
 				, g_inst.m_objects[(int)ObjType.tracker_lfoot]
-				, g_inst.m_objects[(int)ObjType.tracker_pelvis]
 				, g_inst.m_objects[(int)ObjType.tracker_rhand]
 				, g_inst.m_objects[(int)ObjType.tracker_lhand]
 			};
