@@ -65,11 +65,9 @@ public class SteamVR_TrackedObject : MonoBehaviour
 	}
 	public void Lock(Vector3 p, Quaternion r)
 	{
-		m_posDft = p;
-		m_rotDft = r;
 		m_lock = true;
-		transform.position = m_posDft;
-		transform.rotation = m_rotDft;
+		transform.position = p;
+		transform.rotation = r;
 	}
 
 	public bool Locked()
@@ -96,6 +94,8 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		if (!poses[i].bPoseIsValid)
 			return;
 
+		Vector3 pos_m = transform.position;
+		Quaternion rot_m = transform.rotation;
 		isValid = true;
 
 		var pose = new SteamVR_Utils.RigidTransform(poses[i].mDeviceToAbsoluteTracking);
@@ -117,8 +117,8 @@ public class SteamVR_TrackedObject : MonoBehaviour
 		m_rotAct = transform.rotation;
 		if (m_lock)
 		{
-			transform.position = m_posDft;
-			transform.rotation = m_rotDft;
+			transform.position = pos_m;
+			transform.rotation = rot_m;
 		}
 	}
 

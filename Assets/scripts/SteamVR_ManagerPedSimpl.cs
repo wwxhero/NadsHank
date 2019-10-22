@@ -27,7 +27,7 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actViewInspec, actGroundEle, actPersonpanelUpdateF})																	//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actPersonpanelUpdateT, actInspecAvatar_f})				//5
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})				//5
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																							//6
 									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																						//7
 									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																						//8

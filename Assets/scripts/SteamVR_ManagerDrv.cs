@@ -70,7 +70,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actGroundEle, actPersonpanelUpdateF })																							//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actPersonpanelUpdateT, actInspecAvatar_f})		//2
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//2
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																					//3
 									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																				//4
 									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																				//5
@@ -258,8 +258,9 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Transport(l.rotation, t);
 
 		Transform [] vtrackers = new Transform[] {
-			m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_lfoot])
-			, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_rfoot])
+			//m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_lfoot])
+			//, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_rfoot])
+			m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_pelvis])
 		};
 		SteamVR_TrackedObject [] ftrackers = new SteamVR_TrackedObject[] {
 			//m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
