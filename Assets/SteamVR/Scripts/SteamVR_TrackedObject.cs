@@ -40,11 +40,11 @@ public class SteamVR_TrackedObject : MonoBehaviour
 	private bool m_lock = false;
 	private Vector3 m_posAct = new Vector3(0, 0, 0);
 	private Quaternion m_rotAct = Quaternion.identity;
-	public bool Lock(bool l)
+	public bool Lock(bool lok)
 	{
 		bool lock_prev = m_lock;
-		m_lock = l;
-		if (l)
+		m_lock = (lok || (index == EIndex.None)); //a fake tracker is alway locked
+		if (m_lock)
 		{
 			transform.position = m_posDft;
 			transform.rotation = m_rotDft;
