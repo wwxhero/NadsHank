@@ -149,11 +149,12 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	public override bool Calibration()
 	{
 		TransformDefault dft =  new TransformDefault();
+		Transform [] vtrackers = m_avatar.GetComponent<VTrackers>().trackers;
 		for (int i_tracker = 0; i_tracker < c_totalTrackers; i_tracker ++)
 		{
 			int i_obj = i_tracker + tracker_start;
 			Transform tracker = m_objects[i_obj].transform;
-			Transform vtracker = m_avatar.transform.Find(c_vtrackerAvatarNames[i_tracker]);
+			Transform vtracker = vtrackers[i_tracker];
 			Transform vtracker_prime = m_carHost.transform.Find(c_vtrackerCarNames[i_tracker]);
 			Debug.Assert(null != tracker && null != vtracker && null != vtracker_prime);
 			dft.Update(tracker, vtracker, vtracker_prime);
@@ -257,10 +258,11 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 		Transport(l.rotation, t);
 
+
 		Transform [] vtrackers = new Transform[] {
 			//m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_lfoot])
 			//, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_rfoot])
-			m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_pelvis])
+			m_avatar.GetComponent<VTrackers>().trackers[(int)TrackerType.tracker_pelvis]
 		};
 		SteamVR_TrackedObject [] ftrackers = new SteamVR_TrackedObject[] {
 			//m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
