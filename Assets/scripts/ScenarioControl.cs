@@ -13,6 +13,7 @@ public class ScenarioControl : MonoBehaviour
 	public GameObject[] m_vehiPrefabs;
 	public GameObject m_pedPrefab;
 	public GameObject m_drvPrefab;
+	public GameObject m_peerPrefab;
 	public GameObject m_camInspectorPrefab;
 	public GameObject m_mockTrackersPrefab;
 	public GameObject m_areaPrefab;
@@ -691,8 +692,10 @@ public class ScenarioControl : MonoBehaviour
 									bool own = (0 == id);
 									if (m_bDriver && own)
 										ped = Instantiate(m_drvPrefab, p_unity, q_unity);
-									else
+									else if (!m_bDriver && own)
 										ped = Instantiate(m_pedPrefab, p_unity, q_unity);
+									else
+										ped = Instantiate(m_peerPrefab, p_unity, q_unity);
 									ped.name = name;
 									m_id2Ped.Add(id, ped);
 									if (own)
