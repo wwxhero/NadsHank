@@ -43,14 +43,14 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 				, "tracker_lfoot"
 				, "tracker_pelvis"
 			};
-	string [] c_vtrackerAvatarNames = {
-				"rhand_vtracker"
-				, "lhand_vtracker"
-				, "head_vtracker"
-				, "rfoot_vtracker"
-				, "lfoot_vtracker"
-				, "pelvis_vtracker"
-			};
+	//string [] c_vtrackerAvatarNames = {
+	//			"rhand_vtracker"
+	//			, "lhand_vtracker"
+	//			, "head_vtracker"
+	//			, "rfoot_vtracker"
+	//			, "lfoot_vtracker"
+	//			, "pelvis_vtracker"
+	//		};
 	string [] c_vtrackerCarNames = {
 				"rhand_vtracker_default"
 				, "lhand_vtracker_default"
@@ -69,41 +69,51 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_start = (int)ObjType.tracker_rhand;
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
-									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actGroundEle, actPersonpanelUpdateF })																							//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})		//2
-									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																					//3
-									, new Transition(State.pre_calibra, State.pre_calibra, FORWARD, actInspecAvatar_f)																				//4
-									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																				//5
-									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																					//6
-									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)																			//7
-									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)																			//10
-									, new Transition(State.pre_calibra2, State.pre_calibra2, FORWARD, actInspecAvatar_f)																			//11
-									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actInspecAvatar_r)																				//12
-									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actInspecAvatar_u)																					//13
-									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})											//14
-									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustIK_head)																					//16
-									, new Transition(State.post_calibra, State.post_calibra, FORWARD, actInspecAvatar_f)																			//17
-									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																				//18
-									, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																					//19
-									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																				//19.1
-									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock, actInspecCar_r })										//20
-									, new Transition(State.pegging, State.adjusting_r, R_TRIGGER, new Action[]{ actPegUnLock4Tracking, actAdjustVWCnn })											//21
-									, new Transition(State.adjusting_r, State.adjusting_r, L_GRIP, actAdjustVWCnn)																					//22
-									, new Transition(State.adjusting_u, State.adjusting_u, L_GRIP, actAdjustVWCnn)																					//23
-									, new Transition(State.adjusting_f, State.adjusting_f, L_GRIP, actAdjustVWCnn)																					//24
-									, new Transition(State.adjusting_r, State.adjusting_u, UP, actInspecCar_u)																						//25
-									, new Transition(State.adjusting_r, State.adjusting_f, FORWARD, actInspecCar_f)																					//26
-									, new Transition(State.adjusting_u, State.adjusting_r, RIGHT, actInspecCar_r)																					//27
-									, new Transition(State.adjusting_u, State.adjusting_f, FORWARD, actInspecCar_f)																					//28
-									, new Transition(State.adjusting_f, State.adjusting_u, UP, actInspecCar_u)																						//29
-									, new Transition(State.adjusting_f, State.adjusting_r, RIGHT, actInspecCar_r)																					//30
-									, new Transition(State.adjusting_r, State.adjusting_r, ALL, actAdjustCar_r)																						//31
-									, new Transition(State.adjusting_u, State.adjusting_u, ALL, actAdjustCar_u)																						//32
-									, new Transition(State.adjusting_f, State.adjusting_f, ALL, actAdjustCar_f)																						//33
-									, new Transition(State.adjusting_r, State.tracking, R_GRIP)																										//34
-									, new Transition(State.adjusting_f, State.tracking, R_GRIP)																										//35
-									, new Transition(State.adjusting_u, State.tracking, R_GRIP)																										//36
-									, new Transition(State.tracking, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actPersonpanelUpdateF, actInspecAvatar_f})		//37
+									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actGroundEle, actPersonpanelUpdateF })																						//1
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})	//2
+									, new Transition(State.pre_calibra, State.pre_cnn, L_GRIP, new Action[] {actUnShowMirror, actUnConnectVirtualWorld, actPersonpanelUpdateF})															//3
+									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																														//4
+									, new Transition(State.pre_calibra, State.pre_calibra, FRONT, actInspecAvatar_f)																													//5
+									, new Transition(State.pre_calibra, State.pre_calibra, RIGHT, actInspecAvatar_r)																													//6
+									, new Transition(State.pre_calibra, State.pre_calibra, UP, actInspecAvatar_u)																														//7
+									, new Transition(State.pre_calibra, State.pre_calibra, BACK, actInspecAvatar_b)																														//8
+									, new Transition(State.pre_calibra, State.pre_calibra, LEFT, actInspecAvatar_l)																														//9
+									, new Transition(State.pre_calibra, State.pre_calibra, DOWN, actInspecAvatar_d)																														//10
+									, new Transition(State.pre_calibra, State.pre_calibra2, R_TRIGGER, actPosTrackerLock)																												//11
+									, new Transition(State.pre_calibra2, State.pre_calibra, L_GRIP, actPosTrackerUnLock)																												//12
+									, new Transition(State.pre_calibra2, State.pre_calibra2, FRONT, actInspecAvatar_f)																													//13
+									, new Transition(State.pre_calibra2, State.pre_calibra2, RIGHT, actInspecAvatar_r)																													//14
+									, new Transition(State.pre_calibra2, State.pre_calibra2, UP, actInspecAvatar_u)																														//15
+									, new Transition(State.pre_calibra2, State.pre_calibra2, BACK, actInspecAvatar_b)																													//16
+									, new Transition(State.pre_calibra2, State.pre_calibra2, LEFT, actInspecAvatar_l)																													//17
+									, new Transition(State.pre_calibra2, State.pre_calibra2, DOWN, actInspecAvatar_d)																													//18
+									, new Transition(State.pre_calibra2, State.post_calibra, R_MENU, new Action[] {actCalibration, actPosTrackerUnLock})																				//19
+									, new Transition(State.post_calibra, State.post_calibra, ALL, actAdjustIK_head)																														//20
+									, new Transition(State.post_calibra, State.post_calibra, FRONT, actInspecAvatar_f)																													//21
+									, new Transition(State.post_calibra, State.post_calibra, RIGHT, actInspecAvatar_r)																													//22
+									//, new Transition(State.post_calibra, State.post_calibra, UP, actInspecAvatar_u)																														//23
+									, new Transition(State.post_calibra, State.post_calibra, BACK, actInspecAvatar_b)																													//24
+									, new Transition(State.post_calibra, State.post_calibra, LEFT, actInspecAvatar_l)																													//25
+									//, new Transition(State.post_calibra, State.post_calibra, DOWN, actInspecAvatar_d)																													//26
+									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																													//27
+									, new Transition(State.post_calibra, State.pegging, R_GRIP, new Action[]{ actUnShowMirror, actPegLock, actInspecCar_r })																			//28
+									, new Transition(State.pegging, State.adjusting_r, R_TRIGGER, new Action[]{ actPegUnLock4Tracking, actAdjustVWCnn })																				//29
+									, new Transition(State.adjusting_r, State.adjusting_r, L_GRIP, actAdjustVWCnn)																														//30
+									, new Transition(State.adjusting_u, State.adjusting_u, L_GRIP, actAdjustVWCnn)																														//31
+									, new Transition(State.adjusting_f, State.adjusting_f, L_GRIP, actAdjustVWCnn)																														//32
+									, new Transition(State.adjusting_r, State.adjusting_u, UP, actInspecCar_u)																															//33
+									, new Transition(State.adjusting_r, State.adjusting_f, FRONT, actInspecCar_f)																														//34
+									, new Transition(State.adjusting_u, State.adjusting_r, RIGHT, actInspecCar_r)																														//35
+									, new Transition(State.adjusting_u, State.adjusting_f, FRONT, actInspecCar_f)																														//36
+									, new Transition(State.adjusting_f, State.adjusting_u, UP, actInspecCar_u)																															//37
+									, new Transition(State.adjusting_f, State.adjusting_r, RIGHT, actInspecCar_r)																														//38
+									, new Transition(State.adjusting_r, State.adjusting_r, ALL, actAdjustCar_r)																															//39
+									, new Transition(State.adjusting_u, State.adjusting_u, ALL, actAdjustCar_u)																															//40
+									, new Transition(State.adjusting_f, State.adjusting_f, ALL, actAdjustCar_f)																															//41
+									, new Transition(State.adjusting_r, State.tracking, R_GRIP)																														//42
+									, new Transition(State.adjusting_f, State.tracking, R_GRIP)																														//43
+									, new Transition(State.adjusting_u, State.tracking, R_GRIP)																														//44
+									, new Transition(State.tracking, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actPersonpanelUpdateF, actInspecAvatar_f})					//45
 								};
 		g_inst = this;
 	}
@@ -149,7 +159,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 	public override bool Calibration()
 	{
 		TransformDefault dft =  new TransformDefault();
-		Transform [] vtrackers = m_avatar.GetComponent<VTrackers>().trackers;
+		Transform [] vtrackers = m_avatar.GetComponent<ProxyDiguyDrv>().vtrackers;
 		for (int i_tracker = 0; i_tracker < c_totalTrackers; i_tracker ++)
 		{
 			int i_obj = i_tracker + tracker_start;
@@ -262,7 +272,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		Transform [] vtrackers = new Transform[] {
 			//m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_lfoot])
 			//, m_avatar.transform.Find(c_vtrackerAvatarNames[(int)TrackerType.tracker_rfoot])
-			m_avatar.GetComponent<VTrackers>().trackers[(int)TrackerType.tracker_pelvis]
+			m_avatar.GetComponent<ProxyDiguyDrv>().vtrackers[(int)TrackerType.tracker_pelvis]
 		};
 		SteamVR_TrackedObject [] ftrackers = new SteamVR_TrackedObject[] {
 			//m_objects[(int)ObjType.tracker_lfoot].GetComponent<SteamVR_TrackedObject>()
@@ -465,7 +475,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		else
 		{
 			ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, ScenarioControl.InspectorHelper.ObjType.Host);
+			sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.front, ScenarioControl.InspectorHelper.ObjType.Host);
 			return true;
 		}
 	}

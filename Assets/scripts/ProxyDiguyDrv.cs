@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VTrackers : MonoBehaviour {
+public class ProxyDiguyDrv : ProxyDiguy {
 
-	public Transform [] trackers;
+	public Transform [] vtrackers;
 }
