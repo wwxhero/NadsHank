@@ -756,20 +756,4 @@ public class SteamVR_Manager : SteamVR_TDManager
 		g_inst.m_refCanvasMgr.UpdateData(g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().m_confAvatar, false);
 		return true;
 	}
-
-	protected static bool actLockScenario(uint cond)
-	{
-		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("SteamVR_Manager::actLockScenario");
-		g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().Lock(true);
-		return true;
-	}
-
-	protected static bool actUnLockScenario(uint cond)
-	{
-		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("SteamVR_Manager::actUnLockScenario");
-		g_inst.m_senarioCtrl.GetComponent<ScenarioControl>().Lock(false);
-		return true;
-	}
 }

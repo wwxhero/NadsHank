@@ -18,7 +18,6 @@ public class ScenarioControl : MonoBehaviour
 	public GameObject m_mockTrackersPrefab;
 	public GameObject m_areaPrefab;
 	public bool m_bDriver;
-	private bool m_locked = true;
 	IDistriObjsCtrl m_ctrl;
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
@@ -580,7 +579,6 @@ public class ScenarioControl : MonoBehaviour
 
 	public void SetMapElevation(float elevation_t)
 	{
-		Debug.Assert(m_locked);
 		float e_t = elevation_t - transform.position.y;
 		Vector3 tl_w = new Vector3(0, e_t, 0);
 		transform.Translate(tl_w, Space.World);
@@ -590,7 +588,7 @@ public class ScenarioControl : MonoBehaviour
 			if (m_bDriver)
 			{
 				Transform host_t = ped.transform.parent;
-				host_t.gameObject.GetComponent<Dyno>().TranslateDft_w(tl_w);
+				host_t.Translate(tl_w, Space.World);
 			}
 			else
 			{
@@ -658,9 +656,8 @@ public class ScenarioControl : MonoBehaviour
 									int idx = solId % m_vehiPrefabs.Length;
 									GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
 									o.name = name;
-									Dyno dyno = o.GetComponent<Dyno>();
-									dyno.SetDft_w(p_unity, q_unity);
-									dyno.Lock(m_locked);
+
+
 									setLayer(o, LAYER.peer_dynamic);
 									m_id2Dyno.Add(id, o);
 
@@ -879,117 +876,116 @@ public class ScenarioControl : MonoBehaviour
 					}
 				}
 
-				if (!m_locked)
-				{
-					GameObject pedOwn;
-					const int c_ownPedId = 0;
-					bool found = m_id2Ped.TryGetValue(c_ownPedId, out pedOwn);
-					if (found)
-					{
-						Vector3 pos_unity = pedOwn.transform.position;
-						Vector3 tan_unity = pedOwn.transform.forward;
-						Vector3 lat_unity = pedOwn.transform.right;
-						Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
-						Vector3 t = MultiplyDir(c_unity2sim, tan_unity);
-						Vector3 l = MultiplyDir(c_unity2sim, lat_unity);
-						double xPos, yPos, zPos;
-						double xTan, yTan, zTan;
-						double xLat, yLat, zLat;
-						xPos = p.x; yPos = p.y; zPos = p.z;
-						xTan = t.x; yTan = t.y; zTan = t.z;
-						xLat = l.x; yLat = l.y; zLat = l.z;
 
-						ProxyDiguy diguy = pedOwn.GetComponent<ProxyDiguy>();
-						diguy.SyncOut();
+				GameObject pedOwn;
+				const int c_ownPedId = 0;
+				bool found = m_id2Ped.TryGetValue(c_ownPedId, out pedOwn);
+				if (found)
+				{
+					Vector3 pos_unity = pedOwn.transform.position;
+					Vector3 tan_unity = pedOwn.transform.forward;
+					Vector3 lat_unity = pedOwn.transform.right;
+					Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
+					Vector3 t = MultiplyDir(c_unity2sim, tan_unity);
+					Vector3 l = MultiplyDir(c_unity2sim, lat_unity);
+					double xPos, yPos, zPos;
+					double xTan, yTan, zTan;
+					double xLat, yLat, zLat;
+					xPos = p.x; yPos = p.y; zPos = p.z;
+					xTan = t.x; yTan = t.y; zTan = t.z;
+					xLat = l.x; yLat = l.y; zLat = l.z;
+
+					ProxyDiguy diguy = pedOwn.GetComponent<ProxyDiguy>();
+					diguy.SyncOut();
+					for (int i_part = 0; i_part < diguy.m_art.Length; i_part++)
+					{
+						ArtPart art = diguy.m_art[i_part];
+						m_ctrl.OnPushUpdateArt(c_ownPedId, art.id, art.q.w, art.q.x, art.q.y, art.q.z, art.t.x, art.t.y, art.t.z);
+						//fixme: performance might be sacrified here from loop manage to native code call
+					}
+
+					m_ctrl.OnPostPushUpdateArt(c_ownPedId
+										, xPos, yPos, zPos
+										, xTan, yTan, zTan
+										, xLat, yLat, zLat);
+
+
+				}
+
+				foreach (KeyValuePair<int, GameObject> kv in m_id2Dyno)
+				{
+					bool received = true;
+					double xPos, yPos, zPos;
+					double xTan, yTan, zTan;
+					double xLat, yLat, zLat;
+					m_ctrl.OnGetUpdate(kv.Key, out received
+									, out xPos, out yPos, out zPos
+									, out xTan, out yTan, out zTan
+									, out xLat, out yLat, out zLat);
+					if (received)
+					{
+						Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
+						Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
+						Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
+						Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
+						Vector3 t_unity = MultiplyDir(c_sim2unity, t);
+						Vector3 l_unity = MultiplyDir(c_sim2unity, l);
+						Quaternion q_unity;
+						FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
+						kv.Value.transform.position = p_unity;
+						kv.Value.transform.rotation = q_unity;
+					}
+					//fixme debugging log
+					//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
+					//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
+					//Debug.Log(strTuple);
+				}
+
+				foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
+				{
+					if (0 == kv.Key) //id(0) is own object
+						continue;
+					bool received = true;
+					double xPos, yPos, zPos;
+					double xTan, yTan, zTan;
+					double xLat, yLat, zLat;
+					m_ctrl.OnPreGetUpdateArt(kv.Key, out received
+									, out xPos, out yPos, out zPos
+									, out xTan, out yTan, out zTan
+									, out xLat, out yLat, out zLat);
+					if (received)
+					{
+						Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
+						Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
+						Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
+						Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
+						Vector3 t_unity = MultiplyDir(c_sim2unity, t);
+						Vector3 l_unity = MultiplyDir(c_sim2unity, l);
+						Quaternion q_unity;
+						FrameToQuaternionPed(t_unity, l_unity, out q_unity);
+						kv.Value.transform.position = p_unity;
+						kv.Value.transform.rotation = q_unity;
+						ProxyDiguy diguy = kv.Value.GetComponent<ProxyDiguy>();
+						double q_w, q_x, q_y, q_z;
+						double t_x, t_y, t_z;
 						for (int i_part = 0; i_part < diguy.m_art.Length; i_part++)
 						{
-							ArtPart art = diguy.m_art[i_part];
-							m_ctrl.OnPushUpdateArt(c_ownPedId, art.id, art.q.w, art.q.x, art.q.y, art.q.z, art.t.x, art.t.y, art.t.z);
 							//fixme: performance might be sacrified here from loop manage to native code call
+							ArtPart art = diguy.m_art[i_part];
+							m_ctrl.OnGetUpdateArt(kv.Key, art.id
+								, out q_w, out q_x, out q_y, out q_z
+								, out t_x, out t_y, out t_z);
+							art.q.Set((float)q_x, (float)q_y, (float)q_z, (float)q_w);
+							art.t.Set((float)t_x, (float)t_y, (float)t_z);
 						}
-
-						m_ctrl.OnPostPushUpdateArt(c_ownPedId
-											, xPos, yPos, zPos
-											, xTan, yTan, zTan
-											, xLat, yLat, zLat);
-
-
+						diguy.SyncIn();
 					}
-
-					foreach (KeyValuePair<int, GameObject> kv in m_id2Dyno)
-					{
-						bool received = true;
-						double xPos, yPos, zPos;
-						double xTan, yTan, zTan;
-						double xLat, yLat, zLat;
-						m_ctrl.OnGetUpdate(kv.Key, out received
-										, out xPos, out yPos, out zPos
-										, out xTan, out yTan, out zTan
-										, out xLat, out yLat, out zLat);
-						if (received)
-						{
-							Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
-							Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
-							Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
-							Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-							Vector3 t_unity = MultiplyDir(c_sim2unity, t);
-							Vector3 l_unity = MultiplyDir(c_sim2unity, l);
-							Quaternion q_unity;
-							FrameToQuaternionVehi(t_unity, l_unity, out q_unity);
-							kv.Value.transform.position = p_unity;
-							kv.Value.transform.rotation = q_unity;
-						}
-						//fixme debugging log
-						//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
-						//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
-						//Debug.Log(strTuple);
-					}
-
-					foreach (KeyValuePair<int, GameObject> kv in m_id2Ped)
-					{
-						if (0 == kv.Key) //id(0) is own object
-							continue;
-						bool received = true;
-						double xPos, yPos, zPos;
-						double xTan, yTan, zTan;
-						double xLat, yLat, zLat;
-						m_ctrl.OnPreGetUpdateArt(kv.Key, out received
-										, out xPos, out yPos, out zPos
-										, out xTan, out yTan, out zTan
-										, out xLat, out yLat, out zLat);
-						if (received)
-						{
-							Vector3 p = new Vector3((float)xPos, (float)yPos, (float)zPos);
-							Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
-							Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
-							Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
-							Vector3 t_unity = MultiplyDir(c_sim2unity, t);
-							Vector3 l_unity = MultiplyDir(c_sim2unity, l);
-							Quaternion q_unity;
-							FrameToQuaternionPed(t_unity, l_unity, out q_unity);
-							kv.Value.transform.position = p_unity;
-							kv.Value.transform.rotation = q_unity;
-							ProxyDiguy diguy = kv.Value.GetComponent<ProxyDiguy>();
-							double q_w, q_x, q_y, q_z;
-							double t_x, t_y, t_z;
-							for (int i_part = 0; i_part < diguy.m_art.Length; i_part++)
-							{
-								//fixme: performance might be sacrified here from loop manage to native code call
-								ArtPart art = diguy.m_art[i_part];
-								m_ctrl.OnGetUpdateArt(kv.Key, art.id
-									, out q_w, out q_x, out q_y, out q_z
-									, out t_x, out t_y, out t_z);
-								art.q.Set((float)q_x, (float)q_y, (float)q_z, (float)q_w);
-								art.t.Set((float)t_x, (float)t_y, (float)t_z);
-							}
-							diguy.SyncIn();
-						}
-						//fixme debugging log
-						//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
-						//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
-						//Debug.Log(strTuple);
-					}
+					//fixme debugging log
+					//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
+					//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
+					//Debug.Log(strTuple);
 				}
+
 
 
 				m_ctrl.PostUpdateDynamicModels();
@@ -1028,12 +1024,6 @@ public class ScenarioControl : MonoBehaviour
 		}
 	}
 
-	public void Lock(bool a_lock)
-	{
-		foreach (KeyValuePair<int, GameObject> kv in m_id2Dyno)
-			kv.Value.GetComponent<Dyno>().Lock(a_lock);
-		m_locked = a_lock;
-	}
 	static void FrameToQuaternionVehi(Vector3 t, Vector3 l, out Quaternion q)
 	{
 		Vector3 z_prime = Vector3.Cross(l, -t);

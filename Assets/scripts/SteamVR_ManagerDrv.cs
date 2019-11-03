@@ -70,7 +70,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 		tracker_end = (int)ObjType.tracker_lfoot + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actGroundEle, actPersonpanelUpdateF })																						//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actLockScenario, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})	//2
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})	//2
 									, new Transition(State.pre_calibra, State.pre_cnn, L_GRIP, new Action[] {actUnShowMirror, actUnConnectVirtualWorld, actPersonpanelUpdateF})															//3
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																														//4
 									, new Transition(State.pre_calibra, State.pre_calibra, FRONT, actInspecAvatar_f)																													//5
@@ -110,9 +110,9 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 									, new Transition(State.adjusting_r, State.adjusting_r, ALL, actAdjustCar_r)																															//39
 									, new Transition(State.adjusting_u, State.adjusting_u, ALL, actAdjustCar_u)																															//40
 									, new Transition(State.adjusting_f, State.adjusting_f, ALL, actAdjustCar_f)																															//41
-									, new Transition(State.adjusting_r, State.tracking, R_GRIP, actUnLockScenario)																														//42
-									, new Transition(State.adjusting_f, State.tracking, R_GRIP, actUnLockScenario)																														//43
-									, new Transition(State.adjusting_u, State.tracking, R_GRIP, actUnLockScenario)																														//44
+									, new Transition(State.adjusting_r, State.tracking, R_GRIP)																														//42
+									, new Transition(State.adjusting_f, State.tracking, R_GRIP)																														//43
+									, new Transition(State.adjusting_u, State.tracking, R_GRIP)																														//44
 									, new Transition(State.tracking, State.pre_cnn, L_MENU|L_ARROW, new Action[]{actPegUnLock, actUnCalibration, actUnConnectVirtualWorld, actPersonpanelUpdateF, actInspecAvatar_f})					//45
 								};
 		g_inst = this;

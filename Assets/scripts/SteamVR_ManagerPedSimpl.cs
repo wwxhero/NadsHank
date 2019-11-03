@@ -27,7 +27,7 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 		tracker_end = (int)ObjType.tracker_lhand + 1;
 		m_transition = new Transition[] {
 									  new Transition(State.initial, State.pre_cnn, R_TRIGGER, new Action[] {actViewInspec, actGroundEle, actPersonpanelUpdateF})																		//1
-									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actLockScenario, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})	//2
+									, new Transition(State.pre_cnn, State.pre_calibra, R_GRIP, new Action[] {actPersonpanelUpdateT, actIdentifyTrackers, actConnectVirtualWorld, actShowMirror, actInspecAvatar_f})	//2
 									, new Transition(State.pre_calibra, State.pre_cnn, L_GRIP, new Action[] {actUnShowMirror, actUnConnectVirtualWorld, actPersonpanelUpdateF})															//3
 									, new Transition(State.pre_calibra, State.pre_calibra, ALL, actAdjustMirror)																														//4
 									, new Transition(State.pre_calibra, State.pre_calibra, FRONT, actInspecAvatar_f)																													//5
@@ -44,7 +44,7 @@ public class SteamVR_ManagerPedSimpl : SteamVR_Manager
 									, new Transition(State.post_calibra, State.post_calibra, BACK, actInspecAvatar_b)																													//16
 									, new Transition(State.post_calibra, State.post_calibra, LEFT, actInspecAvatar_l)																													//17
 									, new Transition(State.post_calibra, State.post_calibra, DOWN, actInspecAvatar_d)																													//18
-									, new Transition(State.post_calibra, State.tracking_inspec, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker, actUnLockScenario })																//19													//15
+									, new Transition(State.post_calibra, State.tracking_inspec, R_GRIP, new Action[]{ actUnShowMirror, actHideTracker })																//19													//15
 									, new Transition(State.post_calibra, State.pre_calibra, L_GRIP, actUnCalibration)																													//20
 									, new Transition(State.tracking_inspec, State.pre_cnn, L_TRIGGER|L_ARROW, new Action[]{actUnHideTracker, actUnCalibration, actUnConnectVirtualWorld, actPersonpanelUpdateF, actInspecAvatar_f})		//21
 									, new Transition(State.tracking_td, State.teleporting, R_ARROW, actTeleportP)																														//22
