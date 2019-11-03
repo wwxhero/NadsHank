@@ -22,6 +22,8 @@ public class ScenarioControl : MonoBehaviour
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Marker = new Dictionary<int, GameObject>();
+	HashSet<int> m_hostsSet = new HashSet<int>();
+	readonly Vector3 c_offsetHost = new Vector3(0, -0.177481f, 0);
 	GameObject m_trackers;
 	Camera m_egoInspector;
 
@@ -872,7 +874,7 @@ public class ScenarioControl : MonoBehaviour
 							setLayer(m_id2Marker[i_parent], LAYER.marker_dynamic);
 							//adjustInspector(InspectorHelper.Direction.forward, true);
 						}
-
+						m_hostsSet.Add(i_parent);
 					}
 				}
 
@@ -928,6 +930,11 @@ public class ScenarioControl : MonoBehaviour
 						Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
 						Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
 						Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
+						bool host = m_hostsSet.Contains(kv.Key);
+						if (host)
+						{
+							p_unity += c_offsetHost;
+						}
 						Vector3 t_unity = MultiplyDir(c_sim2unity, t);
 						Vector3 l_unity = MultiplyDir(c_sim2unity, l);
 						Quaternion q_unity;
