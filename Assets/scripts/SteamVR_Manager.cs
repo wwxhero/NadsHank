@@ -32,8 +32,8 @@ public class SteamVR_Manager : SteamVR_TDManager
 
 	protected delegate bool Action(uint cond);
 	protected enum State {
-						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra				//the common states shared for driver and pedestrain
-						, tracking_inspec, tracking_hmd, tracking_td, teleporting			//the specific state for pedestrain
+						  initial, pre_cnn, post_cnn, pre_calibra, post_calibra								//the common states shared for driver and pedestrain
+						, tracking_inspec, tracking_hmd, tracking_td, teleporting							//the specific state for pedestrain
 						, pre_calibra2, pegging, adjusting_r, adjusting_f, adjusting_u, tracking			//the specific state for driver
 					};
 
@@ -87,7 +87,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 		}
 	};
 
-	enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, forward, right, up, ori, plus, minus, n_code };
+	//enum CtrlCode { trigger, steam, menu, pad_p, pad_t, grip, forward, right, up, ori, plus, minus, n_code };
 	protected const uint R_TRIGGER = 	0x0001;
 	protected const uint R_STEAM = 		0x0002;
 	protected const uint R_MENU = 		0x0004;
@@ -101,7 +101,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected const uint L_PAD_T = 		0x1000;
 	protected const uint L_GRIP = 		0x2000;
 
-	protected const uint FORWARD =	   0x10000;
+	protected const uint FRONT =	   0x10000;
 	protected const uint RIGHT =	   0x20000;
 	protected const uint UP =		   0x40000;
 	protected const uint ORI =		   0x80000;
@@ -109,6 +109,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected const uint L_ARROW =	  0x200000;
 	protected const uint U_ARROW =	  0x400000;
 	protected const uint D_ARROW =	  0x800000;
+	protected const uint BACK =		 0x1000000;
+	protected const uint LEFT =		 0x2000000;
+	protected const uint DOWN =		 0x4000000;
 	protected const uint ALL =		0xffffffff;
 	protected const uint NONE = 	0x00000000;
 	protected Transition[] m_transition;
@@ -209,15 +212,11 @@ public class SteamVR_Manager : SteamVR_TDManager
 	protected static bool actTeleportP(uint cond)
 	{
 		if (g_inst.DEF_MOCKSTEAM)
-		{
 			Debug.LogWarning("SteamVR_Manager::actTeleportP");
-			return true;
-		}
-		else
-		{
-			ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-			return scenario.Teleport(++s_idx);
-		}
+
+		ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		return scenario.Teleport(++s_idx);
+
 	}
 
 	protected static bool actTeleportM(uint cond)
@@ -494,8 +493,10 @@ public class SteamVR_Manager : SteamVR_TDManager
 	{
 		Debug.Assert(null != g_inst
 			&& null != g_inst.m_avatar);
-		if (g_inst.DEF_MOCKSTEAM)
-			Debug.LogWarning("SteamVR_Manager::actUnCalibration");
+        ScenarioControl scenario = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+        scenario.Teleport(s_idx = 0);
+        if (g_inst.DEF_MOCKSTEAM)
+            Debug.LogWarning("SteamVR_Manager::actUnCalibration");
 		else
 		{
 			g_inst.UnCalibration();
@@ -539,6 +540,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, Input.GetKey(KeyCode.LeftArrow)
 									, Input.GetKey(KeyCode.UpArrow)
 									, Input.GetKey(KeyCode.DownArrow)
+									, Input.GetKey(KeyCode.B) //&& (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+									, Input.GetKey(KeyCode.L) //&& (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+									, Input.GetKey(KeyCode.D) //&& (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
 								};
 		uint[] switch_codes = new uint[] {
 									  R_TRIGGER
@@ -553,7 +557,7 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, L_PAD_P
 									, L_PAD_T
 									, L_GRIP
-									, FORWARD
+									, FRONT
 									, RIGHT
 									, UP
 									, ORI
@@ -561,6 +565,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 									, L_ARROW
 									, U_ARROW
 									, D_ARROW
+									, BACK
+									, LEFT
+									, DOWN
 								};
 
 		if (ctrls_ready)
@@ -638,6 +645,9 @@ public class SteamVR_Manager : SteamVR_TDManager
 					, "LEFT_ARROW"
 					, "UP_ARROW"
 					, "DOWN_ARROW"
+					, "BACK"
+					, "LEFT"
+					, "DOWN"
 				};
 				Debug.Assert(switch_names.Length == ctrl_switch.Length);
 				for (int i_switch = 0; i_switch < ctrl_switch.Length; i_switch++)
@@ -697,7 +707,34 @@ public class SteamVR_Manager : SteamVR_TDManager
 		if (g_inst.DEF_MOCKSTEAM)
 			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_f");
 		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
-		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, ScenarioControl.InspectorHelper.ObjType.Ego);
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.front, ScenarioControl.InspectorHelper.ObjType.Ego);
+		return true;
+	}
+
+	protected static bool actInspecAvatar_l(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_r");
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.left, ScenarioControl.InspectorHelper.ObjType.Ego);
+		return true;
+	}
+
+	protected static bool actInspecAvatar_b(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_u");
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.back, ScenarioControl.InspectorHelper.ObjType.Ego);
+		return true;
+	}
+
+	protected static bool actInspecAvatar_d(uint cond)
+	{
+		if (g_inst.DEF_MOCKSTEAM)
+			Debug.LogWarning("SteamVR_Manager::actInspecAvatar_f");
+		ScenarioControl sc = g_inst.m_senarioCtrl.GetComponent<ScenarioControl>();
+		sc.adjustInspector(ScenarioControl.InspectorHelper.Direction.down, ScenarioControl.InspectorHelper.ObjType.Ego);
 		return true;
 	}
 

@@ -22,6 +22,8 @@ public class ScenarioControl : MonoBehaviour
 	Dictionary<int, GameObject> m_id2Dyno = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Ped = new Dictionary<int, GameObject>();
 	Dictionary<int, GameObject> m_id2Marker = new Dictionary<int, GameObject>();
+	HashSet<int> m_hostsSet = new HashSet<int>();
+	readonly Vector3 c_offsetHost = new Vector3(0, -0.177481f, 0);
 	GameObject m_trackers;
 	Camera m_egoInspector;
 
@@ -195,7 +197,7 @@ public class ScenarioControl : MonoBehaviour
 			public float halfWidth, halfHeight, halfDepth;
 		};
 		BBOX m_bbox;
-		public enum ObjType {Host, Ego, Map};
+		public enum ObjType { Host, Ego, Map };
 		ObjType m_type;
 		Transform m_target;
 		public InspectorHelper(Transform target, ConfAvatar conf)
@@ -228,13 +230,16 @@ public class ScenarioControl : MonoBehaviour
 			m_bbox.halfHeight = conf.Height * 0.5f;
 			m_bbox.halfDepth = conf.Depth * 0.5f;
 		}
-		public enum Direction { forward = 0, up, right };
+		public enum Direction { front = 0, up, right, back, down, left };
 
 		public void Apply(Camera cam, Direction dir)
 		{
 			//fixme: put camera in the specific direction of the target
 			float[] camSize = {
 				  Mathf.Max(m_bbox.halfWidth, m_bbox.halfHeight)
+				, Mathf.Max(m_bbox.halfWidth, m_bbox.halfDepth)
+				, Mathf.Max(m_bbox.halfHeight, m_bbox.halfDepth)
+				, Mathf.Max(m_bbox.halfWidth, m_bbox.halfHeight)
 				, Mathf.Max(m_bbox.halfWidth, m_bbox.halfDepth)
 				, Mathf.Max(m_bbox.halfHeight, m_bbox.halfDepth)
 			};
@@ -264,6 +269,9 @@ public class ScenarioControl : MonoBehaviour
 						  new Vector3(0, -1, 0)
 						, new Vector3(0,  0, 1)
 						, new Vector3(1, 0, 0)
+						, new Vector3(0, 1, 0)
+						, new Vector3(0,  0, -1)
+						, new Vector3(-1, 0, 0)
 					};
 				u_l = new Vector3(0, 0, 1);
 			}
@@ -273,6 +281,9 @@ public class ScenarioControl : MonoBehaviour
 						  new Vector3(0, 0, 1)
 						, new Vector3(0, 1, 0)
 						, new Vector3(1, 0, 0)
+						, new Vector3(0, 0, -1)
+						, new Vector3(0, -1, 0)
+						, new Vector3(-1, 0, 0)
 					};
 				u_l = new Vector3(0, 1, 0);
 			}
@@ -280,6 +291,9 @@ public class ScenarioControl : MonoBehaviour
 			{
 				t_l = new Vector3[] {
 						  new Vector3(0, 1, 0)
+						, new Vector3(0, 1, 0)
+						, new Vector3(0, 1, 0)
+						, new Vector3(0, 1, 0)
 						, new Vector3(0, 1, 0)
 						, new Vector3(0, 1, 0)
 					};
@@ -534,6 +548,7 @@ public class ScenarioControl : MonoBehaviour
 						XmlAttribute e_t_attr = e_map.GetAttributeNode("elevation_t");
 						float e_t = float.Parse(e_t_attr.Value);
 						SetMapElevation(e_t);
+						//SetMapElevation(10);
 					}
 					m_confMap = new ConfMap(transform);
 				}
@@ -571,18 +586,29 @@ public class ScenarioControl : MonoBehaviour
 		transform.Translate(tl_w, Space.World);
 		GameObject ped = null;
 		if (m_id2Ped.TryGetValue(0, out ped))
-			ped.transform.Translate(tl_w, Space.World);
+		{
+			if (m_bDriver)
+			{
+				Transform host_t = ped.transform.parent;
+				host_t.Translate(tl_w, Space.World);
+			}
+			else
+			{
+				Transform ped_t = ped.transform;
+				ped_t.Translate(tl_w, Space.World);
+			}
+		}
 		Matrix4x4 t_u = new Matrix4x4(
-						  new Vector4(1,	0,		0,		0)
-						, new Vector4(0,	1,		0,		0)
-						, new Vector4(0,	0,		1,		0)
-						, new Vector4(0,	e_t,	0,		1)
+						  new Vector4(1, 0, 0, 0)
+						, new Vector4(0, 1, 0, 0)
+						, new Vector4(0, 0, 1, 0)
+						, new Vector4(0, e_t, 0, 1)
 						);
 		Matrix4x4 t_u_inv = new Matrix4x4(
-						  new Vector4(1,	0,		0,		0)
-						, new Vector4(0,	1,		0,		0)
-						, new Vector4(0,	0,		1,		0)
-						, new Vector4(0,	-e_t,	0,		1)
+						  new Vector4(1, 0, 0, 0)
+						, new Vector4(0, 1, 0, 0)
+						, new Vector4(0, 0, 1, 0)
+						, new Vector4(0, -e_t, 0, 1)
 						);
 		c_sim2unity = t_u * c_sim2unity;
 		c_unity2sim = c_unity2sim * t_u_inv;
@@ -632,8 +658,11 @@ public class ScenarioControl : MonoBehaviour
 									int idx = solId % m_vehiPrefabs.Length;
 									GameObject o = Instantiate(m_vehiPrefabs[idx], p_unity, q_unity);
 									o.name = name;
+
+
 									setLayer(o, LAYER.peer_dynamic);
 									m_id2Dyno.Add(id, o);
+
 
 									FrameToQuaternionPed(t_unity, l_unity, out q_unity);
 									GameObject marker = Instantiate(m_areaPrefab, p_unity, q_unity);
@@ -742,7 +771,7 @@ public class ScenarioControl : MonoBehaviour
 										//no matter driver or pedestrain, by default, inspector is on avatar
 										InspectorHelper inspector = new InspectorHelper(ped.transform, m_confAvatar);
 										m_egoInspector = Instantiate(m_camInspectorPrefab).GetComponent<Camera>();
-										inspector.Apply(m_egoInspector, InspectorHelper.Direction.forward);
+										inspector.Apply(m_egoInspector, InspectorHelper.Direction.front);
 									}
 									else
 										setLayer(ped, LAYER.peer_dynamic);
@@ -763,8 +792,8 @@ public class ScenarioControl : MonoBehaviour
 										ids[i_part] = i_part;
 										names[i_part] = namePartS;
 									}
-									DriverDiguy driver = ped.GetComponent<DriverDiguy>();
-									driver.Initialize(ids, names, own);
+									ProxyDiguy diguy = ped.GetComponent<ProxyDiguy>();
+									diguy.Initialize(ids, names, own);
 
 									break;
 								}
@@ -845,44 +874,10 @@ public class ScenarioControl : MonoBehaviour
 							setLayer(m_id2Marker[i_parent], LAYER.marker_dynamic);
 							//adjustInspector(InspectorHelper.Direction.forward, true);
 						}
-
+						m_hostsSet.Add(i_parent);
 					}
 				}
 
-				GameObject pedOwn;
-				const int c_ownPedId = 0;
-				bool found = m_id2Ped.TryGetValue(c_ownPedId, out pedOwn);
-				if (found)
-				{
-					Vector3 pos_unity = pedOwn.transform.position;
-					Vector3 tan_unity = pedOwn.transform.forward;
-					Vector3 lat_unity = pedOwn.transform.right;
-					Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
-					Vector3 t = MultiplyDir(c_unity2sim, tan_unity);
-					Vector3 l = MultiplyDir(c_unity2sim, lat_unity);
-					double xPos, yPos, zPos;
-					double xTan, yTan, zTan;
-					double xLat, yLat, zLat;
-					xPos = p.x; yPos = p.y; zPos = p.z;
-					xTan = t.x; yTan = t.y; zTan = t.z;
-					xLat = l.x; yLat = l.y; zLat = l.z;
-
-					DriverDiguy driver = pedOwn.GetComponent<DriverDiguy>();
-					driver.SyncOut();
-					for (int i_part = 0; i_part < driver.m_art.Length; i_part++)
-					{
-						ArtPart art = driver.m_art[i_part];
-						m_ctrl.OnPushUpdateArt(c_ownPedId, art.id, art.q.w, art.q.x, art.q.y, art.q.z, art.t.x, art.t.y, art.t.z);
-						//fixme: performance might be sacrified here from loop manage to native code call
-					}
-
-					m_ctrl.OnPostPushUpdateArt(c_ownPedId
-										, xPos, yPos, zPos
-										, xTan, yTan, zTan
-										, xLat, yLat, zLat);
-
-
-				}
 
 				foreach (KeyValuePair<int, GameObject> kv in m_id2Dyno)
 				{
@@ -900,6 +895,11 @@ public class ScenarioControl : MonoBehaviour
 						Vector3 t = new Vector3((float)xTan, (float)yTan, (float)zTan);
 						Vector3 l = new Vector3((float)xLat, (float)yLat, (float)zLat);
 						Vector3 p_unity = c_sim2unity.MultiplyPoint3x4(p);
+						bool host = m_hostsSet.Contains(kv.Key);
+						if (host)
+						{
+							p_unity += c_offsetHost;
+						}
 						Vector3 t_unity = MultiplyDir(c_sim2unity, t);
 						Vector3 l_unity = MultiplyDir(c_sim2unity, l);
 						Quaternion q_unity;
@@ -937,26 +937,62 @@ public class ScenarioControl : MonoBehaviour
 						FrameToQuaternionPed(t_unity, l_unity, out q_unity);
 						kv.Value.transform.position = p_unity;
 						kv.Value.transform.rotation = q_unity;
-						DriverDiguy driver = kv.Value.GetComponent<DriverDiguy>();
+						ProxyDiguy diguy = kv.Value.GetComponent<ProxyDiguy>();
 						double q_w, q_x, q_y, q_z;
 						double t_x, t_y, t_z;
-						for (int i_part = 0; i_part < driver.m_art.Length; i_part++)
+						for (int i_part = 0; i_part < diguy.m_art.Length; i_part++)
 						{
 							//fixme: performance might be sacrified here from loop manage to native code call
-							ArtPart art = driver.m_art[i_part];
+							ArtPart art = diguy.m_art[i_part];
 							m_ctrl.OnGetUpdateArt(kv.Key, art.id
 								, out q_w, out q_x, out q_y, out q_z
 								, out t_x, out t_y, out t_z);
 							art.q.Set((float)q_x, (float)q_y, (float)q_z, (float)q_w);
 							art.t.Set((float)t_x, (float)t_y, (float)t_z);
 						}
-						driver.SyncIn();
+						diguy.SyncIn();
 					}
 					//fixme debugging log
 					//string strTuple = string.Format("\nid = {10} received = {0}:\n\tpos=[{1},{2},{3}]\n\ttan=[{4},{5},{6}]\n\tlat=[{7},{8},{9}]"
 					//                                    , received, xPos, yPos, zPos, xTan, yTan, zTan, xLat, yLat, zLat, kv.Key);
 					//Debug.Log(strTuple);
 				}
+
+				GameObject pedOwn;
+				const int c_ownPedId = 0;
+				bool found = m_id2Ped.TryGetValue(c_ownPedId, out pedOwn);
+				if (found)
+				{
+					Vector3 pos_unity = pedOwn.transform.position;
+					Vector3 tan_unity = pedOwn.transform.forward;
+					Vector3 lat_unity = pedOwn.transform.right;
+					Vector3 p = c_unity2sim.MultiplyPoint3x4(pos_unity);
+					Vector3 t = MultiplyDir(c_unity2sim, tan_unity);
+					Vector3 l = MultiplyDir(c_unity2sim, lat_unity);
+					double xPos, yPos, zPos;
+					double xTan, yTan, zTan;
+					double xLat, yLat, zLat;
+					xPos = p.x; yPos = p.y; zPos = p.z;
+					xTan = t.x; yTan = t.y; zTan = t.z;
+					xLat = l.x; yLat = l.y; zLat = l.z;
+
+					ProxyDiguy diguy = pedOwn.GetComponent<ProxyDiguy>();
+					diguy.SyncOut();
+					for (int i_part = 0; i_part < diguy.m_art.Length; i_part++)
+					{
+						ArtPart art = diguy.m_art[i_part];
+						m_ctrl.OnPushUpdateArt(c_ownPedId, art.id, art.q.w, art.q.x, art.q.y, art.q.z, art.t.x, art.t.y, art.t.z);
+						//fixme: performance might be sacrified here from loop manage to native code call
+					}
+
+					m_ctrl.OnPostPushUpdateArt(c_ownPedId
+										, xPos, yPos, zPos
+										, xTan, yTan, zTan
+										, xLat, yLat, zLat);
+
+
+				}
+
 
 				m_ctrl.PostUpdateDynamicModels();
 
@@ -1096,7 +1132,7 @@ public class ScenarioControl : MonoBehaviour
 	public void viewInspec()
 	{
 		m_egoInspector.gameObject.SetActive(true);
-		adjustInspector(ScenarioControl.InspectorHelper.Direction.forward, InspectorHelper.ObjType.Ego);
+		adjustInspector(ScenarioControl.InspectorHelper.Direction.front, InspectorHelper.ObjType.Ego);
 	}
 
 	public void viewHmd()

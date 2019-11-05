@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using JointsReduction;
 
-public class DriverDiguy : MonoBehaviour {
+public class ProxyDiguy : MonoBehaviour {
 	private const int DFN_NJDIGUY = 15;
 	public bool logging = false;
 	public ArtPart[] m_art = new ArtPart[DFN_NJDIGUY];
@@ -54,7 +54,7 @@ public class DriverDiguy : MonoBehaviour {
 		m_diguyMap.mapIn();
 	}
 
-	void Update()
+    void Update()
 	{
 		if (logging)
 		{
