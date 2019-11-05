@@ -595,7 +595,7 @@ public class ScenarioControl : MonoBehaviour
 			else
 			{
 				Transform ped_t = ped.transform;
-				ped_t.transform.Translate(tl_w, Space.World);
+				ped_t.Translate(tl_w, Space.World);
 			}
 		}
 		Matrix4x4 t_u = new Matrix4x4(
