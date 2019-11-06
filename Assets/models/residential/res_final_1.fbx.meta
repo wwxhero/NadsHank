@@ -1,0 +1,742 @@
+fileFormatVersion: 2
+guid: 17107038707284c4482eba1e2f2b9ea8
+timeCreated: 1572994159
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Camera
+    100002: Light
+    100004: res
+    100006: //RootNode
+    400000: Camera
+    400002: Light
+    400004: res
+    400006: //RootNode
+    2000000: Camera
+    2100000: 0_veg_ground01
+    2100002: 1_billb_far128
+    2100004: 2_white_cinderblk_nostag
+    2100006: 3_e_s1
+    2100008: 4_factory_window2
+    2100010: 5_office_win_refl
+    2100012: 6_util01
+    2100014: 7_veg_manyTrees_2
+    2100016: 8_veg_TreeWall_04
+    2100018: 9_2lnRd_02
+    2100020: 10_bs_noise
+    2100022: 11_mailbox01
+    2100024: 12_mailbox01_gray
+    2100026: 13_mailbox01_orange
+    2100028: 14_clapboard_wh_04
+    2100030: 15_dbl_hung_window3
+    2100032: 16_brick1
+    2100034: 17_dbl_hung_window3_grn
+    2100036: 18_stonetile1
+    2100038: 19_wall_wood
+    2100040: 20_stucco_grn
+    2100042: 21_roof3_6mi
+    2100044: 22_bk3
+    2100046: 23_shingles
+    2100048: 24_clapboard_grn_04
+    2100050: 25_clapboard_blue_04
+    2100052: 26_shgls
+    2100054: 27_roof1_fc_128
+    2100056: 28_unassigned
+    2100058: 29_grgdoor1_grn
+    2100060: 30_grgdoor1_brown
+    2100062: 31_roof2
+    2100064: 32_stucco_brown
+    2100066: 33_grgdoor1
+    2100068: 34_dbl_hung_window3_brown
+    2100070: 35_doors
+    2100072: 36_doors_grn
+    2100074: 37_doors_brown
+    2100076: 38_roadMarking_wt_textured02
+    2100078: 39_roadMarking_yo_textured02
+    2100080: 40_sgn_CurveWarning_30More
+    2100082: 41_apartment3
+    2100084: 42_veg_treesMany_04B
+    2100086: 43_veg_treesMany_03B
+    2100088: 44_veg_treesMany_04
+    2100090: 45_veg_treesMany_04
+    2100092: 46_veg_treesMany_03
+    2100094: 47_veg_treesMany_03
+    2100096: 48_Car_Shadow
+    2100098: 49_qVehMscRes2ln3way01
+    2100100: 50_qVehRes2ln3way01
+    2100102: 51_flogo2
+    2100104: 52_comm_door
+    2100106: 53_sgn_BarberShop_01
+    2100108: 54_window_1x1
+    2100110: 55_house14_day
+    2100112: 56_wall_blocks_sm
+    2100114: 57_pool
+    2100116: 58_flower
+    2100118: 59_AllCars
+    2100120: 60_2ln_res_mult_school02
+    2100122: 61_fence_mailbox
+    2100124: 62_AllCars_1024
+    2100126: 63_fml_bldg_mall1
+    2100128: 64_bldg_composite01b
+    2100130: 65_house15_day
+    2100132: 66_lightpole02
+    2100134: 67_concrete_int
+    2100136: 68_brick_b
+    2100138: 69_asphault1
+    2100140: 70_house_small03
+    2100142: 71_house_small01
+    2100144: 72_4ln_res_3way_comm_txCons04
+    2100146: 73_4ln_res_3way_comm_txCons_02
+    2100148: 74_4lnRd_02
+    2100150: 75_wallGasStation_01
+    2100152: 76_veg_manyTrees
+    2100154: 77_building09
+    2100156: 78_building09
+    2100158: 79_treewall_d_512
+    2100160: 80_grasslg
+    2100162: 81_house13Small
+    2100164: 82_Housing
+    2100166: 83_grate1
+    2100168: 84_manhole2
+    2100170: 85_veg_treesMany_05
+    2100172: 86_sgn_intRelated_2ln_res_mult_school
+    2100174: 87_veg_features1
+    2100176: 88_veg_treewall_05
+    2100178: 89_field2
+    2100180: 90_billb_far512
+    2100182: 91_sgn_SL_35
+    2100184: 92_tyre
+    2100186: 93_black
+    2100188: 94_bs_noise_darker
+    2100190: 95_gray_cinderblk_nostag
+    2100192: 96_windstarblue
+    2100194: 97_carwind
+    2100196: 98_chvy_truckgrey
+    2100198: 99_squarelight_gray
+    2100200: 100_sgn_AuxSpeed_30
+    2100202: 101_sgn_AuxSpeed_10
+    2100204: 102_sgnStreetSignBase
+    2100206: 103_d_street_names_withbackground
+    2100208: 104_qSign04
+    2100210: 105_yield_ped_crosswalk
+    2100212: 106_sgn_ped_crossing_flr_yw_grn
+    2300000: res
+    3300000: res
+    4300000: res
+    10800000: Light
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 0_veg_ground01
+    second: {fileID: 2100000, guid: afc21ac254941154e9cc364bd84e13f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 100_sgn_AuxSpeed_30
+    second: {fileID: 2100000, guid: 82097476b550b674d90394f197011763, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 101_sgn_AuxSpeed_10
+    second: {fileID: 2100000, guid: 90584d0858bb85c4c8a1cf1cc2ebb7b2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 102_sgnStreetSignBase
+    second: {fileID: 2100000, guid: 32483ab0aaa377a4eac53307ad7f94f5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 103_d_street_names_withbackground
+    second: {fileID: 2100000, guid: e716a0aef50324e4b9b06f5ba8dace47, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 104_qSign04
+    second: {fileID: 2100000, guid: 3f805ca7b59d3a14388fbebad00beff1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 105_yield_ped_crosswalk
+    second: {fileID: 2100000, guid: f0461be73f6f8864aaa7dc35cc9f41c1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 106_sgn_ped_crossing_flr_yw_grn
+    second: {fileID: 2100000, guid: 0168e56121eab8b4b8cabc5387eb076e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 10_bs_noise
+    second: {fileID: 2100000, guid: 62ac5e5d51680a842957a7600340a770, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 11_mailbox01
+    second: {fileID: 2100000, guid: 555661252dca13d4d9bdf51b41d9dd95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 12_mailbox01_gray
+    second: {fileID: 2100000, guid: 18ce5f4c55cc5704787f2f92ba197fe5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 13_mailbox01_orange
+    second: {fileID: 2100000, guid: ad11910ac19ea524ca655ea8c19244d7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 14_clapboard_wh_04
+    second: {fileID: 2100000, guid: 744ca98e91a7c084e95c267c2a7af305, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 15_dbl_hung_window3
+    second: {fileID: 2100000, guid: be2508925987d904aa5f6ed186b2f0f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 16_brick1
+    second: {fileID: 2100000, guid: a578c673bc1c44f4f8f9914946361a9b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 17_dbl_hung_window3_grn
+    second: {fileID: 2100000, guid: b1d80ebc0bd3e1f4882c6b908bf698e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 18_stonetile1
+    second: {fileID: 2100000, guid: 42468b31659b0274a8e17da7b716e22e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 19_wall_wood
+    second: {fileID: 2100000, guid: 69db43b7b992fce478daf511a9f7536d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 1_billb_far128
+    second: {fileID: 2100000, guid: b0b83b4437f493642bd7724849d35703, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 20_stucco_grn
+    second: {fileID: 2100000, guid: 0d64a99cd053545418963f00bbfc1495, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 21_roof3_6mi
+    second: {fileID: 2100000, guid: 43950fd536f126e49ae3b3d5fd8b73f8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 22_bk3
+    second: {fileID: 2100000, guid: f8e949bffaff5824c9a4bb150f827225, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 23_shingles
+    second: {fileID: 2100000, guid: 29c00ddfb6211bd4abf92e841bba8d07, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 24_clapboard_grn_04
+    second: {fileID: 2100000, guid: 74c0773c62086e747b483ff332f6b980, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 25_clapboard_blue_04
+    second: {fileID: 2100000, guid: 4210e26700ea9984abda9daec29dc3c7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 26_shgls
+    second: {fileID: 2100000, guid: a4aca3b60ea64724fb2743f33ddb36aa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 27_roof1_fc_128
+    second: {fileID: 2100000, guid: be42d9e7e82d8a741b0e197448d10d22, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 28_unassigned
+    second: {fileID: 2100000, guid: 3a97cbee866deaf43860d723d24ea7dc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 29_grgdoor1_grn
+    second: {fileID: 2100000, guid: 7952a931a566dcf48b7c1e752297ce6b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 2_white_cinderblk_nostag
+    second: {fileID: 2100000, guid: 1cf5aa222779daa4ea44274108b5caac, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 30_grgdoor1_brown
+    second: {fileID: 2100000, guid: efc6bb37f62f9864eb87bf2f475d2c2f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 31_roof2
+    second: {fileID: 2100000, guid: 87ff118ef221eb8428d45ff24b0da299, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 32_stucco_brown
+    second: {fileID: 2100000, guid: d20084aedfdf2ab4d9ebee0ccd503213, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 33_grgdoor1
+    second: {fileID: 2100000, guid: 921b5e92c57b9ab4fb010b45d884eeda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 34_dbl_hung_window3_brown
+    second: {fileID: 2100000, guid: accb9b3fff599644ea8d545eb563b058, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 35_doors
+    second: {fileID: 2100000, guid: f29840b6515eac0458186e9b9d69d926, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 36_doors_grn
+    second: {fileID: 2100000, guid: 1c6c217cec6981e4b96e8b9d73fd4291, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 37_doors_brown
+    second: {fileID: 2100000, guid: ce02116caf4cc7e4a8322985bba5d563, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 38_roadMarking_wt_textured02
+    second: {fileID: 2100000, guid: ef91e211d39e37d4ca8a7a596f77ea81, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 39_roadMarking_yo_textured02
+    second: {fileID: 2100000, guid: 5c89234000a57194298217a7ccaa2c0e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 3_e_s1
+    second: {fileID: 2100000, guid: 1be4978c56de82b49b7534a97b6aa021, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 40_sgn_CurveWarning_30More
+    second: {fileID: 2100000, guid: 5eb8332dc092213479176552895a415c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 41_apartment3
+    second: {fileID: 2100000, guid: a376ebcaa8ad8894e9bc5fac82066ef1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 42_veg_treesMany_04B
+    second: {fileID: 2100000, guid: a39a163ac4d8676499d55901e5bad347, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 43_veg_treesMany_03B
+    second: {fileID: 2100000, guid: 0dca1e2dda7fd3146a944d655bb2b851, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 44_veg_treesMany_04
+    second: {fileID: 2100000, guid: 324921c364316f44e946fd1debb0d4dd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 45_veg_treesMany_04
+    second: {fileID: 2100000, guid: 3fa6550be679ade45bd1619833fd09b0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 46_veg_treesMany_03
+    second: {fileID: 2100000, guid: e17bcf85ab92a1e469bbd5773b257f08, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 47_veg_treesMany_03
+    second: {fileID: 2100000, guid: e7d3b4567b7c6c54c92a9bed24eaa96b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 48_Car_Shadow
+    second: {fileID: 2100000, guid: 5ddcf982657a9464fb47bd654b40b918, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 49_qVehMscRes2ln3way01
+    second: {fileID: 2100000, guid: 3b0761c929c209d4fa1c04ee0204a5ec, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 4_factory_window2
+    second: {fileID: 2100000, guid: 187a1b7f16b2fbe4b97ce7f979282e78, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 50_qVehRes2ln3way01
+    second: {fileID: 2100000, guid: 9bb53f015ac51d24194380d38fb2934f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 51_flogo2
+    second: {fileID: 2100000, guid: 58591de16453a094f9387802c737533f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 52_comm_door
+    second: {fileID: 2100000, guid: 9511935d24b05b448acb83fb8f8c0db4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 53_sgn_BarberShop_01
+    second: {fileID: 2100000, guid: 1befec4985d70ba4ebd19bafd86d4d1d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 54_window_1x1
+    second: {fileID: 2100000, guid: e21c37674311c52479039eb1e1cafabd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 55_house14_day
+    second: {fileID: 2100000, guid: 2bf32fa7529558645b29164b02a9aa23, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 56_wall_blocks_sm
+    second: {fileID: 2100000, guid: 0c29ab466c8fa4f4b8a6125ae9d78ab0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 57_pool
+    second: {fileID: 2100000, guid: 4056162b86103e245b9224937fb7ff60, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 58_flower
+    second: {fileID: 2100000, guid: b1648f16379d8c3428fa2fc85c80b228, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 59_AllCars
+    second: {fileID: 2100000, guid: 3284c15037e985746a35010091664c48, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 5_office_win_refl
+    second: {fileID: 2100000, guid: bf3f22312f11a6642b424b53ca753ff0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 60_2ln_res_mult_school02
+    second: {fileID: 2100000, guid: 055f6aa81ffed704290f08512380160a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 61_fence_mailbox
+    second: {fileID: 2100000, guid: 3ddfeed3ad951474dba9113fab5a925c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 62_AllCars_1024
+    second: {fileID: 2100000, guid: 795ec3ef537eb3e4d9e914a8a8ff21db, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 63_fml_bldg_mall1
+    second: {fileID: 2100000, guid: 704191b67bc47ee4392a4ada4351e3cf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 64_bldg_composite01b
+    second: {fileID: 2100000, guid: 12b677e1f3c40be44b1bae1bdfe107aa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 65_house15_day
+    second: {fileID: 2100000, guid: 6d0eaa15543af4e429524929ab3439a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 66_lightpole02
+    second: {fileID: 2100000, guid: cc99186ec23571641bf584034842796f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 67_concrete_int
+    second: {fileID: 2100000, guid: 98f1d1f1b00fcdb4c84910af4effdaf0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 68_brick_b
+    second: {fileID: 2100000, guid: fd42cb5e35454b24ca805576ade1346e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 69_asphault1
+    second: {fileID: 2100000, guid: 6418e6acc7da4ca439561fc39191be21, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 6_util01
+    second: {fileID: 2100000, guid: bc10a15d04f69524b8702e5c6e1ffaf1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 70_house_small03
+    second: {fileID: 2100000, guid: d808033f1776a23489b7cdef12681031, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 71_house_small01
+    second: {fileID: 2100000, guid: 388cf4c5c1161d1478ef4144ce93ed8c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 72_4ln_res_3way_comm_txCons04
+    second: {fileID: 2100000, guid: 52f13249d9309d6418e82f0a513ebf94, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 73_4ln_res_3way_comm_txCons_02
+    second: {fileID: 2100000, guid: d9b4df50c118e7c4e9f43a47cefbcdb0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 74_4lnRd_02
+    second: {fileID: 2100000, guid: 122045780e7a5fc4f8d826fe929ce1af, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 75_wallGasStation_01
+    second: {fileID: 2100000, guid: 8bcd5298d10a2894684c300ecc6b97ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 76_veg_manyTrees
+    second: {fileID: 2100000, guid: 5fac964cd40e29a4f8da74ac8313c047, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 77_building09
+    second: {fileID: 2100000, guid: 839b4de1857648f46a5e58baf2cc942e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 78_building09
+    second: {fileID: 2100000, guid: ce91b49ab4e7d114cbecd7134ed4cc4b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 79_treewall_d_512
+    second: {fileID: 2100000, guid: a493dd8a5fcce8c4f82e7b336f83a161, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 7_veg_manyTrees_2
+    second: {fileID: 2100000, guid: 6ed4b0fcf52816645a37e645c6791c0e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 80_grasslg
+    second: {fileID: 2100000, guid: 5fcab111063ad9c42918f291b5e11246, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 81_house13Small
+    second: {fileID: 2100000, guid: 7a90d03a88d4bae4280a5b49c42021e3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 82_Housing
+    second: {fileID: 2100000, guid: 10618b3232fd0574883086196696cf7a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 83_grate1
+    second: {fileID: 2100000, guid: 823be902fe9171740b1ae4923421b192, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 84_manhole2
+    second: {fileID: 2100000, guid: ad5b17b4a75892b4b868093fd3c2986f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 85_veg_treesMany_05
+    second: {fileID: 2100000, guid: d1c94e254ada2f8469aefae391a515e9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 86_sgn_intRelated_2ln_res_mult_school
+    second: {fileID: 2100000, guid: d7f4fb2eb0352ed4598c76f906f7c925, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 87_veg_features1
+    second: {fileID: 2100000, guid: 9c72c6ac70cdafb43bb9f4266211c314, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 88_veg_treewall_05
+    second: {fileID: 2100000, guid: 6f62cd652349974468c730f6172c54f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 89_field2
+    second: {fileID: 2100000, guid: 9ffadbbb62aa73d499860974abbd227d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 8_veg_TreeWall_04
+    second: {fileID: 2100000, guid: 886c4b71055070944ad44164ad3bb651, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 90_billb_far512
+    second: {fileID: 2100000, guid: c8abfa95e35fadb4a9e83d7fe1fc4c45, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 91_sgn_SL_35
+    second: {fileID: 2100000, guid: 95d3b3fcb389396478204fa492dbbd92, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 92_tyre
+    second: {fileID: 2100000, guid: 64566d3765caa3d40831ed1da1f790b2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 93_black
+    second: {fileID: 2100000, guid: b90403c7271afb541a89c85fce666589, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 94_bs_noise_darker
+    second: {fileID: 2100000, guid: 4ccaeed049f479b47add5925a65cfa36, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 95_gray_cinderblk_nostag
+    second: {fileID: 2100000, guid: 72350f2475d14dd409a7a015ede4559c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 96_windstarblue
+    second: {fileID: 2100000, guid: b71c6526ea5e30443931b965277dfc58, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 97_carwind
+    second: {fileID: 2100000, guid: 21e4f51741b641c44884ce0701bc9b30, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 98_chvy_truckgrey
+    second: {fileID: 2100000, guid: aad56a78f9f2cf14084805a54066faac, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 99_squarelight_gray
+    second: {fileID: 2100000, guid: 3f5eaf9b2ef93ca4a9bd41655b461a65, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 9_2lnRd_02
+    second: {fileID: 2100000, guid: b83051d4b4383b049a86f39809143845, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
