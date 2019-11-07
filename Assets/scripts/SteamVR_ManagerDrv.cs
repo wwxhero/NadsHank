@@ -260,7 +260,7 @@ public class SteamVR_ManagerDrv : SteamVR_Manager
 
 		Matrix4x4 l = m_v.transpose * m_p;
 
-		Vector3 o_p = (m_objects[(int)ObjType.tracker_lhand].transform.localPosition + m_objects[(int)ObjType.tracker_rhand].transform.localPosition) * 0.5f;
+		Vector3 o_p = (m_objects[(int)ObjType.tracker_lfoot].transform.localPosition + m_objects[(int)ObjType.tracker_rfoot].transform.localPosition) * 0.5f;
 		o_p.y = 0.0f;
 		Vector3 o_v = v.position;
 		o_v.y = 0.0f;
